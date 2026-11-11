@@ -307,7 +307,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 <div class="modalWrap" id="artifactsWrap">
   <div class="modal">
     <h2>Artefatos</h2>
-    <p>Os blocos de código que a LUMA gerou nas conversas.</p>
+    <p>Os blocos de código que o Claude gerou nas conversas.</p>
     <div id="artifactList"></div>
     <div class="row"><button class="btnDark" id="closeArtifacts" style="flex:1">Fechar</button></div>
   </div>
@@ -470,7 +470,7 @@ async function send(){
   }catch(e){
     document.getElementById("typingRow")?.remove();
     c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
-      ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic — é ela que deixa a LUMA responder. A chave fica só neste navegador."
+      ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic — é ela que deixa o Claude responder. A chave fica só neste navegador."
       :"Não consegui responder: "+e.message+". Verifica a chave e o modelo nas Configurações."});
     saveConvs();renderChat();
   }
@@ -524,10 +524,10 @@ $("ghostBtn").onclick=()=>$("accountOverlay").classList.add("open");
 $("userRow").onclick=()=>$("accountOverlay").classList.add("open");
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
-$("accLang").onclick=()=>{alert("Idioma: Português (a LUMA responde na língua que escolheres nas Configurações).");};
-$("accHelp").onclick=()=>{alert("Ajuda: escreve a tua pergunta no chat. Se a LUMA não responder, verifica a chave da API nas Configurações.");};
+$("accLang").onclick=()=>{alert("Idioma: Português (o Claude responde na língua que escolheres nas Configurações).");};
+$("accHelp").onclick=()=>{alert("Ajuda: escreve a tua pergunta no chat. Se o Claude não responder, verifica a chave da API nas Configurações.");};
 $("accUpgrade").onclick=()=>{alert("Para subir de plano, usa a tua conta da Anthropic — o plano da API é pago por uso, não há subscrição aqui.");};
-$("accApps").onclick=()=>{alert("A LUMA funciona no navegador. Para a instalares como app, usa 'Adicionar ao ecrã principal' no teu telemóvel.");};
+$("accApps").onclick=()=>{alert("O Claude funciona no navegador. Para o instalares como app, usa 'Adicionar ao ecrã principal' no teu telemóvel.");};
 $("accAbout").onclick=()=>{alert("Claude — assistente de IA com a API da Anthropic.");};
 $("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");if(confirm("Sair apaga as conversas e a chave deste navegador. Continuar?")){localStorage.clear();location.reload();}};
 $("upgradeLink").onclick=e=>{e.preventDefault();alert("Para subir de plano, usa a tua conta da Anthropic — o plano da API é pago por uso.");};
