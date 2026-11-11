@@ -612,7 +612,7 @@ function openArtifacts(){
       el.appendChild(d);
     });
   }));
-  if(!found)el.innerHTML="<p style='color:var(--ink2)'>Ainda não há artefactos. Pede à LUMA um código e ele aparece aqui.</p>";
+  if(!found)el.innerHTML="<p style='color:var(--ink2)'>Ainda não há artefactos. Pede ao Claude um código e ele aparece aqui.</p>";
   $("artifactsWrap").classList.add("open");
 }
 $("navArtifacts").onclick=openArtifacts;
