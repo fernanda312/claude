@@ -255,6 +255,8 @@ body.noSide #sidebar{display:none}
   #sendBtn{width:34px;height:34px}
   #inputCard{padding:12px 12px 8px}
 }
+#netToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:13px 20px;border-radius:12px;font-size:14.5px;box-shadow:0 8px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .25s;z-index:300;max-width:88vw;text-align:center}
+#netToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -941,7 +943,7 @@ function setCode(){
 }
 function setSkills(){
   return "<h2>Skills</h2><p>As Skills ensinam ao Claude como você trabalha.</p>"
-  +"<div class='card' style='background:#F7F7F4'><h2>Adicione suas primeiras Skills</h2><p>Adicione Skills em Descobrir ou crie as suas próprias.</p><button class='setBtn dark'>Descobrir Skills</button></div>"
+  +"<div class='card' style='background:#F7F7F4'><h2>Adicione suas primeiras Skills</h2><p>Adicione Skills em Descobrir ou crie as suas próprias.</p><button class='setBtn dark' id='setDiscoverSkills'>Descobrir Skills</button></div>"
   +"<h3>Da Anthropic e parceiros</h3>"
   +"<div class='setRow'><div><div class='lab'>skill-creator</div><div class='desc'>28 de out.</div></div></div>"
   +"<div class='setRow'><div><div class='lab'>google-workspace</div><div class='desc'>14 de out.</div></div></div>"
@@ -950,11 +952,11 @@ function setSkills(){
 }
 function setConectores(){
   return "<h2>Conectores</h2><p>Ligue os teus serviços ao Claude.</p>"
-  +"<div class='setRow'><div><div class='lab'>Integração com o GitHub</div><div class='desc'>Web</div></div><button class='setBtn'>Vincular</button></div>";
+  +"<div class='setRow'><div><div class='lab'>Integração com o GitHub</div><div class='desc'>Web</div></div><button class='setBtn' id='setLinkGithub'>Vincular</button></div>";
 }
 function setPlugins(){
   return "<h2>Plugins</h2>"
-  +"<div class='card' style='background:#F7F7F4'><h2>Adicione seus primeiros plugins</h2><p>Dê ao Claude conhecimento especializado por função com plugins. Adicione-os em Descobrir ou crie os seus próprios.</p><button class='setBtn dark'>Descobrir plugins</button></div>";
+  +"<div class='card' style='background:#F7F7F4'><h2>Adicione seus primeiros plugins</h2><p>Dê ao Claude conhecimento especializado por função com plugins. Adicione-os em Descobrir ou crie os seus próprios.</p><button class='setBtn dark' id='setDiscoverPlugins'>Descobrir plugins</button></div>";
 }
 function openSettings(){
   const menu=$("setMenu");menu.innerHTML="";
@@ -986,6 +988,14 @@ function renderSetSection(){
   else el.innerHTML=setPlugins();
   wireSetSection();
 }
+let netToastTimer=null;
+function showNetError(){
+  const t=$("netToast");if(!t)return;
+  t.textContent="Falha na internet. Verifica a tua ligação e tenta outra vez.";
+  t.classList.add("show");
+  clearTimeout(netToastTimer);
+  netToastTimer=setTimeout(()=>t.classList.remove("show"),3200);
+}
 function wireSetSection(){
   document.querySelectorAll("#setContent .tgl").forEach(t=>{t.onclick=()=>t.classList.toggle("on");});
   const ak=$("setApiKey");if(ak)ak.addEventListener("input",()=>{cfg.apiKey=ak.value.trim();saveCfg();});
@@ -1002,6 +1012,9 @@ function wireSetSection(){
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="claude-conversas.json";a.click();
   };
   const sup=$("setUpgrade");if(sup)sup.onclick=()=>{$("settingsWrap").classList.remove("open");openUpgrade();};
+  const lg=$("setLinkGithub");if(lg)lg.onclick=()=>showNetError();
+  const ds=$("setDiscoverSkills");if(ds)ds.onclick=()=>showNetError();
+  const dp=$("setDiscoverPlugins");if(dp)dp.onclick=()=>showNetError();
 }
 $("closeSettings").onclick=()=>$("settingsWrap").classList.remove("open");
 function openAdmin(){
@@ -1145,5 +1158,6 @@ $("micBtn").onclick=startDictation;
 $("voiceBtn").onclick=startDictation;
 applyCfg();renderList();renderChat();
 </script>
+<div id="netToast"></div>
 </body>
 </html>
