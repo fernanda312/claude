@@ -401,19 +401,10 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 
 <script>
 const MODELS=[
-  {id:"claude-sonnet-5-5",short:"Sonnet 5.5",label:"Sonnet 5.5 — Mais eficiente para tarefas mais simples",plan:""},
-  {id:"claude-opus-5-5",short:"Opus 5.5",label:"Opus 5.5 — o mais forte",plan:"Pro"},
-  {id:"claude-haiku-5-5",short:"Haiku 5.5",label:"Haiku 5.5 — o mais rápido",plan:""},
-  {id:"claude-fable-5-2",short:"Fable 5.2",label:"Fable 5.2 — raciocínio exigente",plan:"Pro, Max ou Ultra"},
-  {id:"claude-fable-5-1",short:"Fable 5.1",label:"Fable 5.1",plan:"Pro, Max ou Ultra"},
-  {id:"claude-fable-5",short:"Fable 5",label:"Fable 5",plan:"Pro, Max ou Ultra"},
-  {id:"claude-opus-5",short:"Opus 5",label:"Opus 5",plan:"Pro"},
-  {id:"claude-opus-4-8",short:"Opus 4.8",label:"Opus 4.8",plan:"Pro"},
-  {id:"claude-opus-4-7",short:"Opus 4.7",label:"Opus 4.7",plan:"Pro"},
-  {id:"claude-opus-4-6",short:"Opus 4.6",label:"Opus 4.6",plan:"Pro"},
-  {id:"claude-opus-3",short:"Opus 3",label:"Opus 3",plan:"Pro"},
-  {id:"claude-sonnet-5",short:"Sonnet 5",label:"Sonnet 5",plan:""},
-  {id:"claude-sonnet-4-6",short:"Sonnet 4.6",label:"Sonnet 4.6",plan:""}
+  {id:"gemini-2.5-flash",short:"Gemini 2.5 Flash",label:"Gemini 2.5 Flash — rápido e equilibrado",plan:""},
+  {id:"gemini-2.5-flash-lite",short:"Gemini 2.5 Flash-Lite",label:"Gemini 2.5 Flash-Lite — o mais leve",plan:""},
+  {id:"gemini-2.5-pro",short:"Gemini 2.5 Pro",label:"Gemini 2.5 Pro — o mais forte",plan:""},
+  {id:"gemini-flash-latest",short:"Gemini Flash (mais recente)",label:"Gemini Flash — sempre a versão mais recente",plan:""}
 ];
 const EFFORTS=[
   {id:"low",label:"Baixo",short:"Baixo",tokens:1024},
@@ -457,8 +448,8 @@ function md(t){
 function saveCfg(){localStorage.setItem(LS.cfg,JSON.stringify(cfg));applyCfg();}
 function saveConvs(){localStorage.setItem(LS.convs,JSON.stringify(convs));localStorage.setItem(LS.cur,curId||"");}
 function saveProj(){localStorage.setItem(LS.proj,JSON.stringify(projects));}
-function modelShort(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Sonnet";}
-function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Sonnet")+" "+effortOf().short;}
+function modelShort(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Gemini";}
+function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Gemini")+" "+effortOf().short;}
 function applyCfg(){
   document.documentElement.style.setProperty("--accent",cfg.color);
   $("brandWord").textContent=cfg.name;
@@ -518,17 +509,36 @@ function renderChat(){
 async function callClaude(messages){
   const key=(cfg.apiKey||"").trim();
   if(!key) throw new Error("NO_KEY");
-  const r=await fetch("https://api.anthropic.com/v1/messages",{
+  const contents=messages.map(m=>{
+    const role=m.role==="assistant"?"model":"user";
+    let parts;
+    if(Array.isArray(m.content)){
+      parts=m.content.map(b=>{
+        if(b.type==="image"&&b.source&&b.source.data) return {inlineData:{mimeType:b.source.media_type||"image/jpeg",data:b.source.data}};
+        return {text:b.text||""};
+      }).filter(p=>p.text||p.inlineData);
+    }else{
+      parts=[{text:m.content||""}];
+    }
+    return {role,parts};
+  });
+  const body={contents};
+  if(cfg.system) body.systemInstruction={parts:[{text:cfg.system}]};
+  body.generationConfig={maxOutputTokens:effortOf().tokens};
+  const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(cfg.model)+":generateContent",{
     method:"POST",
-    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:cfg.model,max_tokens:effortOf().tokens,system:cfg.system||undefined,messages})
+    headers:{"Content-Type":"application/json","x-goog-api-key":key},
+    body:JSON.stringify(body)
   });
   if(!r.ok){
     const j=await r.json().catch(()=>({}));
     throw new Error((j.error&&j.error.message)||("Erro "+r.status));
   }
   const j=await r.json();
-  return (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+  const parts=(((j.candidates||[])[0]||{}).content||{}).parts||[];
+  const text=parts.filter(p=>p.text).map(p=>p.text).join("");
+  if(!text) throw new Error("O Gemini não devolveu texto. Tenta outra vez ou muda de modelo.");
+  return text;
 }
 function setBusy(b){busy=b;$("sendBtn").disabled=b;updateSend();}
 function buildApiMessages(c){
@@ -564,7 +574,7 @@ async function send(){
   }catch(e){
     document.getElementById("typingRow")?.remove();
     c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
-      ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic — é ela que deixa o Claude responder. A chave fica só neste navegador."
+      ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave do Google AI Studio — é grátis em aistudio.google.com/apikey e é ela que deixa o chat responder. A chave fica só neste navegador."
       :"Não consegui responder: "+e.message+". Verifica a chave e o modelo nas Configurações."});
     saveConvs();renderChat();
   }
@@ -662,7 +672,7 @@ function openUpgrade(){
 function openAbout(){
   showPage("Saiba mais",
   "<img src='"+LOGO_LOCK+"' style='height:32px;margin:8px 0 4px' alt='Claude'><h1>Claude</h1>"
-  +"<div class='card'><h2>O que é o Claude?</h2><p>O Claude é um assistente de IA da Anthropic. Ajuda a escrever, resumir, programar, organizar ideias e responder perguntas — em português e em muitas outras línguas.</p><p>Este site usa a API da Anthropic: as respostas vêm dos modelos Claude (Sonnet, Opus, Haiku e Fable) e o uso é cobrado à conta da chave configurada nas Configurações.</p><a class='link' href='https://claude.ai' target='_blank'>Visitar claude.ai</a></div>"
+  +"<div class='card'><h2>O que é o Claude?</h2><p>O Claude é um assistente de IA da Anthropic. Ajuda a escrever, resumir, programar, organizar ideias e responder perguntas — em português e em muitas outras línguas.</p><p>Neste site, o chat responde com os modelos Gemini do Google: a chave do Google AI Studio (grátis) é que deixa o chat responder, e fica guardada só no teu navegador.</p><a class='link' href='https://claude.ai' target='_blank'>Visitar claude.ai</a></div>"
   +"<div class='card'><h2>Saiba mais</h2>"
   +"<a class='link' href='https://www.anthropic.com' target='_blank'>Sobre a Anthropic</a><br>"
   +"<a class='link' href='https://claude.com/academy' target='_blank'>Claude Academy</a><br>"
@@ -672,7 +682,7 @@ function openAbout(){
   +"<a class='link' href='https://claude.com/fonts' target='_blank'>Licenças de fontes</a><br>"
   +"<a class='link' href='https://claude.com/privacy-choices' target='_blank'>Suas escolhas de privacidade</a><br>"
   +"<a class='link' href='https://claude.com/shortcuts' target='_blank'>Atalhos do teclado (Ctrl+/)</a></div>"
-  +"<div class='card'><h2>Privacidade</h2><p>As tuas conversas ficam guardadas só neste navegador. A tua chave da API também fica só aqui — nunca é enviada para outro sítio além da Anthropic.</p></div>");
+  +"<div class='card'><h2>Privacidade</h2><p>As tuas conversas ficam guardadas só neste navegador. A tua chave da API também fica só aqui — nunca é enviada para outro sítio além do Google.</p></div>");
 }
 /* eventos */
 $("sendBtn").onclick=send;
@@ -727,7 +737,7 @@ $("modelBtn").onclick=()=>{
     d.onclick=()=>{cfg.model=m.id;saveCfg();$("modelWrap").classList.remove("open");};
     el.appendChild(d);
   });
-  const fn=document.createElement("p");fn.style.cssText="color:var(--ink2);font-size:13px;line-height:1.5;margin:12px 0 0";fn.textContent="O Fable está incluído nos planos Max e Ultra, e no Pro por tempo limitado. Saiba mais";
+  const fn=document.createElement("p");fn.style.cssText="color:var(--ink2);font-size:13px;line-height:1.5;margin:12px 0 0";fn.textContent="Os modelos Gemini usam a chave gratuita do Google AI Studio. O plano gratuito tem limites por minuto e por dia.";
   el.appendChild(fn);
   $("modelWrap").classList.add("open");
 };
@@ -751,8 +761,8 @@ let setCur="geral";
 function tgl(on){return "<button class='tgl"+(on?" on":"")+"'></button>";}
 function setGeral(){
   return "<h2>Geral</h2>"
-  +"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o Claude responder. A chave fica guardada só neste navegador.</p>"
-  +"<label>Chave da API (Anthropic)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
+  +"<h3>Ligação ao Google (Gemini)</h3><p>Liga a tua chave do Google AI Studio para o chat responder. É grátis — cria-se em <a class='link' href='https://aistudio.google.com/apikey' target='_blank'>aistudio.google.com/apikey</a> com a tua conta Google. A chave fica guardada só neste navegador, escondida — nunca aparece no site nem no código.</p>"
+  +"<label>Chave da API (Google AI Studio)</label><input type='password' id='setApiKey' placeholder='AIza...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
   +"<div id='keyWarn'>Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta.</div>"
   +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.label+"</option>").join("")+"</select>"
   +"<h3>Aparência</h3>"
