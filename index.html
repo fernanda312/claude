@@ -104,6 +104,30 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #pageBody .plan span{color:var(--ink2);font-size:14px}
 #pageBody .plan .tag{margin-left:auto;font-size:13px;font-weight:600;color:var(--ink2);border:1px solid var(--line);border-radius:16px;padding:5px 12px;white-space:nowrap}
 #pageBody .plan .tag.on{background:#F1F1EE;color:var(--ink)}
+/* página de planos */
+#pageBody .plansTitle{font-family:var(--serif);font-size:38px;font-weight:500;line-height:1.15;margin:14px 0 22px}
+#pageBody .segToggle{display:flex;background:#F1F1EE;border-radius:14px;padding:4px;gap:4px;margin-bottom:22px}
+#pageBody .segToggle button{flex:1;padding:10px 6px;border-radius:10px;font-size:15px;line-height:1.3;color:#6E6A63}
+#pageBody .segToggle button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.14)}
+#pageBody .planCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 24px;margin-bottom:16px}
+#pageBody .planCard h2{font-size:28px;font-weight:700}
+#pageBody .planCard .sub{color:var(--ink2);font-size:16px;margin:6px 0 18px}
+#pageBody .planCard .price{font-size:38px;font-weight:700;line-height:1}
+#pageBody .planCard .priceNote{color:var(--ink2);font-size:13.5px;line-height:1.55;margin:10px 0 18px}
+#pageBody .planCard .btn{display:block;width:100%;text-align:center;border-radius:12px;padding:15px;font-size:16px;font-weight:600;text-decoration:none}
+#pageBody .planCard .btnDark{background:#1A1A1A;color:#fff}
+#pageBody .planCard .btnLight{background:#F1F1EE;color:var(--ink)}
+#pageBody .planCard .btnNote{text-align:center;color:var(--ink2);font-size:13.5px;margin:11px 0 0}
+#pageBody .planCard .incl{font-size:14px;color:var(--ink2);margin:20px 0 4px}
+#pageBody .planCard ul{list-style:none;margin:0}
+#pageBody .planCard ul li{position:relative;padding:8px 0 8px 30px;font-size:15px;line-height:1.55}
+#pageBody .planCard ul li::before{content:"✓";position:absolute;left:2px;top:8px;font-weight:700}
+#pageBody .fine{font-size:12.5px;color:var(--ink2);line-height:1.55;margin:6px 0 26px}
+#pageBody .faqTitle{font-size:22px;font-weight:700;margin:26px 0 6px}
+#pageBody details{border-top:1px solid var(--line);padding:15px 0}
+#pageBody details summary{font-size:16px;font-weight:600;cursor:pointer;list-style:none}
+#pageBody details summary::-webkit-details-marker{display:none}
+#pageBody details p{color:var(--ink2);font-size:15px;line-height:1.6;margin-top:9px}
 .msg.ai .body{flex:1;min-width:0;padding-top:4px;line-height:1.65;font-size:15.5px}
 .msg .body p{margin:0 0 10px}.msg .body p:last-child{margin-bottom:0}
 .msg .body h1,.msg .body h2,.msg .body h3{margin:14px 0 8px}
@@ -550,6 +574,8 @@ function updateSend(){
 function showPage(title,html){
   $("pageTitle").textContent=title;
   $("pageBody").innerHTML=html;
+  $("topbar").style.display="none";
+  $("planRow").style.display="none";
   $("chat").style.display="none";
   $("composer").style.display="none";
   $("pageView").classList.add("open");
@@ -557,6 +583,8 @@ function showPage(title,html){
 }
 function showChat(){
   $("pageView").classList.remove("open");
+  $("topbar").style.display="";
+  $("planRow").style.display="";
   $("chat").style.display="flex";
   $("composer").style.display="block";
   renderChat();
@@ -564,17 +592,37 @@ function showChat(){
 function openApps(){
   showPage("Apps e extensões",
   "<h1>Apps e extensões</h1>"
-  +"<div class='card'><h2>Desktop</h2><p>Use o Chat, o Cowork e o Code em um só app. O Claude trabalha com seus arquivos, apps e abas do navegador.</p><a class='btn' href='https://claude.ai/download' target='_blank'>Baixar para macOS</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Baixar para Windows</a></div>"
-  +"<div class='card'><h2>Celular</h2><p>Leva o Claude contigo. Conversa em qualquer lugar, com a tua conta e o teu histórico.</p><a class='btn' href='https://claude.ai/download' target='_blank'>Baixar para iOS e Android</a></div>"
-  +"<div class='card'><h2>Extensões do navegador</h2><p>Usa o Claude dentro do teu navegador, sem sair da página onde estás.</p><a class='btn' href='https://claude.ai/download' target='_blank'>Adicionar ao Chrome</a></div>");
+  +"<div class='card'><h2>Desktop</h2><p>Todo o Claude, num só app. Use o Chat, o Cowork e o Code em um só app. O Claude trabalha com seus arquivos, apps e abas do navegador.</p><a class='btn' href='https://claude.ai/download' target='_blank'>Baixar para macOS</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Baixar para Windows</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Baixar para Windows (arm64)</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Baixar na Microsoft Store</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Baixar para Linux</a></div>"
+  +"<div class='card'><h2>Celular</h2><p>Leva o Claude contigo. Emparelha com o app de desktop. Começa uma ideia aqui, termina em qualquer lugar — o Claude lembra-se em todos os teus aparelhos.</p><a class='btn' href='https://claude.ai/download' target='_blank'>Baixar para iOS e Android</a><br><a class='link' href='https://claude.ai/mobile' target='_blank'>Ou visita claude.ai/mobile no teu telemóvel</a></div>"
+  +"<div class='card'><h2>Extensões do Claude</h2><p>Põe o Claude a trabalhar nas tuas apps.</p><a class='link' href='https://claude.ai/download' target='_blank'>Chrome — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Slack — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Excel — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>PowerPoint — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Word — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>Google Workspace — Instalar</a></div>"
+  +"<div class='card'><h2>Ambientes do Claude Code</h2><p>Constrói, corrige e publica onde trabalhas melhor.</p><a class='link' href='https://claude.ai/download' target='_blank'>Terminal — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>VS Code — Instalar</a><br><a class='link' href='https://claude.ai/download' target='_blank'>JetBrains — Instalar</a></div>"
+  +"<div class='card'><h2>Claude Science (beta)</h2><p>A tua bancada de trabalho para investigação científica.</p><a class='btn' href='https://claude.ai/download' target='_blank'>Baixar</a></div>");
 }
 function openUpgrade(){
-  showPage("Subir de plano",
-  "<h1>Escolhe o teu plano</h1>"
-  +"<div class='card'><div class='plan'><div><b>Gratuito</b><br><span>O teu plano atual — chat com limites diários.</span></div><span class='tag on'>Atual</span></div></div>"
-  +"<div class='card'><div class='plan'><div><b>Pro</b><br><span>$20/mês — muito mais uso, modelos mais fortes, projetos e mais.</span></div></div><p style='margin-top:12px'><a class='btn' href='https://claude.ai/upgrade' target='_blank'>Passar para Pro</a></p></div>"
-  +"<div class='card'><div class='plan'><div><b>Max</b><br><span>$100/mês — o máximo de uso, para trabalho intenso todos os dias.</span></div></div><p style='margin-top:12px'><a class='btn' href='https://claude.ai/upgrade' target='_blank'>Passar para Max</a></p></div>"
-  +"<div class='card'><h2>Equipas e empresas</h2><p>Planos Team e Enterprise para trabalhar em grupo, com controlos de administração.</p><a class='link' href='https://claude.ai/upgrade' target='_blank'>Ver planos para equipas</a></div>");
+  showPage("",
+  "<h1 class='plansTitle'>Planos que crescem<br>com você</h1>"
+  +"<div class='segToggle'><button id='segInd' class='on'>Para<br>indivíduos</button><button id='segTeam'>Team e<br>Enterprise</button></div>"
+  +"<div id='plansInd'>"
+  +"<div class='planCard'><h2>Free</h2><div class='sub'>Conheça o Claude</div><div class='price'>$ 0</div><div class='priceNote'>Gratuito para todos</div><a class='btn btnLight' href='#' onclick='return false'>Use o Claude gratuitamente</a>"
+  +"<ul><li>Converse na web, no desktop e no celular</li><li>Pesquise na web, crie arquivos e execute código</li><li>Memória entre conversas</li><li>Conecte seus apps e ferramentas</li><li>Claude Design, Slides e Docs</li></ul></div>"
+  +"<div class='planCard'><h2>Pro</h2><div class='sub'>Para o dia a dia de trabalho</div><div class='price'>$17</div><div class='priceNote'>Por mês com desconto da assinatura anual (US$ 200 faturados antecipadamente). US$ 20 com faturamento mensal.</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Experimente o Claude</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Free mais:</div>"
+  +"<ul><li>Mais uso*</li><li>Delegue tarefas e receba documentos, apresentações, planilhas e designs finalizados</li><li>Claude Dashboards (beta)</li><li>Claude Code</li><li>Claude Science</li><li>Projetos</li><li>Mais modelos do Claude</li><li>Claude in Chrome e Microsoft 365</li></ul></div>"
+  +"<div class='planCard'><h2>Max e Ultra</h2><div class='sub'>Para quem trabalha com o Claude o dia todo</div><div class='price'>A partir de $100</div><div class='priceNote'>Por mês</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Experimente o Claude</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Pro mais:</div>"
+  +"<ul><li>Escolha 5x o uso do plano Pro a cada 5 horas e toda semana, ou 10x o uso do plano Pro toda semana*</li><li>Acesso antecipado aos recursos avançados do Claude</li><li>Acesso prioritário em horários de tráfego intenso</li></ul></div>"
+  +"</div>"
+  +"<div id='plansTeam' style='display:none'>"
+  +"<div class='planCard'><h2>Team</h2><div class='sub'>Trabalhe melhor em equipe. Ideal para pequenas equipes.</div><div class='price'>$23</div><div class='priceNote'>Por mês, por pessoa com desconto da assinatura anual (total anual por membro $276). $30 com faturamento mensal.</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Team</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Pro mais:</div>"
+  +"<ul><li>Converse mais por membro do que no Pro</li><li>Limites de uso mais altos do que no Pro*</li><li>Espaço de trabalho compartilhado com Projetos</li><li>Central de administração</li></ul></div>"
+  +"<div class='planCard'><h2>Enterprise</h2><div class='sub'>Para grandes organizações</div><div class='price'>Preços personalizados</div><div class='priceNote'>Fale conosco</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Enterprise</a><div class='incl'>Tudo no Team mais:</div>"
+  +"<ul><li>Controles de segurança avançados com SSO, SCIM e gerenciamento hierárquico</li><li>Análise de uso corporativo</li><li>Suporte e integração dedicados</li><li>Dados de conformidade e retenção</li></ul></div>"
+  +"</div>"
+  +"<p class='fine'>*Sujeito a limites de uso. Os preços exibidos não incluem os impostos aplicáveis. Preços e planos estão sujeitos a alterações a critério da Anthropic.</p>"
+  +"<h2 class='faqTitle'>Perguntas frequentes</h2>"
+  +"<details><summary>O que é o Claude e como ele funciona?</summary><p>O Claude é um assistente de IA da Anthropic. Escreve, resume, programa e responde perguntas — basta escreveres a tua pergunta no chat.</p></details>"
+  +"<details><summary>Para que devo usar o Claude?</summary><p>Para escrever e rever textos, resumir documentos, programar, organizar ideias e aprender — no trabalho e no dia a dia.</p></details>"
+  +"<details><summary>Quanto custa para usar?</summary><p>O plano Free custa $0. O Pro custa $17 por mês com a assinatura anual (ou $20 por mês). O Max e Ultra começam nos $100 por mês.</p></details>");
+  $("segInd").onclick=()=>{$("segInd").classList.add("on");$("segTeam").classList.remove("on");$("plansInd").style.display="block";$("plansTeam").style.display="none";};
+  $("segTeam").onclick=()=>{$("segTeam").classList.add("on");$("segInd").classList.remove("on");$("plansTeam").style.display="block";$("plansInd").style.display="none";};
 }
 function openAbout(){
   showPage("Saiba mais",
