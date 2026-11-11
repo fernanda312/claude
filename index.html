@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LUMA — O teu assistente de IA</title>
+<title>Claude</title>
 <style>
 :root{
   --bg:#F5F4F0; --sidebar:#F0EEE6; --card:#FFFFFF; --ink:#1A1A1A; --ink2:#6E6A63;
-  --line:#E4E0D5; --line2:#D8D3C4; --accent:#C96F4A; --blue:#2E6FDB;
+  --line:#E4E0D5; --line2:#D8D3C4; --accent:#D97757; --blue:#2E6FDB;
   --serif:Georgia,"Times New Roman",serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -165,7 +165,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 <aside id="sidebar">
   <div id="sideHead">
     <button class="x" id="closeSide">×</button>
-    <h1 id="brandWord">LUMA</h1>
+    <h1 id="brandWord">Claude</h1>
   </div>
   <div id="searchRow">🔍 <input id="searchInput" placeholder="Procurar"></div>
   <button id="createBtn"><span class="plus">＋</span> Criar</button>
@@ -220,7 +220,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
           <button id="sendBtn" title="Enviar">↑</button>
         </div>
       </div>
-      <div id="hint">A LUMA usa a API da Anthropic. O uso é cobrado à conta da chave configurada.</div>
+      <div id="hint">O Claude usa a API da Anthropic. O uso é cobrado à conta da chave configurada.</div>
     </div>
   </div>
 </main>
@@ -246,10 +246,10 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 <div class="modalWrap" id="settingsWrap">
   <div class="modal">
     <h2>Configurações</h2>
-    <p>Liga a tua conta da Anthropic para a LUMA responder. A chave fica guardada só neste navegador.</p>
+    <p>Liga a tua conta da Anthropic para o Claude responder. A chave fica guardada só neste navegador.</p>
     <label>Chave da API (Anthropic)</label>
     <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
-    <div id="keyWarn">Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta. Se a chave for de um cliente, é ele que a põe aqui.</div>
+    <div id="keyWarn">Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta.</div>
     <label>Modelo</label>
     <select id="defaultModel"></select>
     <label>Mensagem do sistema (personalidade)</label>
@@ -284,7 +284,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
       <button class="btnLight" id="closeAdmin">Fechar</button>
       <button class="btnDark" id="saveAdmin">Guardar</button>
     </div>
-    <p style="margin-top:14px">Para apagar tudo (conversas e definições) neste navegador: <a href="#" id="resetAll">repor a LUMA</a>.</p>
+    <p style="margin-top:14px">Para apagar tudo (conversas e definições) neste navegador: <a href="#" id="resetAll">repor o Claude</a>.</p>
   </div>
 </div>
 
@@ -336,9 +336,9 @@ const DEFAULT_SUG=[
   ["Ideias para o meu negócio","3 ideias para vender mais esta semana."],
   ["Ajudar com código","Explica ou corrige um bocado de código."]
 ];
-const LS={convs:"luma_convs",cfg:"luma_cfg",cur:"luma_cur",proj:"luma_proj"};
+const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj"};
 let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
-cfg=Object.assign({name:"LUMA",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#C96F4A",model:MODELS[0].id,system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG},cfg);
+cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG},cfg);
 let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
 let projects=JSON.parse(localStorage.getItem(LS.proj)||"[]");
 let curId=localStorage.getItem(LS.cur)||null;
@@ -346,7 +346,7 @@ let busy=false, attach=null;
 
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const STAR='<svg width="46" height="46" viewBox="0 0 46 46"><path d="M23 4 L26.5 19.5 L42 23 L26.5 26.5 L23 42 L19.5 26.5 L4 23 L19.5 19.5 Z" fill="COLOR"/></svg>';
+const STAR='<svg width="46" height="46" viewBox="0 0 46 46"><path d="M23,1 L25.2,16.3 L35.9,5.2 L28.7,18.9 L43.9,16.2 L30,23 L43.9,29.8 L28.7,27.1 L35.9,40.8 L25.2,29.7 L23,45 L20.8,29.7 L10.1,40.8 L17.3,27.1 L2.1,29.8 L16,23 L2.1,16.2 L17.3,18.9 L10.1,5.2 L20.8,16.3 Z" fill="COLOR"/></svg>';
 function markSVG(color,size){return STAR.replace("COLOR",color).replace('width="46" height="46"','width="'+size+'" height="'+size+'"');}
 function md(t){
   let h=esc(t);
@@ -371,7 +371,7 @@ function applyCfg(){
   $("userAv").textContent=(cfg.user||"C")[0].toUpperCase();
   $("accountEmail").textContent=cfg.email||"";
   $("modelShort").textContent=modelShort();
-  document.title=cfg.name+" — O teu assistente de IA";
+  document.title=cfg.name;
   const dm=$("defaultModel");dm.innerHTML="";
   MODELS.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.label;dm.appendChild(o);});
   dm.value=cfg.model;
@@ -528,7 +528,7 @@ $("accLang").onclick=()=>{alert("Idioma: Português (a LUMA responde na língua 
 $("accHelp").onclick=()=>{alert("Ajuda: escreve a tua pergunta no chat. Se a LUMA não responder, verifica a chave da API nas Configurações.");};
 $("accUpgrade").onclick=()=>{alert("Para subir de plano, usa a tua conta da Anthropic — o plano da API é pago por uso, não há subscrição aqui.");};
 $("accApps").onclick=()=>{alert("A LUMA funciona no navegador. Para a instalares como app, usa 'Adicionar ao ecrã principal' no teu telemóvel.");};
-$("accAbout").onclick=()=>{alert("LUMA — assistente de IA com a API da Anthropic. Feito para usar e vender.");};
+$("accAbout").onclick=()=>{alert("Claude — assistente de IA com a API da Anthropic.");};
 $("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");if(confirm("Sair apaga as conversas e a chave deste navegador. Continuar?")){localStorage.clear();location.reload();}};
 $("upgradeLink").onclick=e=>{e.preventDefault();alert("Para subir de plano, usa a tua conta da Anthropic — o plano da API é pago por uso.");};
 $("modelBtn").onclick=()=>{
@@ -563,14 +563,14 @@ function openAdmin(){
   $("adminWelcome").value=cfg.welcome||"";
   $("adminUser").value=cfg.user||"";
   $("adminEmail").value=cfg.email||"";
-  $("adminColor").value=cfg.color||"#C96F4A";
+  $("adminColor").value=cfg.color||"#D97757";
   $("adminSug").value=(cfg.sug||DEFAULT_SUG).map(s=>s[0]+" | "+(s[1]||"")).join("\n");
   $("adminWrap").classList.add("open");
 }
 $("navPersonal").onclick=openAdmin;
 $("closeAdmin").onclick=()=>$("adminWrap").classList.remove("open");
 $("saveAdmin").onclick=()=>{
-  cfg.name=$("adminName").value.trim()||"LUMA";
+  cfg.name=$("adminName").value.trim()||"Claude";
   cfg.welcome=$("adminWelcome").value.trim()||cfg.welcome;
   cfg.user=$("adminUser").value.trim()||cfg.user;
   cfg.email=$("adminEmail").value.trim()||cfg.email;
