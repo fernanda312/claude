@@ -1,10 +1,406 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
-<meta charset="utf-8">
-<title>Luma</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMA — O teu assistente de IA</title>
+<style>
+:root{
+  --bg:#F7F5F0; --bg2:#FFFFFF; --ink:#1F1C19; --ink2:#6B6560; --line:#E6E1D8;
+  --accent:#C96F4A; --accent2:#B25A38; --sidebar:#F0EDE6; --bubble:#FFFFFF;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);display:flex;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
+/* ---------- sidebar ---------- */
+#sidebar{width:280px;min-width:280px;background:var(--sidebar);border-right:1px solid var(--line);display:flex;flex-direction:column;height:100%}
+#sidebar .brand{display:flex;align-items:center;gap:10px;padding:18px 18px 12px}
+#sidebar .brand .logo{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px}
+#sidebar .brand b{font-size:19px;letter-spacing:.5px}
+#sidebar .brand span{font-size:12px;color:var(--ink2)}
+#newChat{margin:6px 14px 10px;padding:11px;border-radius:12px;background:var(--ink);color:#fff;font-weight:600;font-size:15px}
+#newChat:hover{opacity:.88}
+#convList{flex:1;overflow-y:auto;padding:4px 10px}
+.conv{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;font-size:14.5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv:hover{background:#E7E2D6}
+.conv.active{background:#E2DCD0;font-weight:600}
+.conv .x{margin-left:auto;color:var(--ink2);font-size:16px;line-height:1;padding:2px 6px;border-radius:6px}
+.conv .x:hover{background:#D8D2C2;color:#000}
+#sideFoot{border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:8px}
+#sideFoot button{flex:1;padding:10px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:14px;font-weight:600}
+#sideFoot button:hover{border-color:#CFC8B8}
+/* ---------- main ---------- */
+#main{flex:1;display:flex;flex-direction:column;height:100%;min-width:0}
+#topbar{display:none;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg2)}
+#topbar .logo{width:30px;height:30px;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+#topbar b{font-size:17px}
+#topbar .sp{flex:1}
+#topbar button{font-size:20px;padding:6px 10px}
+#chat{flex:1;overflow-y:auto;padding:28px 0 10px}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+.msg{margin:0 0 22px;display:flex;gap:12px}
+.msg .av{width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.msg.user .av{background:#E8E2D5;color:var(--ink)}
+.msg.ai .av{background:var(--accent);color:#fff}
+.msg .body{flex:1;min-width:0;padding-top:5px;line-height:1.65;font-size:15.5px}
+.msg.user .body{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px}
+.msg .body p{margin:0 0 10px}
+.msg .body p:last-child{margin-bottom:0}
+.msg .body h1,.msg .body h2,.msg .body h3{margin:14px 0 8px}
+.msg .body ul,.msg .body ol{margin:0 0 10px 20px}
+.msg .body li{margin:3px 0}
+.msg .body code{background:#F0EDE6;padding:2px 6px;border-radius:6px;font-size:13.5px}
+.msg .body pre{background:#1F1C19;color:#F5F2EA;padding:14px;border-radius:10px;overflow-x:auto;margin:0 0 10px}
+.msg .body pre code{background:none;padding:0;color:inherit}
+.msg .tools{display:flex;gap:6px;margin-top:8px}
+.msg .tools button{font-size:12.5px;color:var(--ink2);border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px}
+.msg .tools button:hover{color:var(--ink);border-color:#CFC8B8}
+.typing{display:inline-flex;gap:5px;padding:8px 0}
+.typing i{width:7px;height:7px;border-radius:50%;background:#B9B2A4;animation:tp 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tp{0%,100%{opacity:.35;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+/* welcome */
+#welcome{max-width:760px;margin:0 auto;padding:60px 20px 0;text-align:center}
+#welcome h1{font-size:32px;font-weight:700;margin:18px 0 8px}
+#welcome p{color:var(--ink2);font-size:16px;margin-bottom:26px}
+#welcome .logoBig{width:64px;height:64px;border-radius:18px;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:34px}
+.sug{display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left}
+.sug button{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;font-size:15px;line-height:1.45;text-align:left}
+.sug button:hover{border-color:var(--accent)}
+.sug button b{display:block;margin-bottom:4px}
+.sug button span{color:var(--ink2);font-size:13.5px}
+/* composer */
+#composer{padding:10px 0 18px;background:linear-gradient(transparent,var(--bg) 30%)}
+#composer .box{max-width:760px;margin:0 auto;padding:0 20px}
+#inputRow{background:#fff;border:1px solid var(--line);border-radius:20px;padding:10px 12px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+#inputRow:focus-within{border-color:#CFC8B8}
+#prompt{width:100%;border:none;outline:none;resize:none;max-height:180px;font-size:15.5px;line-height:1.5;background:none}
+#sendRow{display:flex;align-items:center;gap:8px;margin-top:6px}
+#modelSel{border:1px solid var(--line);border-radius:9px;padding:7px 8px;background:#fff;font-size:13.5px}
+#sendBtn{margin-left:auto;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center}
+#sendBtn:hover{background:var(--accent2)}
+#sendBtn:disabled{opacity:.45}
+#hint{text-align:center;font-size:12px;color:var(--ink2);margin-top:8px}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:18px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;padding:24px}
+.modal h2{font-size:20px;margin-bottom:6px}
+.modal p{color:var(--ink2);font-size:14px;line-height:1.55;margin-bottom:14px}
+.modal label{display:block;font-size:13.5px;font-weight:600;margin:14px 0 6px}
+.modal input,.modal textarea,.modal select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#FBFAF7}
+.modal textarea{min-height:90px;resize:vertical}
+.modal .row{display:flex;gap:10px;margin-top:20px}
+.modal .row button{flex:1;padding:12px;border-radius:11px;font-weight:600;font-size:15px}
+#saveSettings{background:var(--ink);color:#fff}
+#closeSettings{background:#F0EDE6}
+#keyWarn{background:#FFF4E5;border:1px solid #F0D9B5;color:#7A5A1F;border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.5;margin-top:12px}
+@media (max-width:760px){
+  #sidebar{position:fixed;left:0;top:0;bottom:0;z-index:40;transform:translateX(-100%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.15)}
+  #sidebar.open{transform:none}
+  #topbar{display:flex}
+  .sug{grid-template-columns:1fr}
+  #welcome h1{font-size:26px}
+}
+</style>
 </head>
 <body>
-<h1>Luma</h1>
+
+<aside id="sidebar">
+  <div class="brand">
+    <div class="logo" id="brandLogo">L</div>
+    <div><b id="brandName">LUMA</b><br><span>O teu assistente de IA</span></div>
+  </div>
+  <button id="newChat">+ Nova conversa</button>
+  <div id="convList"></div>
+  <div id="sideFoot">
+    <button id="openSettings">⚙️ Definições</button>
+    <button id="openAdmin">Admin</button>
+  </div>
+</aside>
+
+<main id="main">
+  <div id="topbar">
+    <button id="menuBtn">☰</button>
+    <div class="logo">L</div><b>LUMA</b>
+    <div class="sp"></div>
+    <button id="topSettings">⚙️</button>
+  </div>
+
+  <div id="chat">
+    <div id="welcome">
+      <div class="logoBig">L</div>
+      <h1 id="welcomeTitle">Olá, como posso ajudar?</h1>
+      <p id="welcomeSub">Pergunta qualquer coisa — escrever, resumir, ideias, código, planos.</p>
+      <div class="sug" id="sugBox"></div>
+    </div>
+    <div class="wrap" id="msgs"></div>
+  </div>
+
+  <div id="composer">
+    <div class="box">
+      <div id="inputRow">
+        <textarea id="prompt" rows="1" placeholder="Escreve a tua mensagem..."></textarea>
+        <div id="sendRow">
+          <select id="modelSel"></select>
+          <button id="sendBtn" title="Enviar">↑</button>
+        </div>
+      </div>
+      <div id="hint">A LUMA usa a API da Anthropic. O uso é cobrado à conta da chave configurada.</div>
+    </div>
+  </div>
+</main>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="modal">
+    <h2>Definições</h2>
+    <p>Liga a tua conta da Anthropic para a LUMA responder. A chave fica guardada só neste navegador.</p>
+    <label>Chave da API (Anthropic)</label>
+    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+    <div id="keyWarn">Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta. Se a chave for de um cliente, é ele que a põe aqui.</div>
+    <label>Modelo</label>
+    <select id="defaultModel"></select>
+    <label>Mensagem do sistema (personalidade)</label>
+    <textarea id="systemPrompt" placeholder="Ex.: Responde sempre em português de Moçambique, de forma simples e directa."></textarea>
+    <label>Nome do assistente</label>
+    <input type="text" id="siteName" placeholder="LUMA">
+    <div class="row">
+      <button id="closeSettings">Fechar</button>
+      <button id="saveSettings">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="adminOverlay">
+  <div class="modal">
+    <h2>Admin — Personalizar a LUMA</h2>
+    <p>É aqui que o dono muda tudo: nome, mensagem de boas-vindas, sugestões e cor. As mudanças aplicam-se logo.</p>
+    <label>Nome do site</label>
+    <input type="text" id="adminName" placeholder="LUMA">
+    <label>Título de boas-vindas</label>
+    <input type="text" id="adminWelcome" placeholder="Olá, como posso ajudar?">
+    <label>Subtítulo</label>
+    <input type="text" id="adminSub" placeholder="Pergunta qualquer coisa...">
+    <label>Cor principal</label>
+    <input type="color" id="adminColor" value="#C96F4A" style="height:44px;padding:4px">
+    <label>Sugestões (uma por linha)</label>
+    <textarea id="adminSug" rows="4"></textarea>
+    <div class="row">
+      <button id="closeAdmin">Fechar</button>
+      <button id="saveAdmin" style="background:var(--ink);color:#fff">Guardar</button>
+    </div>
+    <p style="margin-top:14px">Para apagar tudo (conversas e definições) neste navegador: <a href="#" id="resetAll">repor a LUMA</a>.</p>
+  </div>
+</div>
+
+<script>
+const MODELS=[
+  {id:"claude-sonnet-4-20250514",label:"Sonnet 4 — equilibrado"},
+  {id:"claude-opus-4-20250514",label:"Opus 4 — o mais forte"},
+  {id:"claude-3-7-sonnet-20250219",label:"Sonnet 3.7 — rápido"},
+  {id:"claude-3-5-haiku-20241022",label:"Haiku 3.5 — o mais barato"}
+];
+const DEFAULT_SUG=[
+  ["Escrever um email","Um email curto e profissional para um cliente."],
+  ["Resumir um texto","Cola um texto e pede um resumo em 5 linhas."],
+  ["Ideias para o meu negócio","3 ideias para vender mais esta semana."],
+  ["Ajudar com código","Explica ou corrige um bocado de código."]
+];
+const LS={convs:"luma_convs",cfg:"luma_cfg",cur:"luma_cur"};
+let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
+cfg=Object.assign({name:"LUMA",welcome:"Olá, como posso ajudar?",sub:"Pergunta qualquer coisa — escrever, resumir, ideias, código, planos.",color:"#C96F4A",model:MODELS[0].id,system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG},cfg);
+let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
+let curId=localStorage.getItem(LS.cur)||null;
+let busy=false;
+
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function md(t){
+  let h=esc(t);
+  h=h.replace(/```([\s\S]*?)```/g,(m,c)=>"<pre><code>"+c.replace(/^\n/,"")+"</code></pre>");
+  h=h.replace(/^### (.*)$/gm,"<h3>$1</h3>").replace(/^## (.*)$/gm,"<h2>$1</h2>").replace(/^# (.*)$/gm,"<h1>$1</h1>");
+  h=h.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<i>$2</i>").replace(/`([^`\n]+)`/g,"<code>$1</code>");
+  h=h.replace(/^\s*[-•] (.*)$/gm,"<li>$1</li>");
+  h=h.replace(/(<li>[\s\S]*?<\/li>)/g,"<ul>$1</ul>").replace(/<\/ul>\s*<ul>/g,"");
+  h=h.split(/\n\s*\n/).map(b=>b.trim()?(/^<(h\d|ul|pre|li)/.test(b)?b:"<p>"+b.replace(/\n/g,"<br>")+"</p>"):"").join("");
+  return h;
+}
+function saveCfg(){localStorage.setItem(LS.cfg,JSON.stringify(cfg));applyCfg();}
+function saveConvs(){localStorage.setItem(LS.convs,JSON.stringify(convs));localStorage.setItem(LS.cur,curId||"");}
+function applyCfg(){
+  document.documentElement.style.setProperty("--accent",cfg.color);
+  $("brandName").textContent=cfg.name;
+  $("brandLogo").textContent=(cfg.name||"L")[0].toUpperCase();
+  $("welcomeTitle").textContent=cfg.welcome;
+  $("welcomeSub").textContent=cfg.sub;
+  document.title=cfg.name+" — O teu assistente de IA";
+  const box=$("sugBox");box.innerHTML="";
+  (cfg.sug||DEFAULT_SUG).forEach(s=>{
+    const b=document.createElement("button");
+    b.innerHTML="<b>"+esc(s[0])+"</b><span>"+esc(s[1]||"")+"</span>";
+    b.onclick=()=>{ $("prompt").value=(s[0]==="Escrever um email"?"Escreve um email curto e profissional para um cliente.":s[0]==="Resumir um texto"?"Resume este texto em 5 linhas: ":s[0]==="Ideias para o meu negócio"?"Dá-me 3 ideias para vender mais esta semana.":"Explica este código de forma simples: "); $("prompt").focus(); };
+    box.appendChild(b);
+  });
+  const ms=$("modelSel");ms.innerHTML="";
+  MODELS.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.label;ms.appendChild(o);});
+  ms.value=cfg.model;
+  const dm=$("defaultModel");dm.innerHTML=ms.innerHTML;dm.value=cfg.model;
+}
+function getConv(){return convs.find(c=>c.id===curId);}
+function newConv(){
+  const c={id:"c"+Date.now(),title:"Nova conversa",msgs:[],ts:Date.now()};
+  convs.unshift(c);curId=c.id;saveConvs();renderList();renderChat();
+}
+function renderList(){
+  const el=$("convList");el.innerHTML="";
+  convs.forEach(c=>{
+    const d=document.createElement("div");
+    d.className="conv"+(c.id===curId?" active":"");
+    d.innerHTML="<span style='overflow:hidden;text-overflow:ellipsis'>"+esc(c.title)+"</span><span class='x' title='Apagar'>×</span>";
+    d.onclick=()=>{curId=c.id;saveConvs();renderList();renderChat();$("sidebar").classList.remove("open");};
+    d.querySelector(".x").onclick=e=>{e.stopPropagation();convs=convs.filter(x=>x.id!==c.id);if(curId===c.id)curId=convs[0]?convs[0].id:null;saveConvs();renderList();renderChat();};
+    el.appendChild(d);
+  });
+}
+function renderChat(){
+  const c=getConv(),box=$("msgs"),w=$("welcome");
+  box.innerHTML="";
+  if(!c||c.msgs.length===0){w.style.display="block";return;}
+  w.style.display="none";
+  c.msgs.forEach((m,i)=>{
+    const d=document.createElement("div");
+    d.className="msg "+(m.role==="user"?"user":"ai");
+    d.innerHTML="<div class='av'>"+(m.role==="user"?"Tu":"L")+"</div><div class='body'>"+(m.role==="user"?esc(m.content):md(m.content))+"</div>";
+    if(m.role==="assistant"){
+      const t=document.createElement("div");t.className="tools";
+      const cp=document.createElement("button");cp.textContent="Copiar";cp.onclick=()=>{navigator.clipboard.writeText(m.content);cp.textContent="Copiado ✓";setTimeout(()=>cp.textContent="Copiar",1500);};
+      const rg=document.createElement("button");rg.textContent="Gerar de novo";rg.onclick=()=>regenerate(i);
+      t.appendChild(cp);t.appendChild(rg);
+      d.querySelector(".body").appendChild(t);
+    }
+    box.appendChild(d);
+  });
+  $("chat").scrollTop=$("chat").scrollHeight;
+}
+async function callClaude(messages){
+  const key=(cfg.apiKey||"").trim();
+  if(!key) throw new Error("NO_KEY");
+  const r=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:cfg.model,max_tokens:4096,system:cfg.system||undefined,messages})
+  });
+  if(!r.ok){
+    const j=await r.json().catch(()=>({}));
+    throw new Error((j.error&&j.error.message)||("Erro "+r.status));
+  }
+  const j=await r.json();
+  return (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+function setBusy(b){
+  busy=b;$("sendBtn").disabled=b;
+}
+async function send(){
+  const ta=$("prompt"),text=ta.value.trim();
+  if(!text||busy)return;
+  if(!getConv())newConv();
+  const c=getConv();
+  c.msgs.push({role:"user",content:text});
+  if(c.msgs.length===1)c.title=text.slice(0,42);
+  ta.value="";ta.style.height="auto";
+  renderChat();renderList();
+  const box=$("msgs");
+  const t=document.createElement("div");t.className="msg ai";t.id="typingRow";
+  t.innerHTML="<div class='av'>L</div><div class='body'><span class='typing'><i></i><i></i><i></i></span></div>";
+  box.appendChild(t);$("chat").scrollTop=$("chat").scrollHeight;
+  setBusy(true);
+  try{
+    const ans=await callClaude(c.msgs.map(m=>({role:m.role,content:m.content})));
+    document.getElementById("typingRow")?.remove();
+    c.msgs.push({role:"assistant",content:ans});
+    saveConvs();renderChat();
+  }catch(e){
+    document.getElementById("typingRow")?.remove();
+    c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
+      ?"Ainda não há chave da API. Vai a **Definições** (⚙️) e coloca a tua chave da Anthropic — é ela que deixa a LUMA responder. A chave fica só neste navegador."
+      :"Não consegui responder: "+e.message+". Verifica a chave e o modelo nas Definições."});
+    saveConvs();renderChat();
+  }
+  setBusy(false);
+}
+async function regenerate(idx){
+  const c=getConv();if(!c||busy)return;
+  const upto=c.msgs.slice(0,idx).filter(m=>m.role==="user"||m.role==="assistant");
+  c.msgs=c.msgs.slice(0,idx);renderChat();
+  const box=$("msgs");
+  const t=document.createElement("div");t.className="msg ai";t.id="typingRow";
+  t.innerHTML="<div class='av'>L</div><div class='body'><span class='typing'><i></i><i></i><i></i></span></div>";
+  box.appendChild(t);setBusy(true);
+  try{
+    const ans=await callClaude(upto.map(m=>({role:m.role,content:m.content})));
+    document.getElementById("typingRow")?.remove();
+    c.msgs.push({role:"assistant",content:ans});saveConvs();renderChat();
+  }catch(e){
+    document.getElementById("typingRow")?.remove();
+    c.msgs.push({role:"assistant",content:"Não consegui gerar de novo: "+e.message});saveConvs();renderChat();
+  }
+  setBusy(false);
+}
+$("sendBtn").onclick=send;
+$("prompt").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
+$("prompt").addEventListener("input",e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,180)+"px";});
+$("newChat").onclick=()=>{newConv();$("sidebar").classList.remove("open");$("prompt").focus();};
+$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
+$("modelSel").onchange=e=>{cfg.model=e.target.value;saveCfg();};
+function openSettings(){
+  $("apiKey").value=cfg.apiKey||"";
+  $("defaultModel").value=cfg.model;
+  $("systemPrompt").value=cfg.system||"";
+  $("siteName").value=cfg.name||"";
+  $("settingsOverlay").classList.add("open");
+}
+function openAdmin(){
+  $("adminName").value=cfg.name||"";
+  $("adminWelcome").value=cfg.welcome||"";
+  $("adminSub").value=cfg.sub||"";
+  $("adminColor").value=cfg.color||"#C96F4A";
+  $("adminSug").value=(cfg.sug||DEFAULT_SUG).map(s=>s[0]+" | "+(s[1]||"")).join("\n");
+  $("adminOverlay").classList.add("open");
+}
+$("openSettings").onclick=openSettings;$("topSettings").onclick=openSettings;
+$("openAdmin").onclick=openAdmin;
+$("closeSettings").onclick=()=>$("settingsOverlay").classList.remove("open");
+$("closeAdmin").onclick=()=>$("adminOverlay").classList.remove("open");
+$("settingsOverlay").onclick=e=>{if(e.target.id==="settingsOverlay")e.target.classList.remove("open");};
+$("adminOverlay").onclick=e=>{if(e.target.id==="adminOverlay")e.target.classList.remove("open");};
+$("saveSettings").onclick=()=>{
+  cfg.apiKey=$("apiKey").value.trim();
+  cfg.model=$("defaultModel").value;
+  cfg.system=$("systemPrompt").value.trim();
+  cfg.name=$("siteName").value.trim()||cfg.name;
+  saveCfg();$("settingsOverlay").classList.remove("open");
+  renderChat();
+};
+$("saveAdmin").onclick=()=>{
+  cfg.name=$("adminName").value.trim()||"LUMA";
+  cfg.welcome=$("adminWelcome").value.trim()||cfg.welcome;
+  cfg.sub=$("adminSub").value.trim()||cfg.sub;
+  cfg.color=$("adminColor").value||cfg.color;
+  cfg.sug=$("adminSug").value.split("\n").map(l=>l.split("|").map(s=>s.trim())).filter(s=>s[0]).slice(0,4);
+  if(!cfg.sug.length)cfg.sug=DEFAULT_SUG;
+  saveCfg();$("adminOverlay").classList.remove("open");
+};
+$("resetAll").onclick=e=>{
+  e.preventDefault();
+  if(confirm("Apagar todas as conversas e definições?")){
+    localStorage.removeItem(LS.convs);localStorage.removeItem(LS.cfg);localStorage.removeItem(LS.cur);
+    location.reload();
+  }
+};
+applyCfg();renderList();renderChat();
+</script>
 </body>
 </html>
