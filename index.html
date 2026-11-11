@@ -283,7 +283,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
     <div id="userRowWrap">
       <button id="userRow">
         <span class="av" id="userAv">G</span>
-        <span class="nm" id="userName">Gere</span><span class="pl">&nbsp;· Free</span>
+        <span class="nm" id="userName">Gere</span><span class="pl" id="userPlan">&nbsp;· Free</span>
         <span class="chev">﹀</span>
       </button>
       <button id="appsBtn" title="Obter apps e extensões"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="12" rx="2"/><rect x="18" y="9" width="4" height="8" rx="1"/><line x1="6" y1="20" x2="12" y2="20"/></svg></button>
@@ -296,7 +296,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
     <button class="iconBtn" id="menuBtn" title="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
     <button class="ghost" id="ghostBtn" title="Conta"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg></button>
   </div>
-  <div id="planRow"><div id="planPill">plano Gratuito &nbsp;·&nbsp; <a href="#" id="upgradeLink">Fazer upgrade</a></div></div>
+  <div id="planRow"><div id="planPill"><span id="planPillText">plano Gratuito</span><span id="planPillUp"> &nbsp;·&nbsp; <a href="#" id="upgradeLink">Fazer upgrade</a></span></div></div>
 
   <div id="chat">
     <div id="welcome">
@@ -377,6 +377,9 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
     <input type="text" id="adminUser">
     <label>Email da conta</label>
     <input type="text" id="adminEmail">
+    <label>Emails Pro (um por linha)</label>
+    <textarea id="adminPro" rows="3" placeholder="email1@exemplo.com&#10;email2@exemplo.com"></textarea>
+    <p style="font-size:13.5px;color:var(--ink2);margin:-6px 0 10px">Quem entrar com um destes emails vê "Pro" em vez de "Free". Só visual — não muda nada no chat.</p>
     <label>Cor principal</label>
     <input type="color" id="adminColor" style="height:44px;padding:4px">
     <label>Sugestões (uma por linha, título | texto)</label>
@@ -414,6 +417,17 @@ const EFFORTS=[
   {id:"max",label:"Máx — 5× ou mais de uso",short:"Máx",tokens:32000}
 ];
 function effortOf(){return EFFORTS.find(e=>e.id===cfg.effort)||EFFORTS[1];}
+/* Emails que veem "Pro" em vez de "Free" — só visual. A dona pode acrescentar mais em Personalização (Admin). */
+const PRO_EMAILS=[];
+function proEmails(){
+  const fromCfg=(cfg.proEmails||"").split(/[\n,;]+/).map(s=>s.trim().toLowerCase()).filter(Boolean);
+  return [...new Set([...PRO_EMAILS.map(e=>e.toLowerCase()),...fromCfg])];
+}
+function isPro(){
+  const em=(cfg.email||"").trim().toLowerCase();
+  return !!em&&proEmails().includes(em);
+}
+function planName(){return isPro()?"Pro":"Free";}
 const DEFAULT_SUG=[
   ["Escrever um email","Um email curto e profissional para um cliente."],
   ["Resumir um texto","Cola um texto e pede um resumo em 5 linhas."],
@@ -422,7 +436,7 @@ const DEFAULT_SUG=[
 ];
 const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj"};
 let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
-cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG},cfg);
+cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:""},cfg);
 let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
 let projects=JSON.parse(localStorage.getItem(LS.proj)||"[]");
 let curId=localStorage.getItem(LS.cur)||null;
@@ -458,6 +472,10 @@ function applyCfg(){
   $("userName").textContent=cfg.user||"Conta";
   $("userAv").textContent=(cfg.user||"C")[0].toUpperCase();
   $("accountEmail").textContent=cfg.email||"";
+  const pro=isPro();
+  const up=$("userPlan");if(up)up.textContent=" · "+(pro?"Pro":"Free");
+  const pt=$("planPillText");if(pt)pt.textContent=pro?"plano Pro":"plano Gratuito";
+  const pu=$("planPillUp");if(pu)pu.style.display=pro?"none":"";
   const mf=$("modelFull");if(mf)mf.textContent=modelFull();
   document.title=cfg.name;
 }
@@ -802,7 +820,8 @@ function setPrivacidade(){
   +"<div class='setRow'><div><div class='lab'>Arquivos enviados</div></div><button class='setBtn'>Gerenciar</button></div>";
 }
 function setCobranca(){
-  return "<h2>Cobrança</h2><h3>plano Gratuito</h3><p>Experimente o Claude</p>"
+  const pro=isPro();
+  return "<h2>Cobrança</h2><h3>plano "+(pro?"Pro":"Gratuito")+"</h3><p>"+(pro?"O seu plano atual":"Experimente o Claude")+"</p>"
   +"<ul style='list-style:none;margin:0 0 16px'>"
   +["Converse na web, no iOS, no Android e no seu desktop","Gerar código e visualizar dados","Escrever, editar e criar conteúdo","Pesquisa na web","Memória entre conversas","Criar arquivos e executar código","Desbloqueie mais recursos do Claude com extensões para desktop","Conectar serviços do Slack e do Google Workspace","Integre qualquer contexto ou ferramenta por meio de conectores com MCP remoto","Raciocínio estendido para trabalhos complexos","Claude Design, Slides e Docs"].map(f=>"<li style='position:relative;padding:7px 0 7px 28px;font-size:15px;line-height:1.5'>✓ "+f+"</li>").join("")
   +"</ul><button class='setBtn dark' id='setUpgrade'>Subir de plano</button>";
@@ -927,6 +946,7 @@ function openAdmin(){
   $("adminWelcome").value=cfg.welcome||"";
   $("adminUser").value=cfg.user||"";
   $("adminEmail").value=cfg.email||"";
+  $("adminPro").value=cfg.proEmails||"";
   $("adminColor").value=cfg.color||"#D97757";
   $("adminSug").value=(cfg.sug||DEFAULT_SUG).map(s=>s[0]+" | "+(s[1]||"")).join("\n");
   $("adminWrap").classList.add("open");
@@ -938,6 +958,7 @@ $("saveAdmin").onclick=()=>{
   cfg.welcome=$("adminWelcome").value.trim()||cfg.welcome;
   cfg.user=$("adminUser").value.trim()||cfg.user;
   cfg.email=$("adminEmail").value.trim()||cfg.email;
+  cfg.proEmails=$("adminPro").value;
   cfg.color=$("adminColor").value||cfg.color;
   cfg.sug=$("adminSug").value.split("\n").map(l=>l.split("|").map(s=>s.trim())).filter(s=>s[0]).slice(0,4);
   if(!cfg.sug.length)cfg.sug=DEFAULT_SUG;
