@@ -57,7 +57,8 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #topbar .iconBtn:hover{background:#EBE7DB}
 #planPill{margin:0 auto;background:#EDEAE0;border-radius:20px;padding:8px 16px;font-size:14.5px;color:var(--ink2);display:flex;gap:8px;align-items:center}
 #planPill a{color:var(--blue);text-decoration:underline;font-weight:500}
-#topbar .ghost{font-size:21px;padding:6px 10px;border-radius:9px}
+#topbar .ghost{font-size:21px;padding:2px;border-radius:50%}
+#topbar .topAv{width:34px;height:34px;border-radius:50%;background:#5A544A;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
 #chat{flex:1;overflow-y:auto;padding:10px 0}
 .wrap{max-width:780px;margin:0 auto;padding:0 20px}
 /* welcome */
@@ -105,10 +106,11 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #iconRow{display:flex;align-items:center;gap:4px;margin-top:4px}
 #iconRow .ib{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;color:#4A463F}
 #iconRow .ib:hover{background:#F0EDE4}
-#iconRow .modelBtn{height:38px;border-radius:19px;background:#F0EDE4;padding:0 13px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:5px}
+#iconRow .modelBtn{height:38px;max-width:112px;border-radius:19px;background:#F0EDE4;padding:0 11px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #iconRow .modelBtn:hover{background:#E7E2D4}
 #iconRow .sp{flex:1}
-#sendBtn{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center}
+#sendBtn{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;font-size:18px;display:none;align-items:center;justify-content:center}
+#sendBtn.show{display:flex}
 #sendBtn:hover{opacity:.9}
 #sendBtn:disabled{opacity:.4}
 #hint{text-align:center;font-size:12px;color:var(--ink2);margin-top:8px}
@@ -148,6 +150,10 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
   #welcome .sug{grid-template-columns:1fr}
   #welcome{padding-top:7vh}
   #planPill{font-size:13px;padding:7px 12px}
+  #iconRow .ib{width:34px;height:34px;font-size:17px}
+  #iconRow .modelBtn{max-width:86px;font-size:13px;padding:0 9px}
+  #sendBtn{width:34px;height:34px}
+  #inputCard{padding:12px 12px 8px}
 }
 </style>
 </head>
@@ -182,14 +188,12 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
   <div id="topbar">
     <button class="iconBtn" id="menuBtn">☰</button>
     <div id="planPill">plano Gratuito &nbsp;·&nbsp; <a href="#" id="upgradeLink">Fazer upgrade</a></div>
-    <button class="ghost" id="ghostBtn" title="Conta">👻</button>
+    <button class="ghost" id="ghostBtn" title="Conta"><span class="topAv" id="topAv">G</span></button>
   </div>
 
   <div id="chat">
     <div id="welcome">
-      <div class="mark" id="welcomeMark"></div>
       <h1><span class="star" id="welcomeStar">✦</span> <span id="welcomeTitle">Que bom ter você aqui!</span></h1>
-      <div class="sug" id="sugBox"></div>
     </div>
     <div class="wrap" id="msgs"></div>
   </div>
@@ -357,20 +361,13 @@ function applyCfg(){
   document.documentElement.style.setProperty("--accent",cfg.color);
   $("brandWord").textContent=cfg.name;
   $("welcomeTitle").textContent=cfg.welcome;
-  $("welcomeStar").innerHTML=markSVG(cfg.color,44);
-  $("welcomeMark").innerHTML=markSVG(cfg.color,50);
+  $("welcomeStar").innerHTML=markSVG(cfg.color,40);
   $("userName").textContent=cfg.user||"Conta";
   $("userAv").textContent=(cfg.user||"C")[0].toUpperCase();
+  $("topAv").textContent=(cfg.user||"C")[0].toUpperCase();
   $("accountEmail").textContent=cfg.email||"";
   $("modelShort").textContent=modelShort();
   document.title=cfg.name+" — O teu assistente de IA";
-  const box=$("sugBox");box.innerHTML="";
-  (cfg.sug||DEFAULT_SUG).forEach(s=>{
-    const b=document.createElement("button");
-    b.innerHTML="<b>"+esc(s[0])+"</b><span>"+esc(s[1]||"")+"</span>";
-    b.onclick=()=>{ $("prompt").value=s[0]==="Escrever um email"?"Escreve um email curto e profissional para um cliente.":s[0]==="Resumir um texto"?"Resume este texto em 5 linhas: ":s[0]==="Ideias para o meu negócio"?"Dá-me 3 ideias para vender mais esta semana.":"Explica este código de forma simples: "; $("prompt").focus(); };
-    box.appendChild(b);
-  });
   const dm=$("defaultModel");dm.innerHTML="";
   MODELS.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.label;dm.appendChild(o);});
   dm.value=cfg.model;
@@ -435,7 +432,7 @@ async function callClaude(messages){
   const j=await r.json();
   return (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
 }
-function setBusy(b){busy=b;$("sendBtn").disabled=b;}
+function setBusy(b){busy=b;$("sendBtn").disabled=b;updateSend();}
 function buildApiMessages(c){
   return c.msgs.map(m=>{
     if(m.role==="user"&&m.img){
@@ -454,7 +451,7 @@ async function send(){
   if(attach&&attach.kind==="text"){m.content=(text?text+"\n\n":"")+"[Ficheiro "+attach.name+"]\n"+attach.data;}
   c.msgs.push(m);
   if(c.msgs.length===1)c.title=(text||"Nova conversa").slice(0,42);
-  ta.value="";ta.style.height="auto";attach=null;renderAttach();
+  ta.value="";ta.style.height="auto";attach=null;renderAttach();updateSend();
   renderChat();renderList();
   const box=$("msgs");
   const t=document.createElement("div");t.className="msg ai";t.id="typingRow";
@@ -495,7 +492,7 @@ async function regenerate(idx){
 }
 function renderAttach(){
   const el=$("attachPrev");el.innerHTML="";
-  if(!attach)return;
+  if(!attach){updateSend();return;}
   if(attach.kind==="image"){
     const im=document.createElement("img");im.src="data:"+attach.type+";base64,"+attach.data;el.appendChild(im);
   }else{
@@ -503,11 +500,16 @@ function renderAttach(){
     ch.onclick=()=>{attach=null;renderAttach();};
     el.appendChild(ch);
   }
+  updateSend();
+}
+function updateSend(){
+  const has=$("prompt").value.trim()||attach;
+  $("sendBtn").classList.toggle("show",!!has&&!busy);
 }
 /* eventos */
 $("sendBtn").onclick=send;
 $("prompt").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
-$("prompt").addEventListener("input",e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,170)+"px";});
+$("prompt").addEventListener("input",e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,170)+"px";updateSend();});
 $("createBtn").onclick=()=>{newConv();$("sidebar").classList.remove("open");$("prompt").focus();};
 $("chatModeBtn").onclick=()=>{newConv();$("prompt").focus();};
 $("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
