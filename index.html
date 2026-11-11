@@ -18,6 +18,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
 input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 /* ============ SIDEBAR ============ */
 #sidebar{width:288px;min-width:288px;background:var(--sidebar);display:flex;flex-direction:column;height:100%;border-right:1px solid var(--line)}
+body.noSide #sidebar{display:none}
 #sideHead{display:flex;align-items:center;gap:10px;padding:16px 18px 8px}
 #sideHead .x{font-size:24px;color:var(--ink);padding:2px 8px;display:none}
 #sideHead h1{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:.2px}
@@ -748,14 +749,33 @@ $("prompt").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.pr
 $("prompt").addEventListener("input",e=>{e.target.style.height="auto";e.target.style.height=Math.min(e.target.scrollHeight,170)+"px";updateSend();});
 $("createBtn").onclick=()=>{newConv();$("sidebar").classList.remove("open");$("prompt").focus();};
 $("chatModeBtn").onclick=()=>{newConv();$("prompt").focus();};
-$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
-$("closeSide").onclick=()=>$("sidebar").classList.remove("open");
-$("hideSide").onclick=()=>$("sidebar").classList.remove("open");
+$("menuBtn").onclick=()=>{
+  if(window.innerWidth<=760){
+    const willOpen=!$("sidebar").classList.contains("open");
+    $("sidebar").classList.toggle("open",willOpen);
+    if(willOpen)document.body.classList.remove("noSide");
+  }else{
+    document.body.classList.toggle("noSide");
+  }
+};
+$("closeSide").onclick=()=>{document.body.classList.add("noSide");$("sidebar").classList.remove("open");};
+$("hideSide").onclick=()=>{document.body.classList.add("noSide");$("sidebar").classList.remove("open");};
 $("sugMemory").onclick=()=>{alert("Importar memória: traz a tua memória de outros assistentes de IA. Por agora, escreve as tuas preferências nas Configurações (Mensagem do sistema).");};
 $("sugPersonal").onclick=()=>{openAdmin();};
 $("appsBtn").onclick=()=>{openApps();};
 $("searchInput").addEventListener("input",renderList);
-$("verTodos").onclick=()=>{renderList();$("sidebar").classList.remove("open");};
+function showAllConvs(){
+  const items=convs.map(c=>{
+    const d=new Date(c.ts||Date.now());
+    const ds=d.toLocaleDateString("pt-PT",{day:"2-digit",month:"short"})+" · "+d.toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"});
+    return "<div class='convRow' data-id='"+c.id+"' style='padding:13px 4px;border-bottom:1px solid var(--line);cursor:pointer'><div style='font-weight:600;font-size:15.5px'>"+esc(c.title||"Nova conversa")+"</div><div style='font-size:13px;color:var(--ink2);margin-top:3px'>"+ds+" · "+(c.msgs?c.msgs.length:0)+" mensagens</div></div>";
+  }).join("")||"<p>Sem conversas ainda.</p>";
+  showPage("Todas as conversas","<div>"+items+"</div>");
+  document.querySelectorAll(".convRow").forEach(el=>{
+    el.onclick=()=>{curId=el.dataset.id;saveConvs();renderList();showChat();};
+  });
+}
+$("verTodos").onclick=()=>{showAllConvs();};
 $("ghostBtn").onclick=()=>$("accountOverlay").classList.add("open");
 $("userRow").onclick=()=>$("accountOverlay").classList.add("open");
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
