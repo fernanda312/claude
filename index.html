@@ -25,6 +25,14 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #searchRow input{flex:1;border:none;outline:none;background:none;font-size:15px}
 #searchRow input::placeholder{color:var(--ink2)}
 #createBtn{margin:4px 14px 12px;display:flex;align-items:center;gap:10px;background:#F1F1EE;border-radius:12px;padding:13px 14px;font-size:16px;font-weight:500;text-align:left}
+#hideSide{margin:2px 14px 4px;display:flex;align-items:center;gap:11px;border-radius:10px;padding:10px 12px;font-size:15px;color:var(--ink2);text-align:left}
+#hideSide:hover{background:#F1F1EE;color:var(--ink)}
+#hideSide .ic{display:flex;align-items:center}
+#sugList{padding:0 10px 4px}
+.sugRow{display:flex;align-items:center;gap:9px;width:100%;padding:10px 12px;border-radius:10px;font-size:15px;text-align:left;color:var(--ink)}
+.sugRow:hover{background:#F1F1EE}
+.sugRow span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sugRow .try{margin-left:auto;font-size:12.5px;color:var(--blue);border:1px solid #C9D6F2;background:#EDF2FC;border-radius:20px;padding:4px 10px;white-space:nowrap}
 #createBtn:hover{background:#E8E8E4}
 #createBtn .plus{font-size:22px;line-height:1}
 .nav{padding:2px 10px}
@@ -47,14 +55,14 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #sideFoot{border-top:1px solid var(--line);padding:12px 14px}
 #userRow{display:flex;align-items:center;gap:11px;width:100%;padding:8px 10px;border-radius:12px;text-align:left}
 #userRow:hover{background:#F1F1EE}
-#userRow .av{width:34px;height:34px;min-width:34px;border-radius:50%;background:#5A544A;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+#userRow .av{width:34px;height:34px;min-width:34px;border-radius:50%;background:#D9A441;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
 #userRow .nm{font-size:15.5px;font-weight:600}
 #userRow .pl{font-size:13px;color:var(--ink2)}
 #userRow .chev{margin-left:auto;color:var(--ink2)}
 #userRowWrap{display:flex;align-items:center;gap:2px}
 #userRowWrap #userRow{flex:1;min-width:0}
-#popBtn{padding:8px;border-radius:9px;display:flex;align-items:center;justify-content:center}
-#popBtn:hover{background:#F1F1EE}
+#appsBtn{padding:8px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+#appsBtn:hover{background:#F1F1EE}
 /* ============ MAIN ============ */
 #main{flex:1;display:flex;flex-direction:column;height:100%;min-width:0}
 #topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
@@ -109,6 +117,8 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #pageBody .segToggle{display:flex;background:#F1F1EE;border-radius:14px;padding:4px;gap:4px;margin-bottom:22px}
 #pageBody .segToggle button{flex:1;padding:10px 6px;border-radius:10px;font-size:15px;line-height:1.3;color:#6E6A63}
 #pageBody .segToggle button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.14)}
+#pageBody .segToggle.mini{margin:0 0 16px}
+#pageBody .segToggle.mini button{font-size:13.5px;padding:8px 6px}
 #pageBody .planCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px 24px;margin-bottom:16px}
 #pageBody .planCard h2{font-size:28px;font-weight:700}
 #pageBody .planCard .sub{color:var(--ink2);font-size:16px;margin:6px 0 18px}
@@ -165,7 +175,10 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 #sendBtn.show{display:flex}
 #sendBtn:hover{opacity:.9}
 #sendBtn:disabled{opacity:.4}
-#hint{text-align:center;font-size:12px;color:var(--ink2);margin-top:8px}
+#hint{font-size:12px;color:var(--ink2)}
+#compFoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px}
+#compFoot .modelBtn{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:5px;white-space:nowrap;padding:6px 8px;border-radius:8px}
+#compFoot .modelBtn:hover{background:#F1F1EE}
 /* account sheet */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:60}
 .overlay.open{display:flex;align-items:flex-end;justify-content:center}
@@ -177,7 +190,41 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 .sheet button .ic{font-size:21px;width:28px;text-align:center}
 .sheet button .arr{margin-left:auto;color:var(--ink2)}
 .sheet hr{border:none;border-top:1px solid var(--line);margin:8px 16px}
-/* modal */
+/* definições (janela com menu lateral) */
+.settingsModal{max-width:880px;padding:0;overflow:hidden}
+.setHead{display:flex;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.setSearch{flex:1;display:flex;align-items:center;gap:9px;background:#F1F1EE;border-radius:10px;padding:9px 12px}
+.setSearch input{flex:1;border:none;outline:none;background:none;font-size:14.5px}
+.setBody{display:flex;min-height:420px;max-height:72vh}
+.setMenu{width:210px;min-width:210px;border-right:1px solid var(--line);padding:10px;overflow-y:auto}
+.setMenu .grp{font-size:11.5px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.6px;padding:12px 12px 6px}
+.setMenu button{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:9px;font-size:15px}
+.setMenu button:hover{background:#F1F1EE}
+.setMenu button.on{background:#ECECE8;font-weight:600}
+.setContent{flex:1;padding:20px 22px;overflow-y:auto}
+.setContent h2{font-size:20px;margin-bottom:4px}
+.setContent h3{font-size:16.5px;margin:20px 0 4px}
+.setContent h3:first-child{margin-top:0}
+.setContent p{color:var(--ink2);font-size:14px;line-height:1.55;margin-bottom:10px}
+.setContent label{display:block;font-size:13.5px;font-weight:600;margin:14px 0 6px}
+.setContent input[type=text],.setContent input[type=password],.setContent textarea,.setContent select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#FAFAF8}
+.setContent textarea{min-height:88px;resize:vertical}
+.setRow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-top:1px solid var(--line)}
+.setRow .lab{font-size:15px;font-weight:600}
+.setRow .desc{font-size:13.5px;color:var(--ink2);line-height:1.5;margin-top:3px}
+.setRow select{width:auto;min-width:130px}
+.tgl{width:46px;height:27px;border-radius:20px;background:#DCDCD6;position:relative;flex-shrink:0;border:none}
+.tgl.on{background:#1A1A1A}
+.tgl::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .15s}
+.tgl.on::after{left:22px}
+.setBtn{border:1px solid var(--line);border-radius:10px;padding:9px 16px;font-size:14.5px;font-weight:600;background:#fff}
+.setBtn.dark{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+@media (max-width:760px){
+  .setBody{flex-direction:column}
+  .setMenu{width:100%;min-width:0;border-right:none;border-bottom:1px solid var(--line);display:flex;overflow-x:auto;padding:8px}
+  .setMenu .grp{display:none}
+  .setMenu button{white-space:nowrap;width:auto}
+}
 .modalWrap{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
 .modalWrap.open{display:flex}
 .modal{background:#fff;border-radius:18px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;padding:24px}
@@ -216,8 +263,9 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
     <button class="x" id="closeSide">×</button>
     <h1 id="brandWord">Claude</h1>
   </div>
-  <div id="searchRow"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg> <input id="searchInput" placeholder="Procurar"></div>
+  <button id="hideSide"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></span> Ocultar barra lateral</button>
   <button id="createBtn"><span class="plus">＋</span> Criar</button>
+  <div id="searchRow"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg> <input id="searchInput" placeholder="Procurar"></div>
   <nav class="nav">
     <button id="navProjects"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span> Projetos</button>
     <button id="navArtifacts"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span> Artefatos</button>
@@ -225,6 +273,10 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
     <button id="navPersonal"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span> Personalização</button>
   </nav>
   <div class="secHead"><span>Conversas e tarefas</span><button class="sort" title="Ordenar">⇅</button></div>
+  <div id="sugList">
+    <button class="sugRow" id="sugMemory"><span>Importar memória</span><span class="try">Experimentar</span></button>
+    <button class="sugRow" id="sugPersonal"><span>Personalizar o Claude para você</span><span class="try">Experimentar</span></button>
+  </div>
   <div id="convList"></div>
   <button id="verTodos">Ver todos</button>
   <div id="sideFoot">
@@ -234,7 +286,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
         <span class="nm" id="userName">Gere</span><span class="pl">&nbsp;· Free</span>
         <span class="chev">﹀</span>
       </button>
-      <button id="popBtn" title="Abrir numa janela nova"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M21 3l-7 7M10 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4"/></svg></button>
+      <button id="appsBtn" title="Obter apps e extensões"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="12" rx="2"/><rect x="18" y="9" width="4" height="8" rx="1"/><line x1="6" y1="20" x2="12" y2="20"/></svg></button>
     </div>
   </div>
 </aside>
@@ -262,7 +314,7 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
     <div class="box">
       <div id="inputCard">
         <div id="attachPrev"></div>
-        <textarea id="prompt" rows="1" placeholder="Como posso ajudar você hoje?"></textarea>
+        <textarea id="prompt" rows="1" placeholder="Diga ao Claude no que você está trabalhando"></textarea>
         <div id="iconRow">
           <button class="ib" id="attachBtn" title="Anexar">＋</button>
           <input type="file" id="fileInput" hidden accept="image/*,.txt,.md,.csv,.json,.pdf">
@@ -270,14 +322,13 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
             <button class="ib" id="chatModeBtn" title="Nova conversa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.4-4.1-1L3 20l1-5.4A8.5 8.5 0 1 1 21 11.5z"/></svg></button>
             <button class="ib" id="tuneBtn" title="Definições"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><circle cx="9" cy="7" r="2.2"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="15" cy="17" r="2.2"/></svg></button>
           </span>
-          <button class="modelBtn" id="modelBtn"><span id="modelShort">Sonnet 4</span> ﹀</button>
           <span class="sp"></span>
           <button class="ib" id="micBtn" title="Falar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
           <button class="ib" id="voiceBtn" title="Modo de voz"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="10" x2="4" y2="14"/><line x1="8" y1="7" x2="8" y2="17"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="16" y1="7" x2="16" y2="17"/><line x1="20" y1="10" x2="20" y2="14"/></svg></button>
           <button id="sendBtn" title="Enviar">↑</button>
         </div>
       </div>
-      <div id="hint">O Claude usa a API da Anthropic. O uso é cobrado à conta da chave configurada.</div>
+      <div id="compFoot"><span id="hint">Claude é uma IA e pode cometer erros. Confira sempre as respostas.</span><button class="modelBtn" id="modelBtn"><span id="modelFull">Sonnet 5.5 Médio</span> ﹀</button></div>
     </div>
   </div>
 </main>
@@ -301,21 +352,14 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 
 <!-- definições -->
 <div class="modalWrap" id="settingsWrap">
-  <div class="modal">
-    <h2>Configurações</h2>
-    <p>Liga a tua conta da Anthropic para o Claude responder. A chave fica guardada só neste navegador.</p>
-    <label>Chave da API (Anthropic)</label>
-    <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
-    <div id="keyWarn">Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta.</div>
-    <label>Modelo</label>
-    <select id="defaultModel"></select>
-    <label>Mensagem do sistema (personalidade)</label>
-    <textarea id="systemPrompt"></textarea>
-    <label>Nome do assistente</label>
-    <input type="text" id="siteName">
-    <div class="row">
-      <button class="btnLight" id="closeSettings">Fechar</button>
-      <button class="btnDark" id="saveSettings">Guardar</button>
+  <div class="modal settingsModal">
+    <div class="setHead">
+      <div class="setSearch"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#6E6A63" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg><input id="setSearchInput" placeholder="Pesquisar configurações"></div>
+      <button class="btnLight" id="closeSettings" style="padding:9px 18px;border-radius:10px;font-weight:600">Fechar</button>
+    </div>
+    <div class="setBody">
+      <div class="setMenu" id="setMenu"></div>
+      <div class="setContent" id="setContent"></div>
     </div>
   </div>
 </div>
@@ -345,31 +389,6 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
   </div>
 </div>
 
-<!-- projetos -->
-<div class="modalWrap" id="projectsWrap">
-  <div class="modal">
-    <h2>Projetos</h2>
-    <p>Organiza as tuas conversas por projeto.</p>
-    <div id="projectList"></div>
-    <label>Novo projeto</label>
-    <input type="text" id="newProjectName" placeholder="Nome do projeto">
-    <div class="row">
-      <button class="btnLight" id="closeProjects">Fechar</button>
-      <button class="btnDark" id="addProject">Criar projeto</button>
-    </div>
-  </div>
-</div>
-
-<!-- artefatos -->
-<div class="modalWrap" id="artifactsWrap">
-  <div class="modal">
-    <h2>Artefatos</h2>
-    <p>Os blocos de código que o Claude gerou nas conversas.</p>
-    <div id="artifactList"></div>
-    <div class="row"><button class="btnDark" id="closeArtifacts" style="flex:1">Fechar</button></div>
-  </div>
-</div>
-
 <!-- escolher modelo -->
 <div class="modalWrap" id="modelWrap">
   <div class="modal">
@@ -382,11 +401,28 @@ input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 
 <script>
 const MODELS=[
-  {id:"claude-sonnet-4-20250514",short:"Sonnet 4",label:"Sonnet 4 — equilibrado"},
-  {id:"claude-opus-4-20250514",short:"Opus 4",label:"Opus 4 — o mais forte"},
-  {id:"claude-3-7-sonnet-20250219",short:"Sonnet 3.7",label:"Sonnet 3.7 — rápido"},
-  {id:"claude-3-5-haiku-20241022",short:"Haiku 3.5",label:"Haiku 3.5 — o mais barato"}
+  {id:"claude-sonnet-5-5",short:"Sonnet 5.5",label:"Sonnet 5.5 — Mais eficiente para tarefas mais simples",plan:""},
+  {id:"claude-opus-5-5",short:"Opus 5.5",label:"Opus 5.5 — o mais forte",plan:"Pro"},
+  {id:"claude-haiku-5-5",short:"Haiku 5.5",label:"Haiku 5.5 — o mais rápido",plan:""},
+  {id:"claude-fable-5-2",short:"Fable 5.2",label:"Fable 5.2 — raciocínio exigente",plan:"Pro, Max ou Ultra"},
+  {id:"claude-fable-5-1",short:"Fable 5.1",label:"Fable 5.1",plan:"Pro, Max ou Ultra"},
+  {id:"claude-fable-5",short:"Fable 5",label:"Fable 5",plan:"Pro, Max ou Ultra"},
+  {id:"claude-opus-5",short:"Opus 5",label:"Opus 5",plan:"Pro"},
+  {id:"claude-opus-4-8",short:"Opus 4.8",label:"Opus 4.8",plan:"Pro"},
+  {id:"claude-opus-4-7",short:"Opus 4.7",label:"Opus 4.7",plan:"Pro"},
+  {id:"claude-opus-4-6",short:"Opus 4.6",label:"Opus 4.6",plan:"Pro"},
+  {id:"claude-opus-3",short:"Opus 3",label:"Opus 3",plan:"Pro"},
+  {id:"claude-sonnet-5",short:"Sonnet 5",label:"Sonnet 5",plan:""},
+  {id:"claude-sonnet-4-6",short:"Sonnet 4.6",label:"Sonnet 4.6",plan:""}
 ];
+const EFFORTS=[
+  {id:"low",label:"Baixo",short:"Baixo",tokens:1024},
+  {id:"medium",label:"Médio (Recomendado)",short:"Médio",tokens:4096},
+  {id:"high",label:"Alto",short:"Alto",tokens:8192},
+  {id:"extra",label:"Extra",short:"Extra",tokens:16384},
+  {id:"max",label:"Máx — 5× ou mais de uso",short:"Máx",tokens:32000}
+];
+function effortOf(){return EFFORTS.find(e=>e.id===cfg.effort)||EFFORTS[1];}
 const DEFAULT_SUG=[
   ["Escrever um email","Um email curto e profissional para um cliente."],
   ["Resumir um texto","Cola um texto e pede um resumo em 5 linhas."],
@@ -395,7 +431,7 @@ const DEFAULT_SUG=[
 ];
 const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj"};
 let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
-cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG},cfg);
+cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG},cfg);
 let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
 let projects=JSON.parse(localStorage.getItem(LS.proj)||"[]");
 let curId=localStorage.getItem(LS.cur)||null;
@@ -422,6 +458,7 @@ function saveCfg(){localStorage.setItem(LS.cfg,JSON.stringify(cfg));applyCfg();}
 function saveConvs(){localStorage.setItem(LS.convs,JSON.stringify(convs));localStorage.setItem(LS.cur,curId||"");}
 function saveProj(){localStorage.setItem(LS.proj,JSON.stringify(projects));}
 function modelShort(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Sonnet";}
+function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Sonnet")+" "+effortOf().short;}
 function applyCfg(){
   document.documentElement.style.setProperty("--accent",cfg.color);
   $("brandWord").textContent=cfg.name;
@@ -430,11 +467,8 @@ function applyCfg(){
   $("userName").textContent=cfg.user||"Conta";
   $("userAv").textContent=(cfg.user||"C")[0].toUpperCase();
   $("accountEmail").textContent=cfg.email||"";
-  $("modelShort").textContent=modelShort();
+  const mf=$("modelFull");if(mf)mf.textContent=modelFull();
   document.title=cfg.name;
-  const dm=$("defaultModel");dm.innerHTML="";
-  MODELS.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.label;dm.appendChild(o);});
-  dm.value=cfg.model;
 }
 function getConv(){return convs.find(c=>c.id===curId);}
 function newConv(){
@@ -487,7 +521,7 @@ async function callClaude(messages){
   const r=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:cfg.model,max_tokens:4096,system:cfg.system||undefined,messages})
+    body:JSON.stringify({model:cfg.model,max_tokens:effortOf().tokens,system:cfg.system||undefined,messages})
   });
   if(!r.ok){
     const j=await r.json().catch(()=>({}));
@@ -603,31 +637,41 @@ function openUpgrade(){
   "<h1 class='plansTitle'>Planos que crescem<br>com você</h1>"
   +"<div class='segToggle'><button id='segInd' class='on'>Para<br>indivíduos</button><button id='segTeam'>Team e<br>Enterprise</button></div>"
   +"<div id='plansInd'>"
-  +"<div class='planCard'><h2>Free</h2><div class='sub'>Conheça o Claude</div><div class='price'>$ 0</div><div class='priceNote'>Gratuito para todos</div><a class='btn btnLight' href='#' onclick='return false'>Use o Claude gratuitamente</a>"
-  +"<ul><li>Converse na web, no desktop e no celular</li><li>Pesquise na web, crie arquivos e execute código</li><li>Memória entre conversas</li><li>Conecte seus apps e ferramentas</li><li>Claude Design, Slides e Docs</li></ul></div>"
-  +"<div class='planCard'><h2>Pro</h2><div class='sub'>Para o dia a dia de trabalho</div><div class='price'>$17</div><div class='priceNote'>Por mês com desconto da assinatura anual (US$ 200 faturados antecipadamente). US$ 20 com faturamento mensal.</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Experimente o Claude</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Free mais:</div>"
-  +"<ul><li>Mais uso*</li><li>Delegue tarefas e receba documentos, apresentações, planilhas e designs finalizados</li><li>Claude Dashboards (beta)</li><li>Claude Code</li><li>Claude Science</li><li>Projetos</li><li>Mais modelos do Claude</li><li>Claude in Chrome e Microsoft 365</li></ul></div>"
-  +"<div class='planCard'><h2>Max e Ultra</h2><div class='sub'>Para quem trabalha com o Claude o dia todo</div><div class='price'>A partir de $100</div><div class='priceNote'>Por mês</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Experimente o Claude</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Pro mais:</div>"
-  +"<ul><li>Escolha 5x o uso do plano Pro a cada 5 horas e toda semana, ou 10x o uso do plano Pro toda semana*</li><li>Acesso antecipado aos recursos avançados do Claude</li><li>Acesso prioritário em horários de tráfego intenso</li></ul></div>"
+  +"<div class='planCard'><h2>Free</h2><div class='sub'>Conheça o Claude</div><div class='price'>$0</div><div class='priceNote'>Gratuito para todos</div><a class='btn btnLight' href='#' onclick='return false'>Use o Claude gratuitamente</a>"
+  +"<ul><li>Converse na web, no iOS, no Android e no seu desktop</li><li>Gerar código e visualizar dados</li><li>Escrever, editar e criar conteúdo</li><li>Pesquisa na web</li><li>Memória entre conversas</li><li>Criar arquivos e executar código</li><li>Conectar serviços do Slack e do Google Workspace</li><li>Raciocínio estendido para trabalhos complexos</li><li>Claude Design, Slides e Docs</li></ul></div>"
+  +"<div class='planCard'><h2>Pro</h2><div class='sub'>Pesquise, programe e organize</div><div class='segToggle mini'><button id='billM' class='on'>Mensal</button><button id='billA'>Anual · Economize 17%</button></div><div class='price' id='proPrice'>$20 USD</div><div class='priceNote' id='proNote'>por mês · cobrado mensalmente</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Pro</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Free mais:</div>"
+  +"<ul><li>Claude Code</li><li>Claude Dashboards (beta)</li><li>Limite maior de uso</li><li>Acesso a mais modelos</li><li>Memória entre conversas</li></ul></div>"
+  +"<div class='planCard'><h2>Max e Ultra</h2><div class='sub'>Limites maiores, acesso prioritário</div><div class='price'>A partir de $100 USD</div><div class='priceNote'>por mês · cobrado mensalmente</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Assinar o plano Max ou Ultra</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Pro mais:</div>"
+  +"<ul><li>Até 10x o uso do plano Pro toda semana*</li><li>Acesso antecipado aos recursos avançados do Claude</li><li>Acesso prioritário em horários de tráfego intenso</li></ul></div>"
   +"</div>"
   +"<div id='plansTeam' style='display:none'>"
-  +"<div class='planCard'><h2>Team</h2><div class='sub'>Trabalhe melhor em equipe. Ideal para pequenas equipes.</div><div class='price'>$23</div><div class='priceNote'>Por mês, por pessoa com desconto da assinatura anual (total anual por membro $276). $30 com faturamento mensal.</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Team</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Pro mais:</div>"
-  +"<ul><li>Converse mais por membro do que no Pro</li><li>Limites de uso mais altos do que no Pro*</li><li>Espaço de trabalho compartilhado com Projetos</li><li>Central de administração</li></ul></div>"
-  +"<div class='planCard'><h2>Enterprise</h2><div class='sub'>Para grandes organizações</div><div class='price'>Preços personalizados</div><div class='priceNote'>Fale conosco</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Enterprise</a><div class='incl'>Tudo no Team mais:</div>"
-  +"<ul><li>Controles de segurança avançados com SSO, SCIM e gerenciamento hierárquico</li><li>Análise de uso corporativo</li><li>Suporte e integração dedicados</li><li>Dados de conformidade e retenção</li></ul></div>"
+  +"<div class='planCard'><h2>Team</h2><div class='sub'>Equipe (2–150 usuários)</div><div class='price'>US$ 20</div><div class='priceNote'>por assento padrão / mês · cobrança anual (US$ 25/mês com cobrança mensal)</div><div class='price' style='font-size:26px;margin-top:14px'>US$ 100</div><div class='priceNote'>por assento premium / mês · cobrança anual (US$ 125/mês com cobrança mensal)</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Team</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Inclui:</div>"
+  +"<ul><li>Claude Code e Claude Cowork</li><li>Claude Design, Slides e Docs</li><li>Claude Motion e Dashboards (beta)</li><li>Claude Science</li><li>Microsoft 365</li><li>Busca empresarial</li><li>SSO</li><li>Sem treinamento de modelos com seu conteúdo por padrão</li></ul></div>"
+  +"<div class='planCard'><h2>Enterprise</h2><div class='sub'>20+ usuários</div><div class='price'>Preço por assento + uso</div><div class='priceNote'>US$ 20/assento/mês + impostos, cobrança anual · uso às tarifas da API</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Enterprise</a><p class='btnNote'>Dúvidas? Fale com nosso consultor de vendas.</p></div>"
   +"</div>"
-  +"<p class='fine'>*Sujeito a limites de uso. Os preços exibidos não incluem os impostos aplicáveis. Preços e planos estão sujeitos a alterações a critério da Anthropic.</p>"
+  +"<p class='fine'>*Sujeito a limites de uso. A rapidez com que você atinge um limite depende do modelo que você usa, da duração das suas conversas e do tamanho dos seus arquivos.<br>Preços e planos estão sujeitos a alterações a critério da Anthropic.<br>O plano Ultra não tem limite de 5 horas para contas verificadas.</p>"
   +"<h2 class='faqTitle'>Perguntas frequentes</h2>"
   +"<details><summary>O que é o Claude e como ele funciona?</summary><p>O Claude é um assistente de IA da Anthropic. Escreve, resume, programa e responde perguntas — basta escreveres a tua pergunta no chat.</p></details>"
   +"<details><summary>Para que devo usar o Claude?</summary><p>Para escrever e rever textos, resumir documentos, programar, organizar ideias e aprender — no trabalho e no dia a dia.</p></details>"
-  +"<details><summary>Quanto custa para usar?</summary><p>O plano Free custa $0. O Pro custa $17 por mês com a assinatura anual (ou $20 por mês). O Max e Ultra começam nos $100 por mês.</p></details>");
+  +"<details><summary>Quanto custa para usar?</summary><p>O plano Free custa $0. O Pro custa $20 por mês (ou $17 por mês com a assinatura anual). O Max e Ultra começam nos $100 por mês.</p></details>");
   $("segInd").onclick=()=>{$("segInd").classList.add("on");$("segTeam").classList.remove("on");$("plansInd").style.display="block";$("plansTeam").style.display="none";};
   $("segTeam").onclick=()=>{$("segTeam").classList.add("on");$("segInd").classList.remove("on");$("plansTeam").style.display="block";$("plansInd").style.display="none";};
+  $("billM").onclick=()=>{$("billM").classList.add("on");$("billA").classList.remove("on");$("proPrice").textContent="$20 USD";$("proNote").textContent="por mês · cobrado mensalmente";};
+  $("billA").onclick=()=>{$("billA").classList.add("on");$("billM").classList.remove("on");$("proPrice").textContent="$17 USD";$("proNote").textContent="por mês · cobrado anualmente (US$ 200 faturados antecipadamente)";};
 }
 function openAbout(){
   showPage("Saiba mais",
   "<img src='"+LOGO_LOCK+"' style='height:32px;margin:8px 0 4px' alt='Claude'><h1>Claude</h1>"
-  +"<div class='card'><h2>O que é o Claude?</h2><p>O Claude é um assistente de IA da Anthropic. Ajuda a escrever, resumir, programar, organizar ideias e responder perguntas — em português e em muitas outras línguas.</p><p>Este site usa a API da Anthropic: as respostas vêm dos modelos Claude (Sonnet, Opus e Haiku) e o uso é cobrado à conta da chave configurada nas Definições.</p><a class='link' href='https://claude.ai' target='_blank'>Visitar claude.ai</a></div>"
+  +"<div class='card'><h2>O que é o Claude?</h2><p>O Claude é um assistente de IA da Anthropic. Ajuda a escrever, resumir, programar, organizar ideias e responder perguntas — em português e em muitas outras línguas.</p><p>Este site usa a API da Anthropic: as respostas vêm dos modelos Claude (Sonnet, Opus, Haiku e Fable) e o uso é cobrado à conta da chave configurada nas Configurações.</p><a class='link' href='https://claude.ai' target='_blank'>Visitar claude.ai</a></div>"
+  +"<div class='card'><h2>Saiba mais</h2>"
+  +"<a class='link' href='https://www.anthropic.com' target='_blank'>Sobre a Anthropic</a><br>"
+  +"<a class='link' href='https://claude.com/academy' target='_blank'>Claude Academy</a><br>"
+  +"<a class='link' href='https://claude.com/use-policy' target='_blank'>Política de uso</a><br>"
+  +"<a class='link' href='https://claude.com/privacy' target='_blank'>Política de privacidade</a><br>"
+  +"<a class='link' href='https://claude.com/terms' target='_blank'>Termos de serviço</a><br>"
+  +"<a class='link' href='https://claude.com/fonts' target='_blank'>Licenças de fontes</a><br>"
+  +"<a class='link' href='https://claude.com/privacy-choices' target='_blank'>Suas escolhas de privacidade</a><br>"
+  +"<a class='link' href='https://claude.com/shortcuts' target='_blank'>Atalhos do teclado (Ctrl+/)</a></div>"
   +"<div class='card'><h2>Privacidade</h2><p>As tuas conversas ficam guardadas só neste navegador. A tua chave da API também fica só aqui — nunca é enviada para outro sítio além da Anthropic.</p></div>");
 }
 /* eventos */
@@ -638,10 +682,13 @@ $("createBtn").onclick=()=>{newConv();$("sidebar").classList.remove("open");$("p
 $("chatModeBtn").onclick=()=>{newConv();$("prompt").focus();};
 $("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
 $("closeSide").onclick=()=>$("sidebar").classList.remove("open");
+$("hideSide").onclick=()=>$("sidebar").classList.remove("open");
+$("sugMemory").onclick=()=>{alert("Importar memória: traz a tua memória de outros assistentes de IA. Por agora, escreve as tuas preferências nas Configurações (Mensagem do sistema).");};
+$("sugPersonal").onclick=()=>{openAdmin();};
+$("appsBtn").onclick=()=>{openApps();};
 $("searchInput").addEventListener("input",renderList);
 $("verTodos").onclick=()=>{renderList();$("sidebar").classList.remove("open");};
 $("ghostBtn").onclick=()=>$("accountOverlay").classList.add("open");
-$("popBtn").onclick=()=>{window.open(location.href,"_blank");};
 $("userRow").onclick=()=>$("accountOverlay").classList.add("open");
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
@@ -656,31 +703,215 @@ document.querySelector("#navCode .up").onclick=e=>{e.stopPropagation();openUpgra
 $("pageBack").onclick=showChat;
 $("modelBtn").onclick=()=>{
   const el=$("modelList");el.innerHTML="";
-  MODELS.forEach(m=>{
+  const cur=MODELS.find(m=>m.id===cfg.model)||MODELS[0];
+  const h1=document.createElement("div");h1.className="listRow";
+  h1.innerHTML="<b>"+cur.label+" ✓</b>";
+  h1.onclick=()=>{$("modelWrap").classList.remove("open");};
+  el.appendChild(h1);
+  const eh=document.createElement("p");eh.style.cssText="color:var(--ink2);font-size:13.5px;margin:16px 0 6px;font-weight:600";eh.textContent="Esforço";
+  el.appendChild(eh);
+  EFFORTS.forEach(e=>{
     const d=document.createElement("div");d.className="listRow";
-    d.innerHTML="<b>"+m.label+(m.id===cfg.model?" ✓":"")+"</b>";
+    d.innerHTML="<b>"+e.label+(e.id===cfg.effort?" ✓":"")+"</b>";
+    d.onclick=()=>{cfg.effort=e.id;saveCfg();$("modelWrap").classList.remove("open");};
+    el.appendChild(d);
+  });
+  const note=document.createElement("p");note.style.cssText="color:var(--ink2);font-size:13px;line-height:1.5;margin:10px 0 4px";note.textContent="Mais esforço significa respostas mais completas, mas leva mais tempo e consome seus limites mais rápido.";
+  el.appendChild(note);
+  const mh=document.createElement("p");mh.style.cssText="color:var(--ink2);font-size:13.5px;margin:16px 0 6px;font-weight:600";mh.textContent="Mais modelos";
+  el.appendChild(mh);
+  MODELS.forEach(m=>{
+    if(m.id===cur.id)return;
+    const d=document.createElement("div");d.className="listRow";
+    d.innerHTML="<b>"+m.label+"</b>"+(m.plan?"<span style='font-size:12.5px;color:var(--blue);border:1px solid #C9D6F2;background:#EDF2FC;border-radius:20px;padding:4px 10px;white-space:nowrap'>"+m.plan+"</span>":"");
     d.onclick=()=>{cfg.model=m.id;saveCfg();$("modelWrap").classList.remove("open");};
     el.appendChild(d);
   });
+  const fn=document.createElement("p");fn.style.cssText="color:var(--ink2);font-size:13px;line-height:1.5;margin:12px 0 0";fn.textContent="O Fable está incluído nos planos Max e Ultra, e no Pro por tempo limitado. Saiba mais";
+  el.appendChild(fn);
   $("modelWrap").classList.add("open");
 };
 $("closeModel").onclick=()=>$("modelWrap").classList.remove("open");
 $("tuneBtn").onclick=openSettings;
+const SET_SECTIONS=[
+  {id:"geral",label:"Geral",grp:"Preferências"},
+  {id:"conta",label:"Conta",grp:"Preferências"},
+  {id:"privacidade",label:"Privacidade",grp:"Preferências"},
+  {id:"cobranca",label:"Cobrança",grp:"Preferências"},
+  {id:"recursos",label:"Recursos",grp:"Preferências"},
+  {id:"memoria",label:"Memória",grp:"Preferências"},
+  {id:"reflexao",label:"Reflexão",grp:"Preferências"},
+  {id:"tempo",label:"Tempo e foco",grp:"Preferências"},
+  {id:"code",label:"Claude Code",grp:"Preferências"},
+  {id:"skills",label:"Skills",grp:"Personalização"},
+  {id:"conectores",label:"Conectores",grp:"Personalização"},
+  {id:"plugins",label:"Plugins",grp:"Personalização"}
+];
+let setCur="geral";
+function tgl(on){return "<button class='tgl"+(on?" on":"")+"'></button>";}
+function setGeral(){
+  return "<h2>Geral</h2>"
+  +"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o Claude responder. A chave fica guardada só neste navegador.</p>"
+  +"<label>Chave da API (Anthropic)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
+  +"<div id='keyWarn'>Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta.</div>"
+  +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.label+"</option>").join("")+"</select>"
+  +"<h3>Aparência</h3>"
+  +"<div class='setRow'><div><div class='lab'>Tema</div><div class='desc'>Sistema, Claro ou Escuro.</div></div><select><option>Sistema</option><option>Claro</option><option>Escuro</option></select></div>"
+  +"<div class='setRow'><div><div class='lab'>Fonte da interface</div></div><span style='font-size:14.5px;color:var(--ink2)'>Padrão · Anthropic Sans</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Fonte das respostas</div></div><span style='font-size:14.5px;color:var(--ink2)'>Anthropic Serif</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Tamanho do texto da conversa</div></div><span style='font-size:14.5px;color:var(--ink2)'>Médio</span></div>"
+  +"<h3>Voz</h3>"
+  +"<div class='setRow'><div><div class='lab'>Idioma</div></div><span style='font-size:14.5px;color:var(--ink2)'>Português</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Velocidade</div></div><span style='font-size:14.5px;color:var(--ink2)'>Normal</span></div>"
+  +"<h3>Notificações</h3>"
+  +"<div class='setRow'><div><div class='lab'>Conclusão de respostas</div><div class='desc'>Receba uma notificação quando Claude terminar uma resposta. Útil para tarefas de longa duração.</div></div>"+tgl(false)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Menções e respostas</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Comentários nos seus artefatos</div><div class='desc'>Receba um e-mail quando alguém comentar em um artefato seu, mesmo que ninguém mencione você.</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Artefatos compartilhados com você</div></div>"+tgl(true)+"</div>";
+}
+function setConta(){
+  return "<h2>Conta</h2><h3>Perfil</h3><p>PNG, JPEG ou WebP, até 10MB.</p>"
+  +"<label>Nome completo</label><input type='text' id='setUser' value='"+esc(cfg.user||"")+"'>"
+  +"<label>Como o Claude deve chamar você?</label><input type='text' id='setCall' value='"+esc(cfg.user||"")+"'>"
+  +"<label>O que melhor descreve seu trabalho?</label><select><option>Outro</option><option>Estudante</option><option>Empreendedor</option><option>Programador</option><option>Escritor</option></select>"
+  +"<label>Instruções para o Claude</label><textarea id='setSystem' placeholder='Diga ao Claude um pouco sobre você e suas preferências. Por exemplo, “Sempre inclua referências e fontes...”'>"+esc(cfg.system||"")+"</textarea>"
+  +"<h3>Conta</h3>"
+  +"<div class='setRow'><div><div class='lab'>Sair em todos os aparelhos</div></div><button class='setBtn' id='setSignOut'>Sair</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Excluir sua conta</div></div><button class='setBtn' id='setDelete'>Apagar conta</button></div>"
+  +"<div class='setRow'><div><div class='lab'>ID da organização</div></div><button class='setBtn' id='setCopyOrg'>Copiar ID</button></div>";
+}
+function setPrivacidade(){
+  return "<h2>Privacidade</h2><p>A Anthropic acredita em práticas transparentes de dados. Saiba como suas informações são protegidas aqui: Central de privacidade e Política de privacidade para mais detalhes.</p>"
+  +"<h3>Preferências</h3>"
+  +"<div class='setRow'><div><div class='lab'>Metadados de localização</div><div class='desc'>Permitir que o Claude use metadados de localização aproximada (cidade/região) para melhorar as experiências do produto.</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Help improve our AI models</div><div class='desc'>Allow the use of your chats and coding sessions to train and improve Anthropic AI models.</div></div>"+tgl(false)+"</div>"
+  +"<h3>Seus dados</h3>"
+  +"<div class='setRow'><div><div class='lab'>Exportar dados</div></div><button class='setBtn' id='setExport'>Exportar dados</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Conversas compartilhadas</div></div><button class='setBtn'>Gerenciar</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Artefatos compartilhados</div></div><button class='setBtn'>Gerenciar</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Arquivos enviados</div></div><button class='setBtn'>Gerenciar</button></div>";
+}
+function setCobranca(){
+  return "<h2>Cobrança</h2><h3>plano Gratuito</h3><p>Experimente o Claude</p>"
+  +"<ul style='list-style:none;margin:0 0 16px'>"
+  +["Converse na web, no iOS, no Android e no seu desktop","Gerar código e visualizar dados","Escrever, editar e criar conteúdo","Pesquisa na web","Memória entre conversas","Criar arquivos e executar código","Desbloqueie mais recursos do Claude com extensões para desktop","Conectar serviços do Slack e do Google Workspace","Integre qualquer contexto ou ferramenta por meio de conectores com MCP remoto","Raciocínio estendido para trabalhos complexos","Claude Design, Slides e Docs"].map(f=>"<li style='position:relative;padding:7px 0 7px 28px;font-size:15px;line-height:1.5'>✓ "+f+"</li>").join("")
+  +"</ul><button class='setBtn dark' id='setUpgrade'>Subir de plano</button>";
+}
+function setRecursos(){
+  return "<h2>Recursos</h2><h3>Modo de acesso a ferramentas</h3><p>Carregar ferramentas quando necessário.</p>"
+  +"<div class='setRow'><div><div class='lab'>Pesquisa de conectores</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Alternar modelos quando uma mensagem for sinalizada</div></div>"+tgl(true)+"</div>"
+  +"<h3>Visuais</h3>"
+  +"<div class='setRow'><div><div class='lab'>Artefatos</div><div class='desc'>Gere código, documentos e designs em uma janela dedicada ao lado da sua conversa. Obrigatório para execução de código e criação de arquivos.</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Artefatos com tecnologia de IA</div></div>"+tgl(false)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Visualizações na conversa</div></div>"+tgl(true)+"</div>"
+  +"<h3>Execução de código e criação de arquivos</h3>"
+  +"<div class='setRow'><div><div class='lab'>Execução de código e criação de arquivos</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Permitir acesso de rede externo</div></div>"+tgl(false)+"</div>"
+  +"<p>As Skills foram movidas para Personalizar.</p>";
+}
+function setMemoria(){
+  return "<h2>Memória</h2>"
+  +"<div class='setRow'><div><div class='lab'>Gerar memória a partir de conversas</div></div>"+tgl(true)+"</div>"
+  +"<p style='margin-top:12px'>Nenhum arquivo ainda</p>"
+  +"<div class='setRow'><div><div class='lab'>Incluir tópicos sensíveis na memória</div></div>"+tgl(false)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Importar memória de outros provedores de IA</div></div><button class='setBtn'>Iniciar importação</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Exportar memória</div><div class='desc'>Baixe sua memória como um .zip de arquivos Markdown. Ainda não há nada para exportar.</div></div><button class='setBtn' disabled style='opacity:.5'>Exportar</button></div>";
+}
+function setReflexao(){
+  return "<h2>Reflexão</h2><p>Você poderá alterar isso quando sua retrospectiva estiver pronta.</p>"
+  +"<div class='setRow'><div><div class='lab'>Período de tempo</div></div><span style='font-size:14.5px;color:var(--ink2)'>Último mês</span></div>"
+  +"<button class='setBtn' disabled style='opacity:.5'>Regenerar reflexão</button>"
+  +"<p style='margin-top:14px'>Analisando seu último mês. Isso deve levar apenas um minuto ou menos.</p>";
+}
+function setTempo(){
+  return "<h2>Tempo e foco</h2>"
+  +"<div class='setRow'><div><div class='lab'>Lembretes de pausa</div><div class='desc'>Receba um lembrete para fazer uma pausa no Claude. Você pode adiar ou ajustar a qualquer momento.</div></div><span style='font-size:14.5px;color:var(--ink2)'>Nenhuma</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Horas silenciosas</div><div class='desc'>Defina limites de tempo para o Claude. Você pode dispensar ou ajustar a qualquer momento.</div></div><span style='font-size:14.5px;color:var(--ink2)'>Desligado</span></div>"
+  +"<p>D S T Q Q S S — todos desligados.</p>";
+}
+function setCode(){
+  return "<h2>Claude Code</h2><p>Claude entende sua base de código e ajuda você a criar, depurar e entregar mais rápido. Faça upgrade para Pro, Max ou Ultra.</p>"
+  +"<h3>Geral</h3>"
+  +"<div class='setRow'><div><div class='lab'>Classificar estados das sessões</div></div>"+tgl(true)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Alternar modelos quando uma mensagem for sinalizada</div></div>"+tgl(true)+"</div>"
+  +"<h3>Aparência do código</h3>"
+  +"<div class='setRow'><div><div class='lab'>Tema de código claro</div></div><span style='font-size:14.5px;color:var(--ink2)'>Claude Light</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Tema escuro para código</div></div><span style='font-size:14.5px;color:var(--ink2)'>Claude Dark</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Tamanho da fonte do código</div></div><span style='font-size:14.5px;color:var(--ink2)'>Padrão · 13 px</span></div>"
+  +"<h3>Aparência</h3>"
+  +"<div class='setRow'><div><div class='lab'>Largura da transcrição</div></div><span style='font-size:14.5px;color:var(--ink2)'>Estreito</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Visualização padrão da transcrição</div></div><span style='font-size:14.5px;color:var(--ink2)'>Normal</span></div>"
+  +"<h3>Pull requests</h3>"
+  +"<div class='setRow'><div><div class='lab'>Prefixo do branch</div></div><span style='font-size:14.5px;color:var(--ink2)'>claude</span></div>"
+  +"<div class='setRow'><div><div class='lab'>Criar pull requests automaticamente</div></div>"+tgl(false)+"</div>"
+  +"<div class='setRow'><div><div class='lab'>Corrigir pull requests automaticamente</div></div>"+tgl(false)+"</div>"
+  +"<p>Nenhuma instância do Claude Code conectada. Quando você fizer login no Claude Code, seus tokens de autorização aparecerão aqui.</p>";
+}
+function setSkills(){
+  return "<h2>Skills</h2><p>As Skills ensinam ao Claude como você trabalha.</p>"
+  +"<div class='card' style='background:#F7F7F4'><h2>Adicione suas primeiras Skills</h2><p>Adicione Skills em Descobrir ou crie as suas próprias.</p><button class='setBtn dark'>Descobrir Skills</button></div>"
+  +"<h3>Da Anthropic e parceiros</h3>"
+  +"<div class='setRow'><div><div class='lab'>skill-creator</div><div class='desc'>28 de out.</div></div></div>"
+  +"<div class='setRow'><div><div class='lab'>google-workspace</div><div class='desc'>14 de out.</div></div></div>"
+  +"<div class='setRow'><div><div class='lab'>import-memory</div><div class='desc'>14 de set.</div></div></div>"
+  +"<div class='setRow'><div><div class='lab'>morning</div><div class='desc'>14 de set.</div></div></div>";
+}
+function setConectores(){
+  return "<h2>Conectores</h2><p>Ligue os teus serviços ao Claude.</p>"
+  +"<div class='setRow'><div><div class='lab'>Integração com o GitHub</div><div class='desc'>Web</div></div><button class='setBtn'>Vincular</button></div>";
+}
+function setPlugins(){
+  return "<h2>Plugins</h2>"
+  +"<div class='card' style='background:#F7F7F4'><h2>Adicione seus primeiros plugins</h2><p>Dê ao Claude conhecimento especializado por função com plugins. Adicione-os em Descobrir ou crie os seus próprios.</p><button class='setBtn dark'>Descobrir plugins</button></div>";
+}
 function openSettings(){
-  $("apiKey").value=cfg.apiKey||"";
-  $("defaultModel").value=cfg.model;
-  $("systemPrompt").value=cfg.system||"";
-  $("siteName").value=cfg.name||"";
+  const menu=$("setMenu");menu.innerHTML="";
+  let grp="";
+  SET_SECTIONS.forEach(s=>{
+    if(s.grp!==grp){grp=s.grp;const g=document.createElement("div");g.className="grp";g.textContent=grp;menu.appendChild(g);}
+    const b=document.createElement("button");b.textContent=s.label;b.dataset.sec=s.id;
+    b.className=s.id===setCur?"on":"";
+    b.onclick=()=>{setCur=s.id;renderSetSection();};
+    menu.appendChild(b);
+  });
+  renderSetSection();
   $("settingsWrap").classList.add("open");
 }
+function renderSetSection(){
+  document.querySelectorAll("#setMenu button").forEach(b=>b.classList.toggle("on",b.dataset.sec===setCur));
+  const el=$("setContent");
+  if(setCur==="geral")el.innerHTML=setGeral();
+  else if(setCur==="conta")el.innerHTML=setConta();
+  else if(setCur==="privacidade")el.innerHTML=setPrivacidade();
+  else if(setCur==="cobranca")el.innerHTML=setCobranca();
+  else if(setCur==="recursos")el.innerHTML=setRecursos();
+  else if(setCur==="memoria")el.innerHTML=setMemoria();
+  else if(setCur==="reflexao")el.innerHTML=setReflexao();
+  else if(setCur==="tempo")el.innerHTML=setTempo();
+  else if(setCur==="code")el.innerHTML=setCode();
+  else if(setCur==="skills")el.innerHTML=setSkills();
+  else if(setCur==="conectores")el.innerHTML=setConectores();
+  else el.innerHTML=setPlugins();
+  wireSetSection();
+}
+function wireSetSection(){
+  document.querySelectorAll("#setContent .tgl").forEach(t=>{t.onclick=()=>t.classList.toggle("on");});
+  const ak=$("setApiKey");if(ak)ak.addEventListener("input",()=>{cfg.apiKey=ak.value.trim();saveCfg();});
+  const sm=$("setModel");if(sm)sm.addEventListener("change",()=>{cfg.model=sm.value;saveCfg();});
+  const su=$("setUser");if(su)su.addEventListener("input",()=>{cfg.user=su.value.trim();saveCfg();});
+  const sc=$("setCall");if(sc)sc.addEventListener("input",()=>{cfg.user=sc.value.trim();saveCfg();});
+  const ss=$("setSystem");if(ss)ss.addEventListener("input",()=>{cfg.system=ss.value.trim();saveCfg();});
+  const so=$("setSignOut");if(so)so.onclick=()=>{if(confirm("Sair apaga as conversas e a chave deste navegador. Continuar?")){localStorage.clear();location.reload();}};
+  const sd=$("setDelete");if(sd)sd.onclick=()=>{if(confirm("Apagar a conta apaga tudo neste navegador. Continuar?")){localStorage.clear();location.reload();}};
+  const sco=$("setCopyOrg");if(sco)sco.onclick=()=>{navigator.clipboard.writeText("org-"+(cfg.user||"claude"));sco.textContent="Copiado ✓";setTimeout(()=>sco.textContent="Copiar ID",1500);};
+  const se=$("setExport");if(se)se.onclick=()=>{
+    const blob=new Blob([JSON.stringify(convs,null,2)],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="claude-conversas.json";a.click();
+  };
+  const sup=$("setUpgrade");if(sup)sup.onclick=()=>{$("settingsWrap").classList.remove("open");openUpgrade();};
+}
 $("closeSettings").onclick=()=>$("settingsWrap").classList.remove("open");
-$("saveSettings").onclick=()=>{
-  cfg.apiKey=$("apiKey").value.trim();
-  cfg.model=$("defaultModel").value;
-  cfg.system=$("systemPrompt").value.trim();
-  cfg.name=$("siteName").value.trim()||cfg.name;
-  saveCfg();$("settingsWrap").classList.remove("open");renderChat();
-};
 function openAdmin(){
   $("adminName").value=cfg.name||"";
   $("adminWelcome").value=cfg.welcome||"";
@@ -703,43 +934,90 @@ $("saveAdmin").onclick=()=>{
   saveCfg();$("adminWrap").classList.remove("open");
 };
 $("resetAll").onclick=e=>{e.preventDefault();if(confirm("Apagar todas as conversas e definições?")){localStorage.clear();location.reload();}};
-function renderProjects(){
-  const el=$("projectList");el.innerHTML="";
-  if(!projects.length)el.innerHTML="<p style='color:var(--ink2)'>Ainda não há projetos.</p>";
-  projects.forEach((p,i)=>{
+function openProjects(){
+  showPage("Projetos",
+  "<div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:6px'><h1 style='margin:0'>Projetos</h1><button id='newProjBtn' style='background:var(--ink);color:#fff;border-radius:24px;padding:11px 20px;font-size:15px;font-weight:600'>Novo projeto</button></div>"
+  +"<div id='projForm' style='display:none' class='card'><h2>No que você está trabalhando?</h2><input type='text' id='projName' placeholder='Dê um nome ao projeto' style='width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-bottom:14px'><h2>O que você quer realizar?</h2><textarea id='projDesc' placeholder='Descreva seu projeto, objetivos, assunto, etc...' style='width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:80px;resize:vertical'></textarea><div style='display:flex;gap:10px;margin-top:14px'><button class='btnLight' id='projCancel' style='flex:1;padding:12px;border-radius:11px;font-weight:600;background:#F1F1EE'>Cancelar</button><button class='btnDark' id='projCreate' style='flex:1;padding:12px;border-radius:11px;font-weight:600;background:var(--ink);color:#fff'>Criar projeto</button></div></div>"
+  +"<div id='projList'></div>");
+  renderProjList();
+  $("newProjBtn").onclick=()=>{$("projForm").style.display="block";$("projName").focus();};
+  $("projCancel").onclick=()=>{$("projForm").style.display="none";};
+  $("projCreate").onclick=()=>{
+    const n=$("projName").value.trim();if(!n)return;
+    projects.push({name:n,desc:$("projDesc").value.trim()});saveProj();
+    $("projName").value="";$("projDesc").value="";$("projForm").style.display="none";renderProjList();
+  };
+}
+function renderProjList(){
+  const el=$("projList");if(!el)return;el.innerHTML="";
+  const list=projects.map(p=>typeof p==="string"?{name:p,desc:""}:p);
+  if(!list.length){
+    el.innerHTML="<div style='text-align:center;padding:60px 20px'><h2 style='font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:10px'>Quer começar um projeto?</h2><p style='color:var(--ink2);font-size:15px;line-height:1.6;margin-bottom:20px'>Faça upload de materiais, defina instruções personalizadas e organize conversas em um só lugar.</p><button id='emptyNewProj' style='background:var(--ink);color:#fff;border-radius:24px;padding:12px 22px;font-size:15px;font-weight:600'>Novo projeto</button></div>";
+    $("emptyNewProj").onclick=()=>{$("projForm").style.display="block";$("projName").focus();};
+    return;
+  }
+  list.forEach((p,i)=>{
     const d=document.createElement("div");d.className="listRow";
-    d.innerHTML="<b>"+esc(p)+"</b><button>Apagar</button>";
-    d.querySelector("button").onclick=()=>{projects.splice(i,1);saveProj();renderProjects();};
+    d.innerHTML="<b>"+esc(p.name)+(p.desc?" — <span style='color:var(--ink2);font-weight:400'>"+esc(p.desc)+"</span>":"")+"</b><button>Apagar</button>";
+    d.querySelector("button").onclick=()=>{projects.splice(i,1);saveProj();renderProjList();};
     el.appendChild(d);
   });
 }
-$("navProjects").onclick=()=>{renderProjects();$("projectsWrap").classList.add("open");};
-$("closeProjects").onclick=()=>$("projectsWrap").classList.remove("open");
-$("addProject").onclick=()=>{
-  const n=$("newProjectName").value.trim();
-  if(!n)return;
-  projects.push(n);saveProj();$("newProjectName").value="";renderProjects();
-};
 function openArtifacts(){
-  const el=$("artifactList");el.innerHTML="";
-  let found=0;
+  showPage("Artefatos",
+  "<div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:6px'><h1 style='margin:0'>Artefatos</h1><button id='artCreateBtn' style='background:var(--ink);color:#fff;border-radius:24px;padding:11px 20px;font-size:15px;font-weight:600'>Criar</button></div>"
+  +"<div class='segToggle' style='margin-bottom:18px'><button id='artTabAll' class='on'>Todos</button><button id='artTabMine'>Meus</button><button id='artTabShared'>Compartilhados com você</button></div>"
+  +"<h2 style='font-size:19px;margin:6px 0 12px'>Crie algo novo</h2>"
+  +"<div style='display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px'>"
+  +"<div class='card' style='background:#E8EFFC;border-color:#D3E0F7;margin:0'><h2>Documentos</h2><p style='color:#4A5568'>Pela Anthropic. Um documento que sua equipe lê, comenta e edita ali mesmo, enquanto o Claude o mantém atualizado.</p></div>"
+  +"<div class='card' style='background:#FDEEE3;border-color:#F6DCC8;margin:0'><h2>Apresentações</h2><p style='color:#4A5568'>Pela Anthropic. Uma apresentação de slides que você pode apresentar, reestilizar com um design system e exportar para o PowerPoint.</p></div>"
+  +"<div class='card' style='background:#F1E9FC;border-color:#E0D2F5;margin:0'><h2>Design</h2><p style='color:#4A5568'>Pela Anthropic. Telas, fluxos e gráficos dispostos como pranchetas em um único canvas que você pode editar manualmente.</p></div>"
+  +"</div>"
+  +"<div id='artList'></div>");
+  renderArtList("all");
+  $("artTabAll").onclick=()=>{setArtTab("all");};
+  $("artTabMine").onclick=()=>{setArtTab("mine");};
+  $("artTabShared").onclick=()=>{setArtTab("shared");};
+  $("artCreateBtn").onclick=()=>{newConv();$("prompt").value="Cria um artefacto: ";$("prompt").focus();};
+}
+function setArtTab(t){
+  ["artTabAll","artTabMine","artTabShared"].forEach(id=>$(id).classList.remove("on"));
+  $("artTabAll").classList.toggle("on",t==="all");
+  $("artTabMine").classList.toggle("on",t==="mine");
+  $("artTabShared").classList.toggle("on",t==="shared");
+  renderArtList(t);
+}
+function collectArtifacts(){
+  const out=[];
   convs.forEach(c=>c.msgs.forEach(m=>{
     if(m.role!=="assistant")return;
     (m.content.match(/```(\w*)\n?([\s\S]*?)```/g)||[]).forEach(b=>{
-      found++;
       const lang=(b.match(/```(\w*)/)||[])[1]||"código";
       const code=b.replace(/```\w*\n?/,"").replace(/```$/,"");
-      const d=document.createElement("div");d.className="listRow";
-      d.innerHTML="<b>"+esc(lang)+" — "+esc(c.title)+"</b><button>Copiar</button>";
-      d.querySelector("button").onclick=()=>{navigator.clipboard.writeText(code);};
-      el.appendChild(d);
+      out.push({lang,code,title:c.title});
     });
   }));
-  if(!found)el.innerHTML="<p style='color:var(--ink2)'>Ainda não há artefactos. Pede ao Claude um código e ele aparece aqui.</p>";
-  $("artifactsWrap").classList.add("open");
+  return out;
+}
+function renderArtList(tab){
+  const el=$("artList");if(!el)return;el.innerHTML="";
+  const arts=collectArtifacts();
+  if(tab==="shared"){
+    el.innerHTML="<div style='text-align:center;padding:50px 20px'><h2 style='font-family:var(--serif);font-size:24px;font-weight:500;margin-bottom:8px'>Nenhum artefato compartilhado</h2><p style='color:var(--ink2);font-size:15px'>Quando alguém compartilhar um artefato com você, ele aparece aqui.</p></div>";
+    return;
+  }
+  if(!arts.length){
+    el.innerHTML="<div style='text-align:center;padding:50px 20px'><h2 style='font-family:var(--serif);font-size:24px;font-weight:500;margin-bottom:8px'>Seus artefatos ficam aqui</h2><p style='color:var(--ink2);font-size:15px;line-height:1.6'>Comece com um modelo acima ou peça ao Claude para criar algo em qualquer conversa.</p></div>";
+    return;
+  }
+  arts.forEach(a=>{
+    const d=document.createElement("div");d.className="listRow";
+    d.innerHTML="<b>"+esc(a.lang)+" — "+esc(a.title)+"</b><button>Copiar</button>";
+    d.querySelector("button").onclick=()=>{navigator.clipboard.writeText(a.code);};
+    el.appendChild(d);
+  });
 }
 $("navArtifacts").onclick=openArtifacts;
-$("closeArtifacts").onclick=()=>$("artifactsWrap").classList.remove("open");
 $("navCode").onclick=()=>{
   cfg.system="És um programador experiente. Responde com código limpo e explica só o essencial, em português.";
   saveCfg();
