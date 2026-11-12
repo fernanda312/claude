@@ -238,7 +238,6 @@ body.noSide #sidebar{display:none}
 .modal .row button{flex:1;padding:12px;border-radius:11px;font-weight:600;font-size:15px}
 .btnDark{background:var(--ink);color:#fff}
 .btnLight{background:#F1F1EE}
-#keyWarn{background:#FFF4E5;border:1px solid #F0D9B5;color:#7A5A1F;border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.5;margin-top:12px}
 .listRow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-top:8px}
 .listRow b{flex:1;font-size:15px}
 .listRow button{color:#B3261E;font-size:14px}
@@ -844,7 +843,6 @@ function setGeral(){
   return "<h2>Geral</h2>"
   +"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o chat responder com o Claude. A chave fica guardada só neste navegador.</p>"
   +"<label>Chave da API (Anthropic)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
-  +"<div id='keyWarn'>Nunca partilhes a tua chave com ninguém. Quem tiver a chave pode gastar na tua conta.</div>"
   +"<label>Chave de reserva (Google AI Studio)</label><input type='password' id='setGeminiKey' placeholder='AIza...' autocomplete='off' value='"+esc(cfg.geminiKey||"")+"'>"
   +"<p style='font-size:13.5px;color:var(--ink2);margin:-4px 0 10px'>Se a chave do Claude falhar, o chat usa esta chave de reserva sem mostrar nada. Cria-se grátis em <a class='link' href='https://aistudio.google.com/apikey' target='_blank'>aistudio.google.com/apikey</a>.</p>"
   +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.label+"</option>").join("")+"</select>"
