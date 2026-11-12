@@ -532,6 +532,8 @@ function renderChat(){
       const cp=document.createElement("button");cp.textContent="Copiar";cp.onclick=()=>{navigator.clipboard.writeText(m.content);cp.textContent="Copiado ✓";setTimeout(()=>cp.textContent="Copiar",1500);};
       const rg=document.createElement("button");rg.textContent="Gerar de novo";rg.onclick=()=>regenerate(i);
       t.appendChild(cp);
+      const sp=document.createElement("button");sp.textContent="Ouvir";sp.onclick=()=>{if(speaking){stopSpeak();return;}speak(m.content,sp);};
+      t.appendChild(sp);
       const code=(m.content.match(/```[\s\S]*?```/g)||[]);
       if(code.length){
         const art=document.createElement("button");art.textContent="Ver artefacto";art.onclick=()=>openArtifacts();
@@ -671,12 +673,14 @@ async function send(){
     document.getElementById("typingRow")?.remove();
     c.msgs.push({role:"assistant",content:ans});
     saveConvs();renderChat();
+    if(voiceMode)speak(ans);
   }catch(e){
     document.getElementById("typingRow")?.remove();
     c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
       ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic (a que compraste) — ou a chave de reserva do Google, que é grátis. A chave fica só neste navegador."
       :"Não consegui responder: "+e.message+". Verifica a chave e o modelo nas Configurações."});
     saveConvs();renderChat();
+    if(voiceMode)speak(c.msgs[c.msgs.length-1].content);
   }
   setBusy(false);
 }
@@ -1236,7 +1240,53 @@ function startDictation(){
   try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});toast("O ditado falhou. Tenta outra vez.");}
 }
 $("micBtn").onclick=startDictation;
-$("voiceBtn").onclick=startDictation;
+$("voiceBtn").onclick=startVoiceMode;
+let voiceMode=false;
+let speaking=false;
+let curSpeakBtn=null;
+function speak(text,btn){
+  if(!("speechSynthesis" in window)){toast("O teu navegador não suporta leitura em voz alta.");return;}
+  window.speechSynthesis.cancel();
+  const clean=String(text||"").replace(/```[\s\S]*?```/g," ").replace(/[*#`_>\[\]()]/g," ").replace(/\s+/g," ").trim();
+  if(!clean)return;
+  const u=new SpeechSynthesisUtterance(clean);
+  u.lang="pt-PT";
+  const v=window.speechSynthesis.getVoices().find(x=>x.lang&&x.lang.toLowerCase().indexOf("pt")===0);
+  if(v)u.voice=v;
+  const done=()=>{speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}};
+  u.onend=done;u.onerror=done;
+  speaking=true;curSpeakBtn=btn||null;
+  if(curSpeakBtn)curSpeakBtn.textContent="Parar";
+  window.speechSynthesis.speak(u);
+}
+function stopSpeak(){if("speechSynthesis" in window)window.speechSynthesis.cancel();speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}}
+function startVoiceMode(){
+  if(voiceMode){voiceMode=false;stopSpeak();const vb=$("voiceBtn");if(vb)vb.classList.remove("listening");toast("Modo de voz desligado.");return;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast("O teu navegador não suporta ditado por voz.");return;}
+  voiceMode=true;
+  const btns=[$("micBtn"),$("voiceBtn")];
+  btns.forEach(b=>{if(b)b.classList.add("listening");});
+  toast("Modo de voz: fala agora.");
+  const r=new SR();r.lang="pt-PT";r.interimResults=false;
+  r.onresult=ev=>{
+    const t=ev.results[0][0].transcript;
+    $("prompt").value=( $("prompt").value?$("prompt").value+" ":"")+t;
+    send();
+  };
+  r.onerror=ev=>{
+    btns.forEach(b=>{if(b)b.classList.remove("listening");});
+    if(ev.error==="not-allowed"||ev.error==="service-not-allowed")toast("Não consegui aceder ao microfone. Permite o microfone nas definições do navegador.");
+    else if(ev.error==="no-speech")toast("Não ouvi nada. Tenta outra vez.");
+    else if(ev.error==="audio-capture")toast("Não consegui usar o microfone. Verifica se outro app está a usá-lo.");
+    else if(ev.error==="network")toast("Sem ligação ao serviço de voz. Verifica a internet e tenta outra vez.");
+    else if(ev.error==="aborted")toast("O ditado foi interrompido. Tenta outra vez.");
+    else if(ev.error==="language-not-supported")toast("O ditado não suporta este idioma.");
+    else toast("O ditado falhou ("+ev.error+"). Tenta outra vez.");
+  };
+  r.onend=()=>{btns.forEach(b=>{if(b)b.classList.remove("listening");});};
+  try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});toast("O ditado falhou. Tenta outra vez.");}
+}
 $("memImport").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();
