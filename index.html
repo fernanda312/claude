@@ -432,7 +432,7 @@ const EFFORTS=[
 ];
 function effortOf(){return EFFORTS.find(e=>e.id===cfg.effort)||EFFORTS[1];}
 /* Emails que veem "Pro" em vez de "Free" — só visual. A dona pode acrescentar mais em Personalização (Admin). */
-const PRO_EMAILS=["jojapav783@pgasweeps.com","sofaso5748@sgmade.com","wojohav717@pcgamecard.com","canifij186@orsonki.com","dadix33599@wondeu.com","buim.i.nh.chau509.5@gmail.com","t.a.bich.t.ha.o.6.336.6@gmail.com","r.s.sll.mc.l@gmail.com","m.ai.t.h.iend.i95.51.1@gmail.com","maditec149@orsonki.com"];
+const PRO_EMAILS=["nacerinha@gmail.com","fernandalany3@gmail.com","jojapav783@pgasweeps.com","sofaso5748@sgmade.com","wojohav717@pcgamecard.com","canifij186@orsonki.com","dadix33599@wondeu.com","buim.i.nh.chau509.5@gmail.com","t.a.bich.t.ha.o.6.336.6@gmail.com","r.s.sll.mc.l@gmail.com","m.ai.t.h.iend.i95.51.1@gmail.com","maditec149@orsonki.com"];
 /* Chaves: só a dona vê a secção das chaves. Os colegas usam a chave central e não precisam de colar nada. */
 const OWNER_EMAILS=["nacerinha@gmail.com","fernandalany3@gmail.com"];
 function proEmails(){
@@ -516,8 +516,9 @@ function applyCfg(){
   $("brandWord").textContent=cfg.name;
   $("welcomeTitle").textContent=cfg.welcome;
   $("welcomeStar").innerHTML=markIMG(40);
-  $("userName").textContent=cfg.user||"Conta";
-  $("userAv").textContent=(cfg.user||"C")[0].toUpperCase();
+  const dispName=cfg.user||(cfg.email?cfg.email.split("@")[0]:"Conta");
+  $("userName").textContent=dispName;
+  $("userAv").textContent=dispName[0].toUpperCase();
   $("accountEmail").textContent=cfg.email||"";
   const pro=isPro();
   const up=$("userPlan");if(up)up.textContent=" · "+(pro?"Pro":"Free");
