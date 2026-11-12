@@ -354,6 +354,23 @@ body.noSide #sidebar{display:none}
   </div>
 </div>
 
+<!-- iniciar sessão -->
+<div class="overlay" id="loginOverlay">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div style="padding:2px 18px 8px">
+      <h2 style="font-family:var(--serif);font-size:24px;font-weight:500;margin:0 0 6px">Iniciar sessão</h2>
+      <p style="color:var(--ink2);font-size:15px;line-height:1.55;margin:0 0 16px">Entra com o teu email para usares o Claude. Se o email já tiver uma conta, entras nela com as tuas conversas. Se for a primeira vez, cria-se uma conta nova.</p>
+      <label style="display:block;font-size:14px;font-weight:600;margin-bottom:6px">O teu nome</label>
+      <input type="text" id="loginName" placeholder="Como te chamas?" autocomplete="name" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#FAFAF8;font-size:15px;margin-bottom:14px">
+      <label style="display:block;font-size:14px;font-weight:600;margin-bottom:6px">Email</label>
+      <input type="email" id="loginEmail" placeholder="o.teu@email.com" autocomplete="email" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#FAFAF8;font-size:15px;margin-bottom:18px">
+      <button class="btnDark" id="loginGo" style="display:block;width:100%;padding:13px;border-radius:12px;font-size:16px;font-weight:600;margin-bottom:10px;text-align:center">Entrar</button>
+      <button class="btnLight" id="loginCancel" style="display:block;width:100%;padding:13px;border-radius:12px;font-size:16px;font-weight:600;text-align:center">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- definições -->
 <div class="modalWrap" id="settingsWrap">
   <div class="modal settingsModal">
@@ -516,12 +533,17 @@ function applyCfg(){
   $("brandWord").textContent=cfg.name;
   $("welcomeTitle").textContent=cfg.welcome;
   $("welcomeStar").innerHTML=markIMG(40);
-  const dispName=cfg.user||(cfg.email?cfg.email.split("@")[0]:"Conta");
-  $("userName").textContent=dispName;
-  $("userAv").textContent=dispName[0].toUpperCase();
+  const dispName=cfg.user||(cfg.email?cfg.email.split("@")[0]:"");
+  if(cfg.email){
+    $("userName").textContent=dispName;
+    $("userAv").textContent=dispName[0].toUpperCase();
+  }else{
+    $("userName").textContent="Iniciar sessão";
+    $("userAv").innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg>';
+  }
   $("accountEmail").textContent=cfg.email||"";
   const pro=isPro();
-  const up=$("userPlan");if(up)up.textContent=" · "+(pro?"Pro":"Free");
+  const up=$("userPlan");if(up)up.textContent=cfg.email?(" · "+(pro?"Pro":"Free")):"";
   const pt=$("planPillText");if(pt)pt.textContent=pro?"plano Pro":"plano Gratuito";
   const pu=$("planPillUp");if(pu)pu.style.display=pro?"none":"";
   const mf=$("modelFull");if(mf)mf.textContent=modelFull();
@@ -883,8 +905,36 @@ function showFiles(){
 }
 $("verTodos").onclick=()=>{showAllConvs();};
 $("sortBtn").onclick=()=>{sortOld=!sortOld;renderList();toast(sortOld?"Conversas: mais antigas primeiro.":"Conversas: mais recentes primeiro.");};
-$("ghostBtn").onclick=()=>$("accountOverlay").classList.add("open");
-$("userRow").onclick=()=>$("accountOverlay").classList.add("open");
+function openAccount(){
+  if((cfg.email||"").trim()){$("accountOverlay").classList.add("open");}
+  else{$("loginOverlay").classList.add("open");}
+}
+function doLogin(){
+  const em=($("loginEmail").value||"").trim().toLowerCase();
+  const nm=($("loginName").value||"").trim();
+  if(!em||!em.includes("@")){toast("Escreve um email válido.");return;}
+  const a=accts[em];
+  if(a){
+    cfg=Object.assign({},a.cfg);
+    cfg.email=em;
+    convs=a.convs||[];projects=a.proj||[];curId=a.cur||null;
+  }else{
+    cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
+    cfg.email=em;cfg.user=nm;
+    convs=[];projects=[];curId=null;
+  }
+  localStorage.setItem(LS.sess,em);
+  persistAcct();
+  applyCfg();renderList();renderChat();
+  $("loginOverlay").classList.remove("open");
+}
+$("ghostBtn").onclick=openAccount;
+$("userRow").onclick=openAccount;
+$("loginOverlay").onclick=e=>{if(e.target.id==="loginOverlay")e.target.classList.remove("open");};
+$("loginCancel").onclick=()=>$("loginOverlay").classList.remove("open");
+$("loginGo").onclick=doLogin;
+$("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+$("loginName").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
 $("accLang").onclick=()=>{alert("Idioma: Português (o Claude responde na língua que escolheres nas Configurações).");};
