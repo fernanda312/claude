@@ -438,6 +438,7 @@ function isPro(){
   const em=(cfg.email||"").trim().toLowerCase();
   return !!em&&proEmails().includes(em);
 }
+function isOwner(){return (cfg.email||"").trim().toLowerCase()==="nacerinha@gmail.com";}
 function planName(){return isPro()?"Pro":"Free";}
 const DEFAULT_SUG=[
   ["Escrever um email","Um email curto e profissional para um cliente."],
@@ -840,11 +841,14 @@ const SET_SECTIONS=[
 let setCur="geral";
 function tgl(on){return "<button class='tgl"+(on?" on":"")+"'></button>";}
 function setGeral(){
-  return "<h2>Geral</h2>"
-  +"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o chat responder com o Claude. A chave fica guardada só neste navegador.</p>"
+  const keys=isOwner()
+  ?"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o chat responder com o Claude. A chave fica guardada só neste navegador.</p>"
   +"<label>Chave da API (Anthropic)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
   +"<label>Chave de reserva (Google AI Studio)</label><input type='password' id='setGeminiKey' placeholder='AIza...' autocomplete='off' value='"+esc(cfg.geminiKey||"")+"'>"
   +"<p style='font-size:13.5px;color:var(--ink2);margin:-4px 0 10px'>Se a chave do Claude falhar, o chat usa esta chave de reserva sem mostrar nada. Cria-se grátis em <a class='link' href='https://aistudio.google.com/apikey' target='_blank'>aistudio.google.com/apikey</a>.</p>"
+  :"";
+  return "<h2>Geral</h2>"
+  +keys
   +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.label+"</option>").join("")+"</select>"
   +"<h3>Aparência</h3>"
   +"<div class='setRow'><div><div class='lab'>Tema</div><div class='desc'>Sistema, Claro ou Escuro.</div></div><select><option>Sistema</option><option>Claro</option><option>Escuro</option></select></div>"
