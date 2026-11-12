@@ -449,14 +449,36 @@ const DEFAULT_SUG=[
   ["Ideias para o meu negócio","3 ideias para vender mais esta semana."],
   ["Ajudar com código","Explica ou corrige um bocado de código."]
 ];
-const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj"};
-let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
-cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},cfg);
+const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj",accts:"claude_accts",sess:"claude_sess"};
+/* Contas: os dados (conversas, chave, definições) ficam guardados por conta, como no site verdadeiro. Sair só termina a sessão — os dados ficam e voltam quando entras com a mesma conta. */
+function loadAccts(){try{return JSON.parse(localStorage.getItem(LS.accts)||"{}");}catch(e){return{};}}
+function saveAccts(a){localStorage.setItem(LS.accts,JSON.stringify(a));}
+let accts=loadAccts();
+/* Migração: dados antigos (chaves soltas) passam para a conta do email guardado */
+(function(){
+  const oldCfgRaw=localStorage.getItem(LS.cfg);
+  if(oldCfgRaw&&!localStorage.getItem(LS.accts)){
+    try{
+      const c=JSON.parse(oldCfgRaw);
+      const em=(c.email||"").trim().toLowerCase();
+      if(em){
+        accts[em]={cfg:c,convs:JSON.parse(localStorage.getItem(LS.convs)||"[]"),proj:JSON.parse(localStorage.getItem(LS.proj)||"[]"),cur:localStorage.getItem(LS.cur)||null};
+        saveAccts(accts);
+        localStorage.setItem(LS.sess,em);
+      }
+    }catch(e){}
+    localStorage.removeItem(LS.cfg);localStorage.removeItem(LS.convs);localStorage.removeItem(LS.proj);localStorage.removeItem(LS.cur);
+  }
+})();
+let sessEmail=(localStorage.getItem(LS.sess)||"").trim().toLowerCase();
+let acct=sessEmail?accts[sessEmail]:null;
+if(sessEmail&&!acct){localStorage.setItem(LS.sess,"");sessEmail="";}
+let cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
-if((cfg.apiKey||"").trim().startsWith("AIza")&&!(cfg.geminiKey||"").trim()){cfg.geminiKey=cfg.apiKey;cfg.apiKey="";localStorage.setItem(LS.cfg,JSON.stringify(cfg));}
-let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
-let projects=JSON.parse(localStorage.getItem(LS.proj)||"[]");
-let curId=localStorage.getItem(LS.cur)||null;
+if((cfg.apiKey||"").trim().startsWith("AIza")&&!(cfg.geminiKey||"").trim()){cfg.geminiKey=cfg.apiKey;cfg.apiKey="";}
+let convs=acct?acct.convs||[]:[];
+let projects=acct?acct.proj||[]:[];
+let curId=acct?acct.cur||null:null;
 let busy=false, attach=null;
 
 const $=id=>document.getElementById(id);
@@ -476,9 +498,15 @@ function md(t){
   h=h.split(/\n\s*\n/).map(b=>b.trim()?(/^<(h\d|ul|pre|li)/.test(b)?b:"<p>"+b.replace(/\n/g,"<br>")+"</p>"):"").join("");
   return h;
 }
-function saveCfg(){localStorage.setItem(LS.cfg,JSON.stringify(cfg));applyCfg();}
-function saveConvs(){localStorage.setItem(LS.convs,JSON.stringify(convs));localStorage.setItem(LS.cur,curId||"");}
-function saveProj(){localStorage.setItem(LS.proj,JSON.stringify(projects));}
+function persistAcct(){
+  const em=(cfg.email||"").trim().toLowerCase();
+  if(!em)return;
+  accts[em]={cfg:cfg,convs:convs,proj:projects,cur:curId};
+  saveAccts(accts);
+}
+function saveCfg(){persistAcct();applyCfg();}
+function saveConvs(){persistAcct();}
+function saveProj(){persistAcct();}
 function modelShort(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Sonnet";}
 function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Sonnet")+" "+effortOf().short;}
 function applyCfg(){
@@ -843,7 +871,7 @@ $("accHelp").onclick=()=>{alert("Ajuda: escreve a tua pergunta no chat. Se o Cla
 $("accUpgrade").onclick=()=>{$("accountOverlay").classList.remove("open");openUpgrade();};
 $("accApps").onclick=()=>{$("accountOverlay").classList.remove("open");openApps();};
 $("accAbout").onclick=()=>{$("accountOverlay").classList.remove("open");openAbout();};
-$("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");if(confirm("Sair apaga as conversas e a chave deste navegador. Continuar?")){localStorage.clear();location.reload();}};
+$("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");localStorage.setItem(LS.sess,"");location.reload();};
 $("upgradeLink").onclick=e=>{e.preventDefault();openUpgrade();};
 document.querySelector("#navCode .up").onclick=e=>{e.stopPropagation();openUpgrade();};
 $("pageBack").onclick=showChat;
@@ -1072,8 +1100,8 @@ function wireSetSection(){
   const su=$("setUser");if(su)su.addEventListener("input",()=>{cfg.user=su.value.trim();saveCfg();});
   const sc=$("setCall");if(sc)sc.addEventListener("input",()=>{cfg.user=sc.value.trim();saveCfg();});
   const ss=$("setSystem");if(ss)ss.addEventListener("input",()=>{cfg.system=ss.value.trim();saveCfg();});
-  const so=$("setSignOut");if(so)so.onclick=()=>{if(confirm("Sair apaga as conversas e a chave deste navegador. Continuar?")){localStorage.clear();location.reload();}};
-  const sd=$("setDelete");if(sd)sd.onclick=()=>{if(confirm("Apagar a conta apaga tudo neste navegador. Continuar?")){localStorage.clear();location.reload();}};
+  const so=$("setSignOut");if(so)so.onclick=()=>{localStorage.setItem(LS.sess,"");location.reload();};
+  const sd=$("setDelete");if(sd)sd.onclick=()=>{if(confirm("Apagar esta conta e as conversas dela?")){const em=(cfg.email||"").trim().toLowerCase();if(em){delete accts[em];saveAccts(accts);}localStorage.setItem(LS.sess,"");location.reload();}};
   const sco=$("setCopyOrg");if(sco)sco.onclick=()=>{navigator.clipboard.writeText("org-"+(cfg.user||"claude"));sco.textContent="Copiado ✓";setTimeout(()=>sco.textContent="Copiar ID",1500);};
   const se=$("setExport");if(se)se.onclick=()=>{
     const blob=new Blob([JSON.stringify(convs,null,2)],{type:"application/json"});
@@ -1102,15 +1130,34 @@ function openAdmin(){
 $("navPersonal").onclick=openAdmin;
 $("closeAdmin").onclick=()=>$("adminWrap").classList.remove("open");
 $("saveAdmin").onclick=()=>{
-  cfg.name=$("adminName").value.trim()||"Claude";
-  cfg.welcome=$("adminWelcome").value.trim()||cfg.welcome;
-  cfg.user=$("adminUser").value.trim()||cfg.user;
-  cfg.email=$("adminEmail").value.trim()||cfg.email;
-  cfg.proEmails=$("adminPro").value;
-  cfg.color=$("adminColor").value||cfg.color;
-  cfg.sug=$("adminSug").value.split("\n").map(l=>l.split("|").map(s=>s.trim())).filter(s=>s[0]).slice(0,4);
-  if(!cfg.sug.length)cfg.sug=DEFAULT_SUG;
-  saveCfg();$("adminWrap").classList.remove("open");
+  const newEmail=$("adminEmail").value.trim().toLowerCase();
+  const oldEmail=(cfg.email||"").trim().toLowerCase();
+  const formName=$("adminName").value.trim()||"Claude";
+  const formWelcome=$("adminWelcome").value.trim()||cfg.welcome;
+  const formUser=$("adminUser").value.trim()||cfg.user;
+  const formPro=$("adminPro").value;
+  const formColor=$("adminColor").value||cfg.color;
+  const formSug=$("adminSug").value.split("\n").map(l=>l.split("|").map(s=>s.trim())).filter(s=>s[0]).slice(0,4);
+  if(newEmail&&newEmail!==oldEmail){
+    persistAcct();
+    const a=accts[newEmail];
+    if(a){
+      cfg=Object.assign({},a.cfg);
+      cfg.email=newEmail;
+      convs=a.convs||[];projects=a.proj||[];curId=a.cur||null;
+    }else{
+      cfg.email=newEmail;
+      cfg.name=formName;cfg.welcome=formWelcome;cfg.user=formUser;cfg.proEmails=formPro;cfg.color=formColor;cfg.sug=formSug.length?formSug:DEFAULT_SUG;
+      convs=[];projects=[];curId=null;
+    }
+    localStorage.setItem(LS.sess,newEmail);
+    persistAcct();
+    applyCfg();renderList();renderChat();
+  }else{
+    cfg.name=formName;cfg.welcome=formWelcome;cfg.user=formUser;cfg.email=newEmail||cfg.email;cfg.proEmails=formPro;cfg.color=formColor;cfg.sug=formSug.length?formSug:DEFAULT_SUG;
+    saveCfg();
+  }
+  $("adminWrap").classList.remove("open");
 };
 $("resetAll").onclick=e=>{e.preventDefault();if(confirm("Apagar todas as conversas e definições?")){localStorage.clear();location.reload();}};
 function openProjects(){
