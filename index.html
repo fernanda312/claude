@@ -433,6 +433,8 @@ const EFFORTS=[
 function effortOf(){return EFFORTS.find(e=>e.id===cfg.effort)||EFFORTS[1];}
 /* Emails que veem "Pro" em vez de "Free" — só visual. A dona pode acrescentar mais em Personalização (Admin). */
 const PRO_EMAILS=[];
+/* Chaves: visíveis para qualquer conta com sessão (para a dona colar as chaves dos colegas, uma a uma). Quando ela disser que terminou, ponho KEYS_HIDDEN=true e a secção some — as chaves ficam guardadas e a funcionar, só escondidas. */
+const KEYS_HIDDEN=false;
 function proEmails(){
   const fromCfg=(cfg.proEmails||"").split(/[\n,;]+/).map(s=>s.trim().toLowerCase()).filter(Boolean);
   return [...new Set([...PRO_EMAILS.map(e=>e.toLowerCase()),...fromCfg])];
@@ -924,7 +926,7 @@ const SET_SECTIONS=[
 let setCur="geral";
 function tgl(on){return "<button class='tgl"+(on?" on":"")+"'></button>";}
 function setGeral(){
-  const keys=isOwner()
+  const keys=(!KEYS_HIDDEN&&(cfg.email||"").trim())
   ?"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o chat responder com o Claude. A chave fica guardada só neste navegador.</p>"
   +"<label>Chave da API (principal)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
   +"<label>Chave de reserva (Google AI Studio)</label><input type='password' id='setGeminiKey' placeholder='AIza...' autocomplete='off' value='"+esc(cfg.geminiKey||"")+"'>"
