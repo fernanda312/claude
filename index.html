@@ -448,7 +448,7 @@ const DEFAULT_SUG=[
 ];
 const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj"};
 let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
-cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:""},cfg);
+cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},cfg);
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
 if((cfg.apiKey||"").trim().startsWith("AIza")&&!(cfg.geminiKey||"").trim()){cfg.geminiKey=cfg.apiKey;cfg.apiKey="";localStorage.setItem(LS.cfg,JSON.stringify(cfg));}
 let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
@@ -538,8 +538,8 @@ function renderChat(){
   });
   $("chat").scrollTop=$("chat").scrollHeight;
 }
-async function callAnthropic(messages){
-  const key=(cfg.apiKey||"").trim();
+async function callAnthropic(messages,keyArg){
+  const key=(keyArg||cfg.apiKey||"").trim();
   if(!key) throw new Error("NO_KEY");
   const base=key.startsWith("sk-ak-")?"https://api.aikeysforyou.com/anthropic":"https://api.anthropic.com";
   const r=await fetch(base+"/v1/messages",{
@@ -554,8 +554,8 @@ async function callAnthropic(messages){
   const j=await r.json();
   return (j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
 }
-async function callShupp(messages){
-  const key=(cfg.apiKey||"").trim();
+async function callShupp(messages,keyArg){
+  const key=(keyArg||cfg.apiKey||"").trim();
   if(!key) throw new Error("NO_KEY");
   const msgs=[];
   if(cfg.system) msgs.push({role:"system",content:cfg.system});
@@ -619,12 +619,13 @@ async function callGemini(messages){
   return text;
 }
 async function callClaude(messages){
-  const hasAnthropic=!!(cfg.apiKey||"").trim();
+  const key=((cfg.modelKeys||{})[cfg.model]||"").trim()||(cfg.apiKey||"").trim();
+  const hasAnthropic=!!key;
   const hasGemini=!!(cfg.geminiKey||"").trim();
   if(!hasAnthropic&&!hasGemini) throw new Error("NO_KEY");
   if(hasAnthropic){
-    const isShupp=(cfg.apiKey||"").trim().startsWith("sh_live_");
-    try{ return await (isShupp?callShupp(messages):callAnthropic(messages)); }
+    const isShupp=key.startsWith("sh_live_");
+    try{ return await (isShupp?callShupp(messages,key):callAnthropic(messages,key)); }
     catch(e){
       if(!hasGemini) throw e;
       try{ return await callGemini(messages); }
@@ -874,9 +875,11 @@ function tgl(on){return "<button class='tgl"+(on?" on":"")+"'></button>";}
 function setGeral(){
   const keys=isOwner()
   ?"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o chat responder com o Claude. A chave fica guardada só neste navegador.</p>"
-  +"<label>Chave da API (Anthropic)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
+  +"<label>Chave da API (principal)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
   +"<label>Chave de reserva (Google AI Studio)</label><input type='password' id='setGeminiKey' placeholder='AIza...' autocomplete='off' value='"+esc(cfg.geminiKey||"")+"'>"
   +"<p style='font-size:13.5px;color:var(--ink2);margin:-4px 0 10px'>Se a chave do Claude falhar, o chat usa esta chave de reserva sem mostrar nada. Cria-se grátis em <a class='link' href='https://aistudio.google.com/apikey' target='_blank'>aistudio.google.com/apikey</a>.</p>"
+  +"<h3>Chaves por modelo</h3><p>Cada modelo usa a sua chave, se estiver preenchida; senão usa a chave principal. A mesma chave pode ser colada em vários modelos.</p>"
+  +MODELS.map(m=>"<label>"+m.short+"</label><input type='password' data-mk='"+m.id+"' placeholder='Chave para "+m.short+"' autocomplete='off' value='"+esc(((cfg.modelKeys||{})[m.id])||"")+"'>").join("")
   :"";
   return "<h2>Geral</h2>"
   +keys
@@ -1034,6 +1037,7 @@ function wireSetSection(){
   document.querySelectorAll("#setContent .tgl").forEach(t=>{t.onclick=()=>t.classList.toggle("on");});
   const ak=$("setApiKey");if(ak)ak.addEventListener("input",()=>{cfg.apiKey=ak.value.trim();saveCfg();});
   const gk=$("setGeminiKey");if(gk)gk.addEventListener("input",()=>{cfg.geminiKey=gk.value.trim();saveCfg();});
+  document.querySelectorAll("#setContent [data-mk]").forEach(inp=>inp.addEventListener("input",()=>{if(!cfg.modelKeys)cfg.modelKeys={};cfg.modelKeys[inp.dataset.mk]=inp.value.trim();saveCfg();}));
   const sm=$("setModel");if(sm)sm.addEventListener("change",()=>{cfg.model=sm.value;saveCfg();});
   const su=$("setUser");if(su)su.addEventListener("input",()=>{cfg.user=su.value.trim();saveCfg();});
   const sc=$("setCall");if(sc)sc.addEventListener("input",()=>{cfg.user=sc.value.trim();saveCfg();});
