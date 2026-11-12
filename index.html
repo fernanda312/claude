@@ -1218,27 +1218,49 @@ $("fileInput").onchange=e=>{
   }
   e.target.value="";
 };
-function startDictation(){
+let rec=null;
+let recStopping=false;
+let recRetries=0;
+function stopRec(){
+  recStopping=true;
+  try{if(rec)rec.stop();}catch(e){}
+}
+function startRec(intent){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){toast("O teu navegador não suporta ditado por voz.");return;}
+  if(rec){stopRec();return;}
+  recStopping=false;
   const btns=[$("micBtn"),$("voiceBtn")];
   btns.forEach(b=>{if(b)b.classList.add("listening");});
-  toast("A ouvir… fala agora.");
+  toast(intent==="voice"?"Modo de voz: fala agora.":"A ouvir… fala agora.");
   const r=new SR();r.lang="pt-PT";r.interimResults=false;
-  r.onresult=ev=>{const t=ev.results[0][0].transcript;$("prompt").value=( $("prompt").value?$("prompt").value+" ":"")+t;$("prompt").focus();};
+  r.onresult=ev=>{
+    const t=ev.results[0][0].transcript;
+    $("prompt").value=( $("prompt").value?$("prompt").value+" ":"")+t;
+    if(intent==="voice"){send();}
+    else{$("prompt").focus();}
+  };
   r.onerror=ev=>{
     btns.forEach(b=>{if(b)b.classList.remove("listening");});
+    const wasStopping=recStopping;
+    rec=null;
+    if(wasStopping)return;
     if(ev.error==="not-allowed"||ev.error==="service-not-allowed")toast("Não consegui aceder ao microfone. Permite o microfone nas definições do navegador.");
     else if(ev.error==="no-speech")toast("Não ouvi nada. Tenta outra vez.");
     else if(ev.error==="audio-capture")toast("Não consegui usar o microfone. Verifica se outro app está a usá-lo.");
     else if(ev.error==="network")toast("Sem ligação ao serviço de voz. Verifica a internet e tenta outra vez.");
-    else if(ev.error==="aborted")toast("O ditado foi interrompido. Tenta outra vez.");
+    else if(ev.error==="aborted"){
+      if(recRetries<1){recRetries++;setTimeout(()=>startRec(intent),400);}
+      else toast("O ditado foi interrompido. Tenta outra vez.");
+    }
     else if(ev.error==="language-not-supported")toast("O ditado não suporta este idioma.");
     else toast("O ditado falhou ("+ev.error+"). Tenta outra vez.");
   };
-  r.onend=()=>{btns.forEach(b=>{if(b)b.classList.remove("listening");});};
-  try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});toast("O ditado falhou. Tenta outra vez.");}
+  r.onend=()=>{btns.forEach(b=>{if(b)b.classList.remove("listening");});rec=null;};
+  rec=r;
+  try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});rec=null;toast("O ditado falhou. Tenta outra vez.");}
 }
+function startDictation(){recRetries=0;startRec("dictate");}
 $("micBtn").onclick=startDictation;
 $("voiceBtn").onclick=startVoiceMode;
 let voiceMode=false;
@@ -1271,31 +1293,10 @@ function speak(text,btn){
 }
 function stopSpeak(){if("speechSynthesis" in window)window.speechSynthesis.cancel();speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}}
 function startVoiceMode(){
-  if(voiceMode){voiceMode=false;stopSpeak();const vb=$("voiceBtn");if(vb)vb.classList.remove("listening");toast("Modo de voz desligado.");return;}
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast("O teu navegador não suporta ditado por voz.");return;}
+  if(voiceMode){voiceMode=false;stopSpeak();stopRec();const vb=$("voiceBtn");if(vb)vb.classList.remove("listening");toast("Modo de voz desligado.");return;}
   voiceMode=true;
-  const btns=[$("micBtn"),$("voiceBtn")];
-  btns.forEach(b=>{if(b)b.classList.add("listening");});
-  toast("Modo de voz: fala agora.");
-  const r=new SR();r.lang="pt-PT";r.interimResults=false;
-  r.onresult=ev=>{
-    const t=ev.results[0][0].transcript;
-    $("prompt").value=( $("prompt").value?$("prompt").value+" ":"")+t;
-    send();
-  };
-  r.onerror=ev=>{
-    btns.forEach(b=>{if(b)b.classList.remove("listening");});
-    if(ev.error==="not-allowed"||ev.error==="service-not-allowed")toast("Não consegui aceder ao microfone. Permite o microfone nas definições do navegador.");
-    else if(ev.error==="no-speech")toast("Não ouvi nada. Tenta outra vez.");
-    else if(ev.error==="audio-capture")toast("Não consegui usar o microfone. Verifica se outro app está a usá-lo.");
-    else if(ev.error==="network")toast("Sem ligação ao serviço de voz. Verifica a internet e tenta outra vez.");
-    else if(ev.error==="aborted")toast("O ditado foi interrompido. Tenta outra vez.");
-    else if(ev.error==="language-not-supported")toast("O ditado não suporta este idioma.");
-    else toast("O ditado falhou ("+ev.error+"). Tenta outra vez.");
-  };
-  r.onend=()=>{btns.forEach(b=>{if(b)b.classList.remove("listening");});};
-  try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});toast("O ditado falhou. Tenta outra vez.");}
+  recRetries=0;
+  startRec("voice");
 }
 $("memImport").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
