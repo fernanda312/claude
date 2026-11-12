@@ -432,9 +432,9 @@ const EFFORTS=[
 ];
 function effortOf(){return EFFORTS.find(e=>e.id===cfg.effort)||EFFORTS[1];}
 /* Emails que veem "Pro" em vez de "Free" — só visual. A dona pode acrescentar mais em Personalização (Admin). */
-const PRO_EMAILS=[];
-/* Chaves: visíveis para qualquer conta com sessão (para a dona colar as chaves dos colegas, uma a uma). Quando ela disser que terminou, ponho KEYS_HIDDEN=true e a secção some — as chaves ficam guardadas e a funcionar, só escondidas. */
-const KEYS_HIDDEN=false;
+const PRO_EMAILS=["jojapav783@pgasweeps.com","sofaso5748@sgmade.com","wojohav717@pcgamecard.com","canifij186@orsonki.com","dadix33599@wondeu.com","buim.i.nh.chau509.5@gmail.com","t.a.bich.t.ha.o.6.336.6@gmail.com","r.s.sll.mc.l@gmail.com","m.ai.t.h.iend.i95.51.1@gmail.com","maditec149@orsonki.com"];
+/* Chaves: só a dona vê a secção das chaves. Os colegas usam a chave central e não precisam de colar nada. */
+const OWNER_EMAILS=["nacerinha@gmail.com","fernandalany3@gmail.com"];
 function proEmails(){
   const fromCfg=(cfg.proEmails||"").split(/[\n,;]+/).map(s=>s.trim().toLowerCase()).filter(Boolean);
   return [...new Set([...PRO_EMAILS.map(e=>e.toLowerCase()),...fromCfg])];
@@ -443,7 +443,7 @@ function isPro(){
   const em=(cfg.email||"").trim().toLowerCase();
   return !!em&&proEmails().includes(em);
 }
-function isOwner(){return (cfg.email||"").trim().toLowerCase()==="nacerinha@gmail.com";}
+function isOwner(){return OWNER_EMAILS.includes((cfg.email||"").trim().toLowerCase());}
 function planName(){return isPro()?"Pro":"Free";}
 const DEFAULT_SUG=[
   ["Escrever um email","Um email curto e profissional para um cliente."],
@@ -944,7 +944,7 @@ const SET_SECTIONS=[
 let setCur="geral";
 function tgl(on){return "<button class='tgl"+(on?" on":"")+"'></button>";}
 function setGeral(){
-  const keys=(!KEYS_HIDDEN&&(cfg.email||"").trim())
+  const keys=(isOwner())
   ?"<h3>Ligação à Anthropic</h3><p>Liga a tua chave da API para o chat responder com o Claude. A chave fica guardada só neste navegador.</p>"
   +"<label>Chave da API (principal)</label><input type='password' id='setApiKey' placeholder='sk-ant-...' autocomplete='off' value='"+esc(cfg.apiKey||"")+"'>"
   +"<label>Chave de reserva (Google AI Studio)</label><input type='password' id='setGeminiKey' placeholder='AIza...' autocomplete='off' value='"+esc(cfg.geminiKey||"")+"'>"
