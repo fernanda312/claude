@@ -1253,11 +1253,21 @@ function speak(text,btn){
   u.lang="pt-PT";
   const v=window.speechSynthesis.getVoices().find(x=>x.lang&&x.lang.toLowerCase().indexOf("pt")===0);
   if(v)u.voice=v;
-  const done=()=>{speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}};
-  u.onend=done;u.onerror=done;
+  const reset=()=>{speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}};
+  u.onend=reset;
+  u.onerror=ev=>{
+    reset();
+    const e=ev.error||"";
+    if(e==="canceled"||e==="interrupted")return;
+    if(e==="not-allowed")toast("A leitura em voz alta foi bloqueada. Permite o áudio nas definições do navegador.");
+    else if(e==="audio-busy"||e==="audio-hardware")toast("Não consegui usar o som. Verifica se outro app está a usar o áudio.");
+    else if(e==="network")toast("Sem ligação ao serviço de voz. Verifica a internet e tenta outra vez.");
+    else if(e==="language-unavailable"||e==="voice-unavailable")toast("Não há voz em português instalada neste aparelho.");
+    else toast("Não consegui ler em voz alta ("+e+").");
+  };
   speaking=true;curSpeakBtn=btn||null;
   if(curSpeakBtn)curSpeakBtn.textContent="Parar";
-  window.speechSynthesis.speak(u);
+  try{window.speechSynthesis.speak(u);}catch(e){reset();toast("Não consegui ler em voz alta. Tenta outra vez.");}
 }
 function stopSpeak(){if("speechSynthesis" in window)window.speechSynthesis.cancel();speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}}
 function startVoiceMode(){
