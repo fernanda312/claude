@@ -1226,7 +1226,11 @@ function startDictation(){
     btns.forEach(b=>{if(b)b.classList.remove("listening");});
     if(ev.error==="not-allowed"||ev.error==="service-not-allowed")toast("Não consegui aceder ao microfone. Permite o microfone nas definições do navegador.");
     else if(ev.error==="no-speech")toast("Não ouvi nada. Tenta outra vez.");
-    else toast("O ditado falhou. Tenta outra vez.");
+    else if(ev.error==="audio-capture")toast("Não consegui usar o microfone. Verifica se outro app está a usá-lo.");
+    else if(ev.error==="network")toast("Sem ligação ao serviço de voz. Verifica a internet e tenta outra vez.");
+    else if(ev.error==="aborted")toast("O ditado foi interrompido. Tenta outra vez.");
+    else if(ev.error==="language-not-supported")toast("O ditado não suporta este idioma.");
+    else toast("O ditado falhou ("+ev.error+"). Tenta outra vez.");
   };
   r.onend=()=>{btns.forEach(b=>{if(b)b.classList.remove("listening");});};
   try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});toast("O ditado falhou. Tenta outra vez.");}
