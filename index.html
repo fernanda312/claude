@@ -576,6 +576,21 @@ function renderChat(){
   });
   $("chat").scrollTop=$("chat").scrollHeight;
 }
+const CENTRAL_URL="https://iydalacvpqfioyclyeto.supabase.co/functions/v1/chat";
+const CENTRAL_KEY="sb_publishable_eyK2XCuLgN0sIxRgO7Zvfw_CLMOzhsM";
+async function callCentral(messages){
+  const email=(cfg.email||"").trim().toLowerCase();
+  if(!email) throw new Error("NO_KEY");
+  const r=await fetch(CENTRAL_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},
+    body:JSON.stringify({email:email,messages:messages,model:cfg.model,system:cfg.system||""})
+  });
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error||("Erro "+r.status));
+  if(!j.text) throw new Error(j.error||"Sem resposta do servidor.");
+  return j.text;
+}
 async function callAnthropic(messages,keyArg){
   const key=(keyArg||cfg.apiKey||"").trim();
   if(!key) throw new Error("NO_KEY");
@@ -660,7 +675,10 @@ async function callClaude(messages){
   const key=((cfg.modelKeys||{})[cfg.model]||"").trim()||(cfg.apiKey||"").trim();
   const hasAnthropic=!!key;
   const hasGemini=!!(cfg.geminiKey||"").trim();
-  if(!hasAnthropic&&!hasGemini) throw new Error("NO_KEY");
+  if(!hasAnthropic&&!hasGemini){
+    try{ return await callCentral(messages); }
+    catch(e){ if(e.message==="NO_KEY") throw e; throw e; }
+  }
   if(hasAnthropic){
     const isShupp=key.startsWith("sh_live_");
     try{ return await (isShupp?callShupp(messages,key):callAnthropic(messages,key)); }
