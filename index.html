@@ -1081,7 +1081,7 @@ function wireSetSection(){
   const msh=$("setManageShared");if(msh)msh.onclick=()=>{$("settingsWrap").classList.remove("open");showAllConvs();};
   const mar=$("setManageArt");if(mar)mar.onclick=()=>{$("settingsWrap").classList.remove("open");openArtifacts();setArtTab("shared");};
   const mfi=$("setManageFiles");if(mfi)mfi.onclick=()=>{$("settingsWrap").classList.remove("open");showFiles();};
-  const im=$("setImportMem");if(im)im.onclick=()=>{const f=$("memImport");if(f)f.click();};
+  const im=$("setImportMem");if(im)im.onclick=()=>{toast("Escolhe o ficheiro com a tua memória (.md, .txt ou .json).");const f=$("memImport");if(f)f.click();};
 }
 $("closeSettings").onclick=()=>$("settingsWrap").classList.remove("open");
 function openAdmin(){
@@ -1249,6 +1249,6 @@ $("memImport").addEventListener("change",e=>{
 applyCfg();renderList();renderChat();
 </script>
 <div id="netToast"></div>
-<input type="file" id="memImport" accept=".md,.txt,.json" hidden>
+<input type="file" id="memImport" accept=".md,.txt,.json" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
 </body>
 </html>
