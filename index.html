@@ -406,6 +406,7 @@ body.noSide #sidebar{display:none}
   </div>
 </div>
 
+<input type="file" id="memImport" accept=".md,.txt,.json" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
 <script>
 const MODELS=[
   {id:"claude-sonnet-5-5",short:"Sonnet 5.5",label:"Sonnet 5.5 — Mais eficiente para tarefas mais simples",plan:""},
@@ -1249,6 +1250,5 @@ $("memImport").addEventListener("change",e=>{
 applyCfg();renderList();renderChat();
 </script>
 <div id="netToast"></div>
-<input type="file" id="memImport" accept=".md,.txt,.json" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
 </body>
 </html>
