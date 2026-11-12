@@ -451,7 +451,7 @@ const DEFAULT_SUG=[
 ];
 const LS={convs:"claude_convs",cfg:"claude_cfg",cur:"claude_cur",proj:"claude_proj"};
 let cfg=JSON.parse(localStorage.getItem(LS.cfg)||"{}");
-cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"Gere",email:"fernandalany3@gmail.com",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},cfg);
+cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},cfg);
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
 if((cfg.apiKey||"").trim().startsWith("AIza")&&!(cfg.geminiKey||"").trim()){cfg.geminiKey=cfg.apiKey;cfg.apiKey="";localStorage.setItem(LS.cfg,JSON.stringify(cfg));}
 let convs=JSON.parse(localStorage.getItem(LS.convs)||"[]");
