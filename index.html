@@ -541,7 +541,8 @@ function renderChat(){
 async function callAnthropic(messages){
   const key=(cfg.apiKey||"").trim();
   if(!key) throw new Error("NO_KEY");
-  const r=await fetch("https://api.anthropic.com/v1/messages",{
+  const base=key.startsWith("sk-ak-")?"https://api.aikeysforyou.com/anthropic":"https://api.anthropic.com";
+  const r=await fetch(base+"/v1/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({model:cfg.model,max_tokens:effortOf().tokens,system:cfg.system||undefined,messages})
