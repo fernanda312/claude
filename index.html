@@ -14,7 +14,9 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);display:flex;overflow:hidden}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;touch-action:manipulation}
+#iconRow .ib.listening{background:#C2410C;color:#fff;animation:micPulse 1.1s ease-in-out infinite}
+@keyframes micPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
 /* ============ SIDEBAR ============ */
 #sidebar{width:288px;min-width:288px;background:var(--sidebar);display:flex;flex-direction:column;height:100%;border-right:1px solid var(--line)}
@@ -274,7 +276,7 @@ body.noSide #sidebar{display:none}
     <button id="navCode"><span class="ic">&lt;/&gt;</span> Code <span class="up">Fazer upgrade</span></button>
     <button id="navPersonal"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span> Personalização</button>
   </nav>
-  <div class="secHead"><span>Conversas e tarefas</span><button class="sort" title="Ordenar">⇅</button></div>
+  <div class="secHead"><span>Conversas e tarefas</span><button class="sort" id="sortBtn" title="Ordenar">⇅</button></div>
   <div id="sugList">
     <button class="sugRow" id="sugMemory"><span>Importar memória</span><span class="try">Experimentar</span></button>
     <button class="sugRow" id="sugPersonal"><span>Personalizar o Claude para você</span><span class="try">Experimentar</span></button>
@@ -498,10 +500,13 @@ function newConv(){
   const c={id:"c"+Date.now(),title:"Nova conversa",msgs:[],ts:Date.now()};
   convs.unshift(c);curId=c.id;saveConvs();renderList();renderChat();
 }
+let sortOld=false;
 function renderList(){
   const q=($("searchInput").value||"").toLowerCase();
   const el=$("convList");el.innerHTML="";
-  convs.filter(c=>!q||c.title.toLowerCase().includes(q)).forEach(c=>{
+  let list=convs.filter(c=>!q||c.title.toLowerCase().includes(q));
+  if(sortOld)list=list.slice().reverse();
+  list.forEach(c=>{
     const d=document.createElement("div");
     d.className="conv"+(c.id===curId?" active":"");
     d.innerHTML="<span class='dot'></span><span class='t'>"+esc(c.title)+"</span><span class='x' title='Apagar'>×</span>";
@@ -810,7 +815,20 @@ function showAllConvs(){
     el.onclick=()=>{curId=el.dataset.id;saveConvs();renderList();showChat();};
   });
 }
+function showFiles(){
+  const files=[];
+  convs.forEach(c=>{(c.msgs||[]).forEach(m=>{
+    if(m.img)files.push({name:"Imagem enviada",conv:c.title});
+    const mm=/\[Ficheiro ([^\]]+)\]/.exec(m.content||"");
+    if(mm)files.push({name:mm[1],conv:c.title});
+  });});
+  const body=!files.length
+    ?"<p style='color:var(--ink2)'>Ainda não enviaste nenhum ficheiro.</p>"
+    :"<div>"+files.map(f=>"<div style='padding:13px 4px;border-bottom:1px solid var(--line)'><div style='font-weight:600;font-size:15.5px'>"+esc(f.name)+"</div><div style='font-size:13px;color:var(--ink2);margin-top:3px'>"+esc(f.conv||"Nova conversa")+"</div></div>").join("")+"</div>";
+  showPage("Arquivos enviados",body);
+}
 $("verTodos").onclick=()=>{showAllConvs();};
+$("sortBtn").onclick=()=>{sortOld=!sortOld;renderList();toast(sortOld?"Conversas: mais antigas primeiro.":"Conversas: mais recentes primeiro.");};
 $("ghostBtn").onclick=()=>$("accountOverlay").classList.add("open");
 $("userRow").onclick=()=>$("accountOverlay").classList.add("open");
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
@@ -916,9 +934,9 @@ function setPrivacidade(){
   +"<div class='setRow'><div><div class='lab'>Help improve our AI models</div><div class='desc'>Allow the use of your chats and coding sessions to train and improve Anthropic AI models.</div></div>"+tgl(false)+"</div>"
   +"<h3>Seus dados</h3>"
   +"<div class='setRow'><div><div class='lab'>Exportar dados</div></div><button class='setBtn' id='setExport'>Exportar dados</button></div>"
-  +"<div class='setRow'><div><div class='lab'>Conversas compartilhadas</div></div><button class='setBtn'>Gerenciar</button></div>"
-  +"<div class='setRow'><div><div class='lab'>Artefatos compartilhados</div></div><button class='setBtn'>Gerenciar</button></div>"
-  +"<div class='setRow'><div><div class='lab'>Arquivos enviados</div></div><button class='setBtn'>Gerenciar</button></div>";
+  +"<div class='setRow'><div><div class='lab'>Conversas compartilhadas</div></div><button class='setBtn' id='setManageShared'>Gerenciar</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Artefatos compartilhados</div></div><button class='setBtn' id='setManageArt'>Gerenciar</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Arquivos enviados</div></div><button class='setBtn' id='setManageFiles'>Gerenciar</button></div>";
 }
 function setCobranca(){
   const pro=isPro();
@@ -945,7 +963,7 @@ function setMemoria(){
   +"<div class='setRow'><div><div class='lab'>Gerar memória a partir de conversas</div></div>"+tgl(true)+"</div>"
   +"<p style='margin-top:12px'>Nenhum arquivo ainda</p>"
   +"<div class='setRow'><div><div class='lab'>Incluir tópicos sensíveis na memória</div></div>"+tgl(false)+"</div>"
-  +"<div class='setRow'><div><div class='lab'>Importar memória de outros provedores de IA</div></div><button class='setBtn'>Iniciar importação</button></div>"
+  +"<div class='setRow'><div><div class='lab'>Importar memória de outros provedores de IA</div></div><button class='setBtn' id='setImportMem'>Iniciar importação</button></div>"
   +"<div class='setRow'><div><div class='lab'>Exportar memória</div><div class='desc'>Baixe sua memória como um .zip de arquivos Markdown. Ainda não há nada para exportar.</div></div><button class='setBtn' disabled style='opacity:.5'>Exportar</button></div>";
 }
 function setReflexao(){
@@ -1033,6 +1051,13 @@ function showNetError(){
   clearTimeout(netToastTimer);
   netToastTimer=setTimeout(()=>t.classList.remove("show"),3200);
 }
+function toast(msg){
+  const t=$("netToast");if(!t)return;
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(netToastTimer);
+  netToastTimer=setTimeout(()=>t.classList.remove("show"),3200);
+}
 function wireSetSection(){
   document.querySelectorAll("#setContent .tgl").forEach(t=>{t.onclick=()=>t.classList.toggle("on");});
   const ak=$("setApiKey");if(ak)ak.addEventListener("input",()=>{cfg.apiKey=ak.value.trim();saveCfg();});
@@ -1053,6 +1078,10 @@ function wireSetSection(){
   const lg=$("setLinkGithub");if(lg)lg.onclick=()=>showNetError();
   const ds=$("setDiscoverSkills");if(ds)ds.onclick=()=>showNetError();
   const dp=$("setDiscoverPlugins");if(dp)dp.onclick=()=>showNetError();
+  const msh=$("setManageShared");if(msh)msh.onclick=()=>{$("settingsWrap").classList.remove("open");showAllConvs();};
+  const mar=$("setManageArt");if(mar)mar.onclick=()=>{$("settingsWrap").classList.remove("open");openArtifacts();setArtTab("shared");};
+  const mfi=$("setManageFiles");if(mfi)mfi.onclick=()=>{$("settingsWrap").classList.remove("open");showFiles();};
+  const im=$("setImportMem");if(im)im.onclick=()=>{const f=$("memImport");if(f)f.click();};
 }
 $("closeSettings").onclick=()=>$("settingsWrap").classList.remove("open");
 function openAdmin(){
@@ -1186,16 +1215,40 @@ $("fileInput").onchange=e=>{
 };
 function startDictation(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){alert("O teu navegador não suporta ditado por voz.");return;}
+  if(!SR){toast("O teu navegador não suporta ditado por voz.");return;}
+  const btns=[$("micBtn"),$("voiceBtn")];
+  btns.forEach(b=>{if(b)b.classList.add("listening");});
+  toast("A ouvir… fala agora.");
   const r=new SR();r.lang="pt-PT";r.interimResults=false;
   r.onresult=ev=>{const t=ev.results[0][0].transcript;$("prompt").value=( $("prompt").value?$("prompt").value+" ":"")+t;$("prompt").focus();};
-  r.onerror=()=>{};
-  r.start();
+  r.onerror=ev=>{
+    btns.forEach(b=>{if(b)b.classList.remove("listening");});
+    if(ev.error==="not-allowed"||ev.error==="service-not-allowed")toast("Não consegui aceder ao microfone. Permite o microfone nas definições do navegador.");
+    else if(ev.error==="no-speech")toast("Não ouvi nada. Tenta outra vez.");
+    else toast("O ditado falhou. Tenta outra vez.");
+  };
+  r.onend=()=>{btns.forEach(b=>{if(b)b.classList.remove("listening");});};
+  try{r.start();}catch(e){btns.forEach(b=>{if(b)b.classList.remove("listening");});toast("O ditado falhou. Tenta outra vez.");}
 }
 $("micBtn").onclick=startDictation;
 $("voiceBtn").onclick=startDictation;
+$("memImport").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const txt=String(rd.result||"").trim();
+    if(!txt){toast("O ficheiro está vazio.");return;}
+    cfg.system=((cfg.system?cfg.system+"\n\n":"")+"[Memória importada de "+f.name+"]\n"+txt).trim();
+    saveCfg();
+    const ss=$("setSystem");if(ss)ss.value=cfg.system;
+    toast("Memória importada para as Instruções.");
+  };
+  rd.readAsText(f);
+  e.target.value="";
+});
 applyCfg();renderList();renderChat();
 </script>
 <div id="netToast"></div>
+<input type="file" id="memImport" accept=".md,.txt,.json" hidden>
 </body>
 </html>
