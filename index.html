@@ -482,10 +482,11 @@ body.noSide #sidebar{display:none}
 <input type="file" id="memImport" accept=".md,.txt,.json" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
 <script>
 const MODELS=[
-  {id:"claude-sonnet-5-5",short:"Sonnet 5.5",label:"Sonnet 5.5 — Mais eficiente para tarefas mais simples",plan:""},
-  {id:"claude-opus-5-5",short:"Opus 5.5",label:"Opus 5.5 — o mais forte",plan:"Pro"},
-  {id:"claude-haiku-5-5",short:"Haiku 5.5",label:"Haiku 5.5 — o mais rápido",plan:""},
-  {id:"claude-fable-5-1",short:"Fable 5.1",label:"Fable 5.1 — raciocínio exigente",plan:"Pro"}
+  {id:"claude-fable-5-2",short:"Fable 5.2",desc:"Para seus desafios mais difíceis",plan:"Pro, Max ou Ultra"},
+  {id:"claude-opus-5-5",short:"Opus 5.5",desc:"Para trabalhos complexos e tarefas do dia a dia",plan:"Pro"},
+  {id:"claude-sonnet-5-5",short:"Sonnet 5.5",desc:"Mais eficiente para tarefas mais simples",plan:""},
+  {id:"claude-haiku-5-5",short:"Haiku 5.5",desc:"Mais rápido para respostas rápidas",plan:""},
+  {id:"claude-fable-5-1",short:"Fable 5.1",desc:"Raciocínio exigente",plan:"Pro",more:true}
 ];
 const EFFORTS=[
   {id:"low",label:"Baixo",short:"Baixo",tokens:1024},
@@ -539,7 +540,7 @@ let accts=loadAccts();
 let sessEmail=(localStorage.getItem(LS.sess)||"").trim().toLowerCase();
 let acct=sessEmail?accts[sessEmail]:null;
 if(sessEmail&&!acct){localStorage.setItem(LS.sess,"");sessEmail="";}
-let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
+let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
 /* Título igual ao do claude.ai — o anterior era inventado. */
 if(cfg.welcome==="Que bom ter você aqui!"){cfg.welcome="O que vamos pensar juntos?";if(cfg.email)persistAcct();}
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
@@ -1023,7 +1024,7 @@ function onbStep(n){
 }
 function finishOnboard(){
   const nm=($("onbName").value||"").trim()||onbName||onbEmail.split("@")[0];
-  cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
+  cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
   cfg.email=onbEmail;cfg.user=nm;
   convs=[];projects=[];curId=null;
   localStorage.setItem(LS.sess,onbEmail);
@@ -1051,32 +1052,39 @@ document.querySelector("#navCode .up").onclick=e=>{e.stopPropagation();openUpgra
 $("pageBack").onclick=showChat;
 $("modelBtn").onclick=()=>{
   const el=$("modelList");el.innerHTML="";
-  const cur=MODELS.find(m=>m.id===cfg.model)||MODELS[0];
-  const h1=document.createElement("div");h1.className="listRow";
-  h1.innerHTML="<b>"+cur.label+" ✓</b>";
-  h1.onclick=()=>{$("modelWrap").classList.remove("open");};
-  el.appendChild(h1);
-  const eh=document.createElement("p");eh.style.cssText="color:var(--ink2);font-size:13.5px;margin:16px 0 6px;font-weight:600";eh.textContent="Esforço";
+  const cur=MODELS.find(m=>m.id===cfg.model)||MODELS.find(m=>m.id==="claude-sonnet-5-5")||MODELS[0];
+  const pro=isPro();
+  function mrow(m){
+    const d=document.createElement("div");
+    d.style.cssText="display:flex;align-items:flex-start;gap:10px;padding:12px 2px;cursor:pointer";
+    const sel=m.id===cur.id;
+    const badge=m.plan?"<span style='font-size:12px;color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:3px 9px;white-space:nowrap'>"+m.plan+"</span>":"";
+    const info=m.id==="claude-fable-5-2"?"<span style='display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border:1.5px solid var(--ink2);border-radius:50%;color:var(--ink2);font-size:11px;font-weight:700'>i</span>":"";
+    const right=sel?"<span style='color:var(--blue);font-size:22px;line-height:1'>✓</span>"
+      :(m.plan&&!pro?"<button style='font-size:13.5px;color:var(--blue);background:#EDF2FC;border:none;border-radius:20px;padding:7px 13px;white-space:nowrap;cursor:pointer'>Fazer upgrade</button>":"");
+    d.innerHTML="<div style='flex:1'><div style='display:flex;align-items:center;gap:7px;flex-wrap:wrap'><b style='font-size:16px'>"+m.short+"</b>"+info+badge+"</div><div style='color:var(--ink2);font-size:14px;margin-top:2px'>"+m.desc+"</div></div>"+right;
+    d.onclick=()=>{
+      if(m.plan&&!pro){$("modelWrap").classList.remove("open");openUpgrade();return;}
+      cfg.model=m.id;saveCfg();$("modelWrap").classList.remove("open");
+    };
+    return d;
+  }
+  MODELS.filter(m=>!m.more).forEach(m=>el.appendChild(mrow(m)));
+  const eh=document.createElement("p");eh.style.cssText="color:var(--ink2);font-size:13.5px;margin:18px 0 4px;font-weight:600";eh.textContent="Esforço";
   el.appendChild(eh);
   EFFORTS.forEach(e=>{
-    const d=document.createElement("div");d.className="listRow";
-    d.innerHTML="<b>"+e.label+(e.id===cfg.effort?" ✓":"")+"</b>";
+    const d=document.createElement("div");
+    d.style.cssText="display:flex;align-items:center;gap:10px;padding:11px 2px;cursor:pointer";
+    const warn=e.id==="max"?"<span style='font-size:12.5px;background:#FFF3CD;border-radius:20px;padding:3px 9px;white-space:nowrap'>⚠️ 5× ou mais de uso</span>":"";
+    const rec=e.id==="medium"?"<span style='font-size:12.5px;color:var(--ink);border:1px solid var(--line);border-radius:20px;padding:3px 9px;white-space:nowrap'>Recomendado</span>":"";
+    const check=e.id===cfg.effort?"<span style='color:var(--blue);font-size:22px;line-height:1'>✓</span>":"";
+    d.innerHTML="<div style='flex:1;display:flex;align-items:center;gap:7px'><b style='font-size:16px'>"+e.short+"</b>"+rec+warn+"</div>"+check;
     d.onclick=()=>{cfg.effort=e.id;saveCfg();$("modelWrap").classList.remove("open");};
     el.appendChild(d);
   });
-  const note=document.createElement("p");note.style.cssText="color:var(--ink2);font-size:13px;line-height:1.5;margin:10px 0 4px";note.textContent="Mais esforço significa respostas mais completas, mas leva mais tempo e consome seus limites mais rápido.";
-  el.appendChild(note);
-  const mh=document.createElement("p");mh.style.cssText="color:var(--ink2);font-size:13.5px;margin:16px 0 6px;font-weight:600";mh.textContent="Mais modelos";
+  const mh=document.createElement("p");mh.style.cssText="color:var(--ink2);font-size:13.5px;margin:18px 0 4px;font-weight:600";mh.textContent="Mais modelos";
   el.appendChild(mh);
-  MODELS.forEach(m=>{
-    if(m.id===cur.id)return;
-    const d=document.createElement("div");d.className="listRow";
-    d.innerHTML="<b>"+m.label+"</b>"+(m.plan?"<span style='font-size:12.5px;color:var(--blue);border:1px solid #C9D6F2;background:#EDF2FC;border-radius:20px;padding:4px 10px;white-space:nowrap'>"+m.plan+"</span>":"");
-    d.onclick=()=>{cfg.model=m.id;saveCfg();$("modelWrap").classList.remove("open");};
-    el.appendChild(d);
-  });
-  const fn=document.createElement("p");fn.style.cssText="color:var(--ink2);font-size:13px;line-height:1.5;margin:12px 0 0";fn.textContent="O Fable está incluído nos planos Max e Ultra, e no Pro por tempo limitado. Saiba mais";
-  el.appendChild(fn);
+  MODELS.filter(m=>m.more).forEach(m=>el.appendChild(mrow(m)));
   $("modelWrap").classList.add("open");
 };
 $("closeModel").onclick=()=>$("modelWrap").classList.remove("open");
