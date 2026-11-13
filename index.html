@@ -864,6 +864,12 @@ async function callClaude(messages){
   const key=((cfg.modelKeys||{})[cfg.model]||"").trim()||(cfg.apiKey||"").trim();
   const hasAnthropic=!!key;
   const hasGemini=!!(cfg.geminiKey||"").trim();
+  const hasImage=messages.some(m=>Array.isArray(m.content));
+  if(hasImage){
+    // Imagens: a central converte o array [{imagem},{texto}] correctamente; o caminho directo (proxy) transforma-o em "[object Object],[object Object]".
+    try{ return await callCentral(messages); }
+    catch(e){ if(!hasAnthropic&&!hasGemini) throw e; /* sem central, cai para a chave própria */ }
+  }
   if(!hasAnthropic&&!hasGemini){
     try{ return await callCentral(messages); }
     catch(e){ if(e.message==="NO_KEY") throw e; throw e; }
