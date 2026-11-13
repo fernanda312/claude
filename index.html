@@ -258,9 +258,82 @@ body.noSide #sidebar{display:none}
 }
 #netToast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:13px 20px;border-radius:12px;font-size:14.5px;box-shadow:0 8px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:all .25s;z-index:300;max-width:88vw;text-align:center}
 #netToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* página de início de sessão (igual a claude.ai/login) */
+#loginPage{display:none;position:fixed;inset:0;background:#fff;z-index:200;overflow-y:auto}
+#loginPage.open{display:block}
+.loginWrap{max-width:480px;margin:0 auto;padding:56px 20px 40px;text-align:center}
+.loginTitle{font-family:var(--serif);font-size:46px;font-weight:500;line-height:1.12;letter-spacing:-.5px;margin:0 0 34px}
+.loginCard{border:1px solid var(--line);border-radius:18px;padding:20px;text-align:left;margin-bottom:16px}
+.loginCard .appRow{display:flex;gap:14px;align-items:flex-start}
+.loginCard .appRow img{width:44px;height:44px;flex:none}
+.loginCard h3{font-size:19px;font-weight:600;margin:0 0 6px}
+.loginCard p{color:var(--ink2);font-size:14.5px;line-height:1.5;margin:0}
+.loginBtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 16px;border-radius:12px;font-size:15.5px;font-weight:600;background:#F1F1EE;margin-bottom:10px}
+.loginBtn.dark{background:#1A1A1A;color:#fff}
+.loginBtn svg{flex:none}
+.loginOr{display:flex;align-items:center;gap:12px;color:var(--ink2);font-size:13.5px;margin:14px 0}
+.loginOr:before,.loginOr:after{content:"";flex:1;height:1px;background:var(--line)}
+.loginInput{width:100%;border:none;border-radius:12px;padding:14px 16px;background:#F1F1EE;font-size:15.5px;margin-bottom:10px;outline:none}
+.loginInput:focus{background:#EDEDEA}
+.loginFine{color:var(--ink2);font-size:13px;line-height:1.5;text-align:center;margin:6px 0 0}
+.loginFine a{color:var(--ink);text-decoration:underline}
+/* integração (onboarding) */
+#onboardPage{display:none;position:fixed;inset:0;background:#fff;z-index:210;overflow-y:auto}
+#onboardPage.open{display:block}
+.onbWrap{max-width:520px;margin:0 auto;padding:48px 20px 40px;text-align:center}
+.onbLogo{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--serif);font-size:30px;font-weight:700;margin-bottom:34px}
+.onbLogo img{width:34px;height:34px}
+.onbTitle{font-family:var(--serif);font-size:44px;font-weight:500;line-height:1.12;letter-spacing:-.5px;margin:0 0 10px}
+.onbSub{color:var(--ink2);font-size:16px;margin:0 0 28px}
+.onbCard{border:1px solid var(--line);border-radius:18px;padding:22px;text-align:left}
+.onbCheck{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;font-size:15.5px;line-height:1.5}
+.onbCheck input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:#1A1A1A}
+.onbCheck a{color:var(--ink);text-decoration:underline}
+.onbInfo{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px;text-align:left}
+.onbInfo .ic{width:44px;height:44px;min-width:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.onbInfo b{display:block;font-size:16px;margin-bottom:2px}
+.onbInfo span{color:var(--ink2);font-size:14.5px;line-height:1.5}
+.onbInput{width:100%;border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;font-size:17px;outline:none;margin-bottom:14px}
+.onbInput:focus{border-color:#1A1A1A}
+.onbBtn{display:block;width:100%;padding:15px;border-radius:12px;font-size:16px;font-weight:600;background:#1A1A1A;color:#fff;text-align:center}
+.onbBtn:disabled{background:#E5E5E2;color:#8a8781}
+@media (max-width:760px){
+  .loginTitle{font-size:36px}
+  .onbTitle{font-size:34px}
+}
 </style>
 </head>
 <body>
+
+<!-- página de início de sessão (igual a claude.ai/login) -->
+<div id="loginPage">
+  <div class="loginWrap">
+    <h1 class="loginTitle">A IA para<br>quem resolve<br>problemas</h1>
+    <div class="loginCard">
+      <div class="appRow">
+        <svg width="44" height="44" viewBox="0 0 46 46"><path d="M23,1 L25.2,16.3 L35.9,5.2 L28.7,18.9 L43.9,16.2 L30,23 L43.9,29.8 L28.7,27.1 L35.9,40.8 L25.2,29.7 L23,45 L20.8,29.7 L10.1,40.8 L17.3,27.1 L2.1,29.8 L16,23 L2.1,16.2 L17.3,18.9 L10.1,5.2 L20.8,16.3 Z" fill="#D97757"/></svg>
+        <div>
+          <h3>Baixe o app</h3>
+          <p>Converse sem usar as mãos, conecte-se aos seus apps e inicie tarefas em qualquer lugar.</p>
+        </div>
+      </div>
+      <div style="margin-top:16px"><button class="loginBtn dark" id="loginDownload" style="margin-bottom:0">Baixar</button></div>
+    </div>
+    <div class="loginCard">
+      <button class="loginBtn" id="loginGoogle"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.2H12v4.3h6.5c-.1 1.1-.8 2.7-2.4 3.8l3.7 2.9c2.2-2.1 3.7-5.1 3.7-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.1-6.8-5.1L1.3 17.2C3.3 21.2 7.3 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3L1.3 6.8C.5 8.4 0 10.1 0 12s.5 3.6 1.3 5.2l3.9-2.9z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.3 0 3.3 2.8 1.3 6.8l3.9 2.9c.9-2.9 3.6-5 6.8-5z"/></svg>Continuar com o Google</button>
+      <button class="loginBtn" id="loginApple"><svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.86-3.08.4-1.09-.47-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8.98-.2 1.92-.87 3.03-.83 1.32.11 2.31.63 2.97 1.57-2.73 1.63-2.28 5.23.45 6.23-.57 1.5-1.31 2.99-2.53 4.2l-.01.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>Continuar com Apple</button>
+      <div class="loginOr">OU</div>
+      <input type="email" class="loginInput" id="loginPageEmail" placeholder="Digite seu e-mail" autocomplete="email">
+      <button class="loginBtn" id="loginPageGo" style="margin-bottom:0">Continuar com e-mail</button>
+      <p class="loginFine">By continuing, you acknowledge Anthropic's <a href="https://www.anthropic.com/privacy" target="_blank">Privacy Policy</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- integração (onboarding) -->
+<div id="onboardPage">
+  <div class="onbWrap" id="onbWrap"></div>
+</div>
 
 <aside id="sidebar">
   <div id="sideHead">
@@ -304,7 +377,7 @@ body.noSide #sidebar{display:none}
 
   <div id="chat">
     <div id="welcome">
-      <h1><span class="star" id="welcomeStar"><img src="data:image/png;base64,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" width="40" height="40" style="display:block" alt=""></span> <span id="welcomeTitle">Que bom ter você aqui!</span></h1>
+      <h1><span class="star" id="welcomeStar"><img src="data:image/png;base64,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" width="40" height="40" style="display:block" alt=""></span> <span id="welcomeTitle">O que vamos pensar juntos?</span></h1>
     </div>
     <div class="wrap" id="msgs"></div>
   </div>
@@ -351,23 +424,6 @@ body.noSide #sidebar{display:none}
     <button id="accAbout"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="0.5" fill="#1A1A1A"/></svg></span> Saiba mais <span class="arr">›</span></button>
     <hr>
     <button id="accLogout"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3M16 17l5-5-5-5M21 12H9"/></svg></span> Sair</button>
-  </div>
-</div>
-
-<!-- iniciar sessão -->
-<div class="overlay" id="loginOverlay">
-  <div class="sheet">
-    <div class="grab"></div>
-    <div style="padding:2px 18px 8px">
-      <h2 style="font-family:var(--serif);font-size:24px;font-weight:500;margin:0 0 6px">Iniciar sessão</h2>
-      <p style="color:var(--ink2);font-size:15px;line-height:1.55;margin:0 0 16px">Entra com o teu email para usares o Claude. Se o email já tiver uma conta, entras nela com as tuas conversas. Se for a primeira vez, cria-se uma conta nova.</p>
-      <label style="display:block;font-size:14px;font-weight:600;margin-bottom:6px">O teu nome</label>
-      <input type="text" id="loginName" placeholder="Como te chamas?" autocomplete="name" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#FAFAF8;font-size:15px;margin-bottom:14px">
-      <label style="display:block;font-size:14px;font-weight:600;margin-bottom:6px">Email</label>
-      <input type="email" id="loginEmail" placeholder="o.teu@email.com" autocomplete="email" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#FAFAF8;font-size:15px;margin-bottom:18px">
-      <button class="btnDark" id="loginGo" style="display:block;width:100%;padding:13px;border-radius:12px;font-size:16px;font-weight:600;margin-bottom:10px;text-align:center">Entrar</button>
-      <button class="btnLight" id="loginCancel" style="display:block;width:100%;padding:13px;border-radius:12px;font-size:16px;font-weight:600;text-align:center">Cancelar</button>
-    </div>
   </div>
 </div>
 
@@ -492,7 +548,9 @@ let accts=loadAccts();
 let sessEmail=(localStorage.getItem(LS.sess)||"").trim().toLowerCase();
 let acct=sessEmail?accts[sessEmail]:null;
 if(sessEmail&&!acct){localStorage.setItem(LS.sess,"");sessEmail="";}
-let cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
+let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
+/* Título igual ao do claude.ai — o anterior era inventado. */
+if(cfg.welcome==="Que bom ter você aqui!"){cfg.welcome="O que vamos pensar juntos?";if(cfg.email)persistAcct();}
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
 if((cfg.apiKey||"").trim().startsWith("AIza")&&!(cfg.geminiKey||"").trim()){cfg.geminiKey=cfg.apiKey;cfg.apiKey="";}
 let convs=acct?acct.convs||[]:[];
@@ -906,35 +964,89 @@ function showFiles(){
 $("verTodos").onclick=()=>{showAllConvs();};
 $("sortBtn").onclick=()=>{sortOld=!sortOld;renderList();toast(sortOld?"Conversas: mais antigas primeiro.":"Conversas: mais recentes primeiro.");};
 function openAccount(){
-  if((cfg.email||"").trim()){$("accountOverlay").classList.add("open");}
-  else{$("loginOverlay").classList.add("open");}
+  $("accountOverlay").classList.add("open");
 }
-function doLogin(){
-  const em=($("loginEmail").value||"").trim().toLowerCase();
-  const nm=($("loginName").value||"").trim();
-  if(!em||!em.includes("@")){toast("Escreve um email válido.");return;}
+/* Mostra a página de início de sessão quando não há conta, ou a app quando há. */
+function renderAuth(){
+  const logged=!!(cfg.email||"").trim();
+  $("loginPage").classList.toggle("open",!logged);
+  $("sidebar").style.display=logged?"":"none";
+  $("main").style.display=logged?"":"none";
+}
+function enterAccount(em,nm){
+  em=(em||"").trim().toLowerCase();
+  if(!em||!em.includes("@")){toast("Escreve um email válido.");return false;}
   const a=accts[em];
   if(a){
     cfg=Object.assign({},a.cfg);
     cfg.email=em;
     convs=a.convs||[];projects=a.proj||[];curId=a.cur||null;
-  }else{
-    cfg=Object.assign({name:"Claude",welcome:"Que bom ter você aqui!",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
-    cfg.email=em;cfg.user=nm;
-    convs=[];projects=[];curId=null;
+    localStorage.setItem(LS.sess,em);
+    persistAcct();
+    applyCfg();renderList();renderChat();renderAuth();
+    return true;
   }
-  localStorage.setItem(LS.sess,em);
+  showOnboard(em,nm||"");
+  return true;
+}
+let onbEmail="",onbName="";
+function showOnboard(em,nm){
+  onbEmail=em;onbName=nm||"";
+  $("loginPage").classList.remove("open");
+  $("onboardPage").classList.add("open");
+  onbStep(1);
+}
+function onbStep(n){
+  const w=$("onbWrap");
+  const star='<svg width="34" height="34" viewBox="0 0 46 46"><path d="M23,1 L25.2,16.3 L35.9,5.2 L28.7,18.9 L43.9,16.2 L30,23 L43.9,29.8 L28.7,27.1 L35.9,40.8 L25.2,29.7 L23,45 L20.8,29.7 L10.1,40.8 L17.3,27.1 L2.1,29.8 L16,23 L2.1,16.2 L17.3,18.9 L10.1,5.2 L20.8,16.3 Z" fill="#D97757"/></svg>';
+  if(n===1){
+    w.innerHTML='<div class="onbLogo">'+star+'Claude</div>'
+    +'<h1 class="onbTitle">Vamos criar sua<br>conta</h1>'
+    +'<p class="onbSub">Algumas coisas para você revisar</p>'
+    +'<div class="onbCard"><label class="onbCheck"><input type="checkbox" id="onbTerms"><span>Concordo com os <a href="https://www.anthropic.com/terms" target="_blank">Termos de Serviço do Consumidor</a> e com a <a href="https://www.anthropic.com/acceptable-use" target="_blank">Política de Uso Aceitável</a> da Anthropic e confirmo que tenho pelo menos 18 anos de idade.</span></label>'
+    +'<label class="onbCheck"><input type="checkbox" id="onbPromo"><span>Inscrever-se para receber e-mails e notificações promocionais ocasionais. Você pode cancelar a inscrição a qualquer momento.</span></label>'
+    +'<button class="onbBtn" id="onbCreate" disabled>Criar conta</button></div>'
+    +'<p class="loginFine">E-mail confirmado como '+esc(onbEmail)+'</p>';
+    $("onbTerms").onchange=e=>{$("onbCreate").disabled=!e.target.checked;};
+    $("onbCreate").onclick=()=>onbStep(2);
+  }else if(n===2){
+    w.innerHTML='<div class="onbLogo">'+star+'Claude</div>'
+    +'<h1 class="onbTitle">Antes da sua<br>primeira conversa</h1>'
+    +'<p class="onbSub">Algumas coisas para saber, além de uma configuração para revisar</p>'
+    +'<div class="onbCard">'
+    +'<div class="onbInfo"><span class="ic" style="background:#E8E4F5"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="5.5" y1="5.5" x2="18.5" y2="18.5"/></svg></span><div><b>Conversas sem anúncios:</b><span>Não mostraremos anúncios nem permitiremos que anunciantes influenciem o que o Claude diz.</span></div></div>'
+    +'<div class="onbInfo"><span class="ic" style="background:#DCE8DD"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.5-7-10a7 7 0 0 1 14 0c0 5.5-7 10-7 10z"/><path d="M12 12m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0"/></svg></span><div><b>Feito para ajudar, não para prejudicar:</b><span>Salvaguardas automatizadas protegem suas conversas contra conteúdo violento, abusivo ou perigoso.</span></div></div>'
+    +'<button class="onbBtn" id="onbNext2">Continuar</button></div>';
+    $("onbNext2").onclick=()=>onbStep(3);
+  }else{
+    w.innerHTML='<div class="onbLogo">'+star+'Claude</div>'
+    +'<h1 class="onbTitle">Qual é o seu<br>nome?</h1>'
+    +'<p class="onbSub">Para que o Claude saiba como chamar você.</p>'
+    +'<input type="text" class="onbInput" id="onbName" placeholder="Digite seu nome" value="'+esc(onbName)+'" autocomplete="name">'
+    +'<button class="onbBtn" id="onbFinish">Continuar</button>';
+    const ni=$("onbName");
+    ni.focus();
+    $("onbFinish").onclick=()=>finishOnboard();
+    ni.addEventListener("keydown",e=>{if(e.key==="Enter")finishOnboard();});
+  }
+}
+function finishOnboard(){
+  const nm=($("onbName").value||"").trim()||onbName||onbEmail.split("@")[0];
+  cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:MODELS[0].id,effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
+  cfg.email=onbEmail;cfg.user=nm;
+  convs=[];projects=[];curId=null;
+  localStorage.setItem(LS.sess,onbEmail);
   persistAcct();
-  applyCfg();renderList();renderChat();
-  $("loginOverlay").classList.remove("open");
+  $("onboardPage").classList.remove("open");
+  applyCfg();renderList();renderChat();renderAuth();
 }
 $("ghostBtn").onclick=openAccount;
 $("userRow").onclick=openAccount;
-$("loginOverlay").onclick=e=>{if(e.target.id==="loginOverlay")e.target.classList.remove("open");};
-$("loginCancel").onclick=()=>$("loginOverlay").classList.remove("open");
-$("loginGo").onclick=doLogin;
-$("loginEmail").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
-$("loginName").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+$("loginGoogle").onclick=()=>{enterAccount("nacerinha@gmail.com","");};
+$("loginApple").onclick=()=>{toast("Usa o teu email para entrar.");};
+$("loginPageGo").onclick=()=>{enterAccount($("loginPageEmail").value,"");};
+$("loginPageEmail").addEventListener("keydown",e=>{if(e.key==="Enter")enterAccount($("loginPageEmail").value,"");});
+$("loginDownload").onclick=()=>{window.open("https://claude.ai","_blank");};
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
 $("accLang").onclick=()=>{alert("Idioma: Português (o Claude responde na língua que escolheres nas Configurações).");};
@@ -1430,7 +1542,7 @@ $("memImport").addEventListener("change",e=>{
   rd.readAsText(f);
   e.target.value="";
 });
-applyCfg();renderList();renderChat();
+applyCfg();renderList();renderChat();renderAuth();
 </script>
 <div id="netToast"></div>
 </body>
