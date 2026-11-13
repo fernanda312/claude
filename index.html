@@ -28,7 +28,7 @@ body.noSide #sidebar{display:none}
 #searchRow input{flex:1;border:none;outline:none;background:none;font-size:15px}
 #searchRow input::placeholder{color:var(--ink2)}
 #createBtn{margin:4px 14px 12px;display:flex;align-items:center;gap:10px;background:#F1F1EE;border-radius:12px;padding:13px 14px;font-size:16px;font-weight:500;text-align:left}
-#hideSide{margin:2px 14px 4px;display:flex;align-items:center;gap:11px;border-radius:10px;padding:10px 12px;font-size:15px;color:var(--ink2);text-align:left}
+#hideSide{margin:2px 14px 4px;display:flex;align-items:center;width:max-content;border-radius:10px;padding:10px 12px;color:var(--ink2)}
 #hideSide:hover{background:#F1F1EE;color:var(--ink)}
 #hideSide .ic{display:flex;align-items:center}
 #sugList{padding:0 10px 4px}
@@ -152,6 +152,25 @@ body.noSide #sidebar{display:none}
 .msg .tools{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .msg .tools button{font-size:12.5px;color:var(--ink2);border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px}
 .msg .tools button:hover{color:var(--ink)}
+.msg .tools button.on{background:#ECECE8;color:var(--ink);border-color:var(--line2);font-weight:600}
+.msg .body table{border-collapse:collapse;margin:0 0 10px;width:100%}
+.msg .body th,.msg .body td{border:1px solid var(--line);padding:7px 10px;text-align:left;font-size:14.5px;vertical-align:top}
+.msg .body th{background:#F7F7F4}
+.msg .body a{color:var(--blue)}
+.grpHead{padding:14px 12px 6px;font-size:12.5px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.5px}
+.listRow button.artView{color:var(--blue)}
+#attachMenu{position:absolute;bottom:100%;left:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);padding:6px;min-width:220px;display:none;z-index:40}
+#attachMenu.open{display:block}
+#attachMenu button{display:flex;width:100%;text-align:left;padding:11px 12px;border-radius:9px;font-size:15px}
+#attachMenu button:hover{background:#F1F1EE}
+body.dark{--bg:#20201D;--sidebar:#262622;--card:#2B2B28;--ink:#F0EFEA;--ink2:#A9A79E;--line:#3B3B37;--line2:#4C4C47}
+body.dark #searchRow,body.dark #createBtn,body.dark .loginBtn,body.dark .loginInput,body.dark .setSearch,body.dark .btnLight,body.dark .setContent input[type=text],body.dark .setContent input[type=password],body.dark .setContent textarea,body.dark .setContent select,body.dark .modal input,body.dark .modal textarea,body.dark .modal select{background:#33332F;color:var(--ink)}
+body.dark .msg.user .body{background:#33332F}
+body.dark .msg .body th{background:#33332F}
+body.dark .msg .body code{background:#33332F}
+body.dark #attachMenu button:hover,body.dark .conv:hover,body.dark .nav button:hover,body.dark #userRow:hover,body.dark #hideSide:hover,body.dark #iconRow .ib:hover,body.dark #compFoot .modelBtn:hover{background:#33332F}
+body.dark .tgl{background:#55554F}
+body.dark .tgl.on{background:var(--accent)}
 .typing{display:inline-flex;gap:5px;padding:8px 0}
 .typing i{width:7px;height:7px;border-radius:50%;background:#C9C9C2;animation:tp 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
@@ -159,7 +178,7 @@ body.noSide #sidebar{display:none}
 /* composer */
 #composer{padding:8px 0 16px}
 #composer .box{max-width:780px;margin:0 auto;padding:0 20px}
-#inputCard{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:14px 16px 10px;box-shadow:0 6px 24px rgba(0,0,0,.07)}
+#inputCard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:14px 16px 10px;box-shadow:0 6px 24px rgba(0,0,0,.07)}
 #inputCard:focus-within{border-color:var(--line2)}
 #prompt{width:100%;border:none;outline:none;resize:none;max-height:170px;font-size:16.5px;line-height:1.5;background:none}
 #prompt::placeholder{color:#A9A9A2}
@@ -174,10 +193,10 @@ body.noSide #sidebar{display:none}
 #iconRow .modelBtn{height:38px;max-width:120px;padding:0 8px;font-size:15px;font-weight:500;color:#4A463F;display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #iconRow .modelBtn:hover{color:var(--ink)}
 #iconRow .sp{flex:1}
-#sendBtn{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;font-size:18px;display:none;align-items:center;justify-content:center}
+#sendBtn{width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center}
 #sendBtn.show{display:flex}
 #sendBtn:hover{opacity:.9}
-#sendBtn:disabled{opacity:.4}
+#sendBtn:disabled{background:#DCDCD6;opacity:1}
 #hint{font-size:12px;color:var(--ink2)}
 #compFoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px}
 #compFoot .modelBtn{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:5px;white-space:nowrap;padding:6px 8px;border-radius:8px}
@@ -340,13 +359,13 @@ body.noSide #sidebar{display:none}
     <button class="x" id="closeSide">×</button>
     <h1 id="brandWord">Claude</h1>
   </div>
-  <button id="hideSide"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></span> Ocultar barra lateral</button>
+  <button id="hideSide" title="Ocultar barra lateral"><span class="ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></span></button>
   <button id="createBtn"><span class="plus">＋</span> Novo</button>
   <div id="searchRow"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg> <input id="searchInput" placeholder="Procurar"></div>
   <nav class="nav">
     <button id="navProjects"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span> Projetos</button>
     <button id="navArtifacts"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span> Artefatos</button>
-    <button id="navCode"><span class="ic">&lt;/&gt;</span> Code <span class="up">Fazer upgrade</span></button>
+    <button id="navScheduled"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> Agendamentos</button>
     <button id="navPersonal"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg></span> Personalização</button>
   </nav>
   <div class="secHead"><span>Conversas e tarefas</span><button class="sort" id="sortBtn" title="Ordenar">⇅</button></div>
@@ -371,7 +390,7 @@ body.noSide #sidebar{display:none}
 <main id="main">
   <div id="topbar">
     <button class="iconBtn" id="menuBtn" title="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-    <button class="ghost" id="ghostBtn" title="Conta"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg></button>
+    <button class="ghost" id="ghostBtn" title="Conversa temporária"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.2 3.8-5 7-5s5.8 1.8 7 5"/></svg></button>
   </div>
   <div id="planRow"><div id="planPill"><span id="planPillText">plano Gratuito</span><span id="planPillUp"> &nbsp;·&nbsp; <a href="#" id="upgradeLink">Fazer upgrade</a></span></div></div>
 
@@ -394,17 +413,18 @@ body.noSide #sidebar{display:none}
         <div id="attachPrev"></div>
         <textarea id="prompt" rows="1" placeholder="Como posso ajudar você hoje?"></textarea>
         <div id="iconRow">
-          <label class="ib" id="attachBtn" for="fileInput" title="Anexar" style="cursor:pointer">＋</label>
+          <button class="ib" id="attachBtn" title="Anexar">＋</button>
+          <div id="attachMenu"><button id="amFile">Anexar ficheiro</button><button id="amShot">Captura de ecrã</button><button id="amSearch">Pesquisar</button></div>
           <input type="file" id="fileInput" accept="image/*,.txt,.md,.csv,.json,.pdf" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
           <span class="iconGroup">
           </span>
           <span class="sp"></span>
           <button class="ib" id="micBtn" title="Falar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
           <button class="ib" id="voiceBtn" title="Modo de voz"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="10" x2="4" y2="14"/><line x1="8" y1="7" x2="8" y2="17"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="16" y1="7" x2="16" y2="17"/><line x1="20" y1="10" x2="20" y2="14"/></svg></button>
-          <button id="sendBtn" title="Enviar">↑</button>
+          <button id="sendBtn" title="Enviar" disabled>↑</button>
         </div>
       </div>
-      <div id="compFoot"><span id="hint">Claude é uma IA e pode cometer erros. Confira sempre as respostas.</span><button class="modelBtn" id="modelBtn"><span id="modelFull">Sonnet 5.5 Médio</span> ﹀</button></div>
+      <div id="compFoot"><span id="hint">Claude é uma IA e pode cometer erros. Confira sempre as respostas.</span><button class="modelBtn" id="permModeBtn" title="Modo de permissão">Manual</button><button class="modelBtn" id="modelBtn"><span id="modelFull">Sonnet 5.5 Médio Manual</span> ﹀</button></div>
     </div>
   </div>
 </main>
@@ -420,6 +440,7 @@ body.noSide #sidebar{display:none}
     <hr>
     <button id="accUpgrade"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 16V8M8.5 11.5L12 8l3.5 3.5"/></svg></span> Subir de plano</button>
     <button id="accApps"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6"/></svg></span> Obter apps e extensões</button>
+    <button id="accAcademy"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h13"/></svg></span> Claude Academy</button>
     <button id="accAbout"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="0.5" fill="#1A1A1A"/></svg></span> Saiba mais <span class="arr">›</span></button>
     <hr>
     <button id="accLogout"><span class="ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3M16 17l5-5-5-5M21 12H9"/></svg></span> Sair</button>
@@ -539,7 +560,7 @@ let accts=loadAccts();
 let sessEmail=(localStorage.getItem(LS.sess)||"").trim().toLowerCase();
 let acct=sessEmail?accts[sessEmail]:null;
 if(sessEmail&&!acct){localStorage.setItem(LS.sess,"");sessEmail="";}
-let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde SEMPRE em português de Moçambique. Nunca respondas em russo, inglês ou qualquer outra língua. A tua língua é o português.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
+let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",permMode:"manual",theme:"system",lang:"Português",toggles:{},scheduled:[],skills:[],system:"Responde SEMPRE em português de Moçambique. Nunca respondas em russo, inglês ou qualquer outra língua. A tua língua é o português.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
 /* Título igual ao do claude.ai — o anterior era inventado. */
 if(cfg.welcome==="Que bom ter você aqui!"){cfg.welcome="O que vamos pensar juntos?";if(cfg.email)persistAcct();}
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
@@ -547,7 +568,7 @@ if((cfg.apiKey||"").trim().startsWith("AIza")&&!(cfg.geminiKey||"").trim()){cfg.
 let convs=acct?acct.convs||[]:[];
 let projects=acct?acct.proj||[]:[];
 let curId=acct?acct.cur||null:null;
-let busy=false, attach=null;
+let busy=false, attach=null, tempConv=null, editIdx=null, sessMsgs=0;
 
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -558,12 +579,46 @@ function markIMG(size){return '<img src="'+LOGO_AST+'" width="'+size+'" height="
 function markSVG(color,size){return markIMG(size);}
 function md(t){
   let h=esc(t);
-  h=h.replace(/```([\s\S]*?)```/g,(m,c)=>"<pre><code>"+c.replace(/^\n/,"")+"</code></pre>");
+  const blocks=[];
+  h=h.replace(/```([\s\S]*?)```/g,(m,c)=>{blocks.push("<pre><code>"+c.replace(/^\n/,"").replace(/^[A-Za-z0-9_+-]+\n/,"")+"</code></pre>");return "\n@@B"+(blocks.length-1)+"@@\n";});
   h=h.replace(/^### (.*)$/gm,"<h3>$1</h3>").replace(/^## (.*)$/gm,"<h2>$1</h2>").replace(/^# (.*)$/gm,"<h1>$1</h1>");
-  h=h.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<i>$2</i>").replace(/`([^`\n]+)`/g,"<code>$1</code>");
-  h=h.replace(/^\s*[-•] (.*)$/gm,"<li>$1</li>");
-  h=h.replace(/(<li>[\s\S]*?<\/li>)/g,"<ul>$1</ul>").replace(/<\/ul>\s*<ul>/g,"");
-  h=h.split(/\n\s*\n/).map(b=>b.trim()?(/^<(h\d|ul|pre|li)/.test(b)?b:"<p>"+b.replace(/\n/g,"<br>")+"</p>"):"").join("");
+  const lines=h.split("\n"),out=[];let i=0;
+  while(i<lines.length){
+    const L=lines[i];
+    if(/^\s*\|/.test(L)){
+      const rows=[];
+      while(i<lines.length&&/^\s*\|/.test(lines[i])){rows.push(lines[i]);i++;}
+      const data=rows.filter(r=>!/^\s*\|[\s:|\-]+\|\s*$/.test(r));
+      if(data.length){
+        const cells=r=>r.split("|").slice(1,-1).map(c=>c.trim());
+        out.push("<table><thead><tr>"+cells(data[0]).map(c=>"<th>"+c+"</th>").join("")+"</tr></thead><tbody>"
+          +data.slice(1).map(r=>"<tr>"+cells(r).map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("")+"</tbody></table>");
+      }else out.push.apply(out,rows);
+      continue;
+    }
+    const om=L.match(/^\s*\d+[.)] (.*)$/);
+    if(om){
+      const items=[];
+      while(i<lines.length){const m2=lines[i].match(/^\s*\d+[.)] (.*)$/);if(!m2)break;items.push("<li>"+m2[1]+"</li>");i++;}
+      out.push("<ol>"+items.join("")+"</ol>");continue;
+    }
+    const um=L.match(/^\s*[-•] (.*)$/);
+    if(um){
+      const items=[];
+      while(i<lines.length){const m2=lines[i].match(/^\s*[-•] (.*)$/);if(!m2)break;items.push("<li>"+m2[1]+"</li>");i++;}
+      out.push("<ul>"+items.join("")+"</ul>");continue;
+    }
+    out.push(L);i++;
+  }
+  h=out.join("\n");
+  const ics=[];
+  h=h.replace(/`([^`\n]+)`/g,(m,c)=>{ics.push("<code>"+c+"</code>");return "@@I"+(ics.length-1)+"@@";});
+  h=h.replace(/\[([^\]]+)\]\((https?:[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  h=h.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+  h=h.replace(/(^|[^*])\*([^*\n]+)\*/g,"$1<i>$2</i>");
+  h=h.replace(/@@I(\d+)@@/g,(m,n)=>ics[+n]);
+  h=h.split(/\n\s*\n/).map(b=>b.trim()?(/^<(h\d|ul|ol|pre|li|table|@@B)/.test(b)?b:"<p>"+b.replace(/\n/g,"<br>")+"</p>"):"").join("");
+  h=h.replace(/@@B(\d+)@@/g,(m,n)=>blocks[+n]);
   return h;
 }
 function persistAcct(){
@@ -576,7 +631,12 @@ function saveCfg(){persistAcct();applyCfg();}
 function saveConvs(){persistAcct();}
 function saveProj(){persistAcct();}
 function modelShort(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Sonnet";}
-function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Sonnet")+" "+effortOf().short;}
+function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Sonnet")+" "+effortOf().short+" "+(cfg.permMode==="auto"?"Auto":"Manual");}
+function applyTheme(){
+  const th=cfg.theme||"system";
+  const dark=th==="dark"||(th==="system"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.body.classList.toggle("dark",!!dark);
+}
 function applyCfg(){
   document.documentElement.style.setProperty("--accent",cfg.color);
   $("brandWord").textContent=cfg.name;
@@ -597,11 +657,14 @@ function applyCfg(){
   const pt=$("planPillText");if(pt)pt.textContent=pro?"plano Pro":"plano Gratuito";
   const pu=$("planPillUp");if(pu)pu.style.display=pro?"none":"";
   const mf=$("modelFull");if(mf)mf.textContent=modelFull();
+  const pm=$("permModeBtn");if(pm)pm.textContent=cfg.permMode==="auto"?"Auto":"Manual";
+  applyTheme();
   document.title=cfg.name;
 }
-function getConv(){return convs.find(c=>c.id===curId);}
+function getConv(){if(tempConv&&!curId)return tempConv;return convs.find(c=>c.id===curId);}
 function newConv(){
-  const c={id:"c"+Date.now(),title:"Nova conversa",msgs:[],ts:Date.now()};
+  tempConv=null;editIdx=null;
+  const c={id:"c"+Date.now(),title:"Nova conversa",msgs:[],ts:Date.now(),created:Date.now()};
   convs.unshift(c);curId=c.id;saveConvs();renderList();renderChat();
 }
 let sortOld=false;
@@ -609,14 +672,29 @@ function renderList(){
   const q=($("searchInput").value||"").toLowerCase();
   const el=$("convList");el.innerHTML="";
   let list=convs.filter(c=>!q||c.title.toLowerCase().includes(q));
-  if(sortOld)list=list.slice().reverse();
+  list=list.slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
+  const startOf=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x.getTime();};
+  const today=startOf(Date.now()),yday=today-864e5,week=today-7*864e5;
+  const groups=[["Hoje",[]],["Ontem",[]],["Últimos 7 dias",[]],["Anteriores",[]]];
   list.forEach(c=>{
-    const d=document.createElement("div");
-    d.className="conv"+(c.id===curId?" active":"");
-    d.innerHTML="<span class='dot'></span><span class='t'>"+esc(c.title)+"</span><span class='x' title='Apagar'>×</span>";
-    d.onclick=()=>{curId=c.id;saveConvs();renderList();renderChat();$("sidebar").classList.remove("open");};
-    d.querySelector(".x").onclick=e=>{e.stopPropagation();convs=convs.filter(x=>x.id!==c.id);if(curId===c.id)curId=convs[0]?convs[0].id:null;saveConvs();renderList();renderChat();};
-    el.appendChild(d);
+    const t=c.created||c.ts||Date.now();
+    if(t>=today)groups[0][1].push(c);
+    else if(t>=yday)groups[1][1].push(c);
+    else if(t>=week)groups[2][1].push(c);
+    else groups[3][1].push(c);
+  });
+  if(sortOld){groups.reverse();groups.forEach(g=>g[1].reverse());}
+  groups.forEach(g=>{
+    if(!g[1].length)return;
+    const h=document.createElement("div");h.className="grpHead";h.textContent=g[0];el.appendChild(h);
+    g[1].forEach(c=>{
+      const d=document.createElement("div");
+      d.className="conv"+(c.id===curId?" active":"");
+      d.innerHTML="<span class='dot'></span><span class='t'>"+esc(c.title)+"</span><span class='x' title='Apagar'>×</span>";
+      d.onclick=()=>{tempConv=null;editIdx=null;curId=c.id;saveConvs();renderList();renderChat();$("sidebar").classList.remove("open");};
+      d.querySelector(".x").onclick=e=>{e.stopPropagation();convs=convs.filter(x=>x.id!==c.id);if(curId===c.id)curId=convs[0]?convs[0].id:null;saveConvs();renderList();renderChat();};
+      el.appendChild(d);
+    });
   });
 }
 function renderSug(){
@@ -633,6 +711,8 @@ function renderSug(){
 function renderChat(){
   const c=getConv(),box=$("msgs"),w=$("welcome");
   box.innerHTML="";
+  const pt=$("planPillText");
+  if(pt)pt.textContent=(c&&c.temp)?"Conversa temporária — não é guardada":(isPro()?"plano Pro":"plano Gratuito");
   if(!c||c.msgs.length===0){w.style.display="block";return;}
   w.style.display="none";
   c.msgs.forEach((m,i)=>{
@@ -641,17 +721,41 @@ function renderChat(){
     if(m.role==="user"){
       const img=m.img?"<img src='data:"+(m.imgType||"image/jpeg")+";base64,"+m.img+"' style='max-width:100%;border-radius:10px;margin-bottom:8px;display:block'>":"";
       d.innerHTML="<div class='body'>"+img+esc(m.content)+"</div>";
+      d.style.flexDirection="column";d.style.alignItems="flex-end";
+      const t=document.createElement("div");t.className="tools";
+      const ed=document.createElement("button");ed.textContent="Editar";
+      ed.onclick=()=>{
+        editIdx=i;
+        $("prompt").value=m.content||"";
+        $("prompt").focus();updateSend();
+        toast("Edita a mensagem e envia — as respostas seguintes são refeitas.");
+      };
+      t.appendChild(ed);
+      d.appendChild(t);
     }else{
       d.innerHTML="<div class='av'>"+markSVG("#fff",16)+"</div><div class='body'>"+md(m.content)+"</div>";
       const t=document.createElement("div");t.className="tools";
       const cp=document.createElement("button");cp.textContent="Copiar";cp.onclick=()=>{navigator.clipboard.writeText(m.content);cp.textContent="Copiado ✓";setTimeout(()=>cp.textContent="Copiar",1500);};
       const rg=document.createElement("button");rg.textContent="Gerar de novo";rg.onclick=()=>regenerate(i);
       t.appendChild(cp);
-      const sp=document.createElement("button");sp.textContent="Ouvir";sp.onclick=()=>{if(speaking){stopSpeak();return;}speak(m.content,sp);};
+      const sp=document.createElement("button");sp.textContent="Ouvir";sp.onclick=()=>{if(speaking&&curSpeakBtn===sp){stopSpeak();return;}speak(m.content,sp);};
       t.appendChild(sp);
+      const up=document.createElement("button");up.title="Gosto";up.className=m.fb==="up"?"on":"";
+      up.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3zm0 0l4-7a2.4 2.4 0 0 1 2.3 3.1L12.6 9H19a2 2 0 0 1 2 2.4l-1.4 7A2 2 0 0 1 17.6 20H7"/></svg>';
+      up.onclick=()=>{m.fb=m.fb==="up"?null:"up";saveConvs();renderChat();};
+      const dn=document.createElement("button");dn.title="Não gosto";dn.className=m.fb==="down"?"on":"";
+      dn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-3zm0 0l-4 7a2.4 2.4 0 0 1-2.3-3.1L11.4 15H5a2 2 0 0 1-2-2.4l1.4-7A2 2 0 0 1 6.4 4H17"/></svg>';
+      dn.onclick=()=>{m.fb=m.fb==="down"?null:"down";saveConvs();renderChat();};
+      t.appendChild(up);t.appendChild(dn);
+      const sh=document.createElement("button");sh.textContent="Partilhar";sh.onclick=()=>{navigator.clipboard.writeText(m.content);sh.textContent="Copiado ✓";setTimeout(()=>sh.textContent="Partilhar",1500);};
+      t.appendChild(sh);
       const code=(m.content.match(/```[\s\S]*?```/g)||[]);
       if(code.length){
-        const art=document.createElement("button");art.textContent="Ver artefacto";art.onclick=()=>openArtifacts();
+        const art=document.createElement("button");art.textContent="Ver artefacto";
+        art.onclick=()=>{
+          const mm=code[0].match(/```(\w*)\n?([\s\S]*?)```/);
+          openArtifactView(mm?mm[2]:"",mm?(mm[1]||"código"):"código");
+        };
         t.appendChild(art);
       }
       t.appendChild(rg);
@@ -789,10 +893,11 @@ async function send(){
   if((!text&&!attach)||busy)return;
   if(!getConv())newConv();
   const c=getConv();
+  if(editIdx!=null){c.msgs=c.msgs.slice(0,editIdx);editIdx=null;}
   const m={role:"user",content:text};
   if(attach&&attach.kind==="image"){m.img=attach.data;m.imgType=attach.type;}
   if(attach&&attach.kind==="text"){m.content=(text?text+"\n\n":"")+"[Ficheiro "+attach.name+"]\n"+attach.data;}
-  c.msgs.push(m);
+  c.msgs.push(m);sessMsgs++;
   if(c.msgs.length===1)c.title=(text||"Nova conversa").slice(0,42);
   ta.value="";ta.style.height="auto";attach=null;renderAttach();updateSend();
   renderChat();renderList();
@@ -806,14 +911,14 @@ async function send(){
     document.getElementById("typingRow")?.remove();
     c.msgs.push({role:"assistant",content:ans});
     saveConvs();renderChat();
-    if(voiceMode)speak(ans);
+    if(voiceMode)speak(ans,null,true);
   }catch(e){
     document.getElementById("typingRow")?.remove();
     c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
       ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic (a que compraste) — ou a chave de reserva do Google, que é grátis. A chave fica só neste navegador."
       :"Não consegui responder: "+e.message+". Verifica a chave e o modelo nas Configurações."});
     saveConvs();renderChat();
-    if(voiceMode)speak(c.msgs[c.msgs.length-1].content);
+    if(voiceMode)speak(c.msgs[c.msgs.length-1].content,null,true);
   }
   setBusy(false);
 }
@@ -849,7 +954,7 @@ function renderAttach(){
 }
 function updateSend(){
   const has=$("prompt").value.trim()||attach;
-  $("sendBtn").classList.toggle("show",!!has&&!busy);
+  $("sendBtn").disabled=!has||busy;
 }
 /* páginas (Apps, Planos, Saiba mais) */
 function showPage(title,html){
@@ -884,7 +989,7 @@ function openUpgrade(){
   "<h1 class='plansTitle'>Planos que crescem<br>com você</h1>"
   +"<div class='segToggle'><button id='segInd' class='on'>Para<br>indivíduos</button><button id='segTeam'>Team e<br>Enterprise</button></div>"
   +"<div id='plansInd'>"
-  +"<div class='planCard'><h2>Free</h2><div class='sub'>Conheça o Claude</div><div class='price'>$0</div><div class='priceNote'>Gratuito para todos</div><a class='btn btnLight' href='#' onclick='return false'>Use o Claude gratuitamente</a>"
+  +"<div class='planCard'><h2>Free</h2><div class='sub'>Conheça o Claude</div><div class='price'>$0</div><div class='priceNote'>Gratuito para todos</div><button class='btn btnLight' id='freeBtn'>Use o Claude gratuitamente</button>"
   +"<ul><li>Converse na web, no iOS, no Android e no seu desktop</li><li>Gerar código e visualizar dados</li><li>Escrever, editar e criar conteúdo</li><li>Pesquisa na web</li><li>Memória entre conversas</li><li>Criar arquivos e executar código</li><li>Conectar serviços do Slack e do Google Workspace</li><li>Raciocínio estendido para trabalhos complexos</li><li>Claude Design, Slides e Docs</li></ul></div>"
   +"<div class='planCard'><h2>Pro</h2><div class='sub'>Pesquise, programe e organize</div><div class='segToggle mini'><button id='billM' class='on'>Mensal</button><button id='billA'>Anual · Economize 17%</button></div><div class='price' id='proPrice'>$20 USD</div><div class='priceNote' id='proNote'>por mês · cobrado mensalmente</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Pro</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Tudo no Free mais:</div>"
   +"<ul><li>Claude Code</li><li>Claude Dashboards (beta)</li><li>Limite maior de uso</li><li>Acesso a mais modelos</li><li>Memória entre conversas</li></ul></div>"
@@ -892,7 +997,7 @@ function openUpgrade(){
   +"<ul><li>Até 10x o uso do plano Pro toda semana*</li><li>Acesso antecipado aos recursos avançados do Claude</li><li>Acesso prioritário em horários de tráfego intenso</li></ul></div>"
   +"</div>"
   +"<div id='plansTeam' style='display:none'>"
-  +"<div class='planCard'><h2>Team</h2><div class='sub'>Equipe (2–150 usuários)</div><div class='price'>US$ 20</div><div class='priceNote'>por assento padrão / mês · cobrança anual (US$ 25/mês com cobrança mensal)</div><div class='price' style='font-size:26px;margin-top:14px'>US$ 100</div><div class='priceNote'>por assento premium / mês · cobrança anual (US$ 125/mês com cobrança mensal)</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Team</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Inclui:</div>"
+  +"<div class='planCard'><h2>Team</h2><div class='sub'>Equipe (2–150 usuários)</div><div class='price'>US$ 20</div><div class='priceNote'>por pessoa/mês · cobrança anual</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Team</a><p class='btnNote'>Sem compromisso · Cancele quando quiser</p><div class='incl'>Inclui:</div>"
   +"<ul><li>Claude Code e Claude Cowork</li><li>Claude Design, Slides e Docs</li><li>Claude Motion e Dashboards (beta)</li><li>Claude Science</li><li>Microsoft 365</li><li>Busca empresarial</li><li>SSO</li><li>Sem treinamento de modelos com seu conteúdo por padrão</li></ul></div>"
   +"<div class='planCard'><h2>Enterprise</h2><div class='sub'>20+ usuários</div><div class='price'>Preço por assento + uso</div><div class='priceNote'>US$ 20/assento/mês + impostos, cobrança anual · uso às tarifas da API</div><a class='btn btnDark' href='https://claude.ai/upgrade' target='_blank'>Obter plano Enterprise</a><p class='btnNote'>Dúvidas? Fale com nosso consultor de vendas.</p></div>"
   +"</div>"
@@ -905,11 +1010,12 @@ function openUpgrade(){
   $("segTeam").onclick=()=>{$("segTeam").classList.add("on");$("segInd").classList.remove("on");$("plansTeam").style.display="block";$("plansInd").style.display="none";};
   $("billM").onclick=()=>{$("billM").classList.add("on");$("billA").classList.remove("on");$("proPrice").textContent="$20 USD";$("proNote").textContent="por mês · cobrado mensalmente";};
   $("billA").onclick=()=>{$("billA").classList.add("on");$("billM").classList.remove("on");$("proPrice").textContent="$17 USD";$("proNote").textContent="por mês · cobrado anualmente (US$ 200 faturados antecipadamente)";};
+  const fb=$("freeBtn");if(fb)fb.onclick=()=>{showChat();};
 }
 function openAbout(){
   showPage("Saiba mais",
   "<img src='"+LOGO_LOCK+"' style='height:32px;margin:8px 0 4px' alt='Claude'><h1>Claude</h1>"
-  +"<div class='card'><h2>O que é o Claude?</h2><p>O Claude é um assistente de IA da Anthropic. Ajuda a escrever, resumir, programar, organizar ideias e responder perguntas — em português e em muitas outras línguas.</p><p>Este site usa a API da Anthropic: as respostas vêm dos modelos Claude (Sonnet, Opus, Haiku e Fable) e o uso é cobrado à conta da chave configurada nas Configurações.</p><a class='link' href='https://claude.ai' target='_blank'>Visitar claude.ai</a></div>"
+  +"<div class='card'><h2>O que é o Claude?</h2><p>O Claude é um assistente de IA da Anthropic. Ajuda a escrever, resumir, programar, organizar ideias e responder perguntas — em português e em muitas outras línguas.</p><a class='link' href='https://claude.ai' target='_blank'>Visitar claude.ai</a></div>"
   +"<div class='card'><h2>Saiba mais</h2>"
   +"<a class='link' href='https://www.anthropic.com' target='_blank'>Sobre a Anthropic</a><br>"
   +"<a class='link' href='https://claude.com/academy' target='_blank'>Claude Academy</a><br>"
@@ -937,7 +1043,7 @@ $("menuBtn").onclick=()=>{
 };
 $("closeSide").onclick=()=>{document.body.classList.add("noSide");$("sidebar").classList.remove("open");};
 $("hideSide").onclick=()=>{document.body.classList.add("noSide");$("sidebar").classList.remove("open");};
-$("sugMemory").onclick=()=>{alert("Importar memória: traz a tua memória de outros assistentes de IA. Por agora, escreve as tuas preferências nas Configurações (Mensagem do sistema).");};
+$("sugMemory").onclick=()=>{toast("Escolhe o ficheiro com a tua memória (.md, .txt ou .json).");const f=$("memImport");if(f)f.click();};
 $("sugPersonal").onclick=()=>{openAdmin();};
 $("appsBtn").onclick=()=>{openApps();};
 $("searchInput").addEventListener("input",renderList);
@@ -949,7 +1055,7 @@ function showAllConvs(){
   }).join("")||"<p>Sem conversas ainda.</p>";
   showPage("Todas as conversas","<div>"+items+"</div>");
   document.querySelectorAll(".convRow").forEach(el=>{
-    el.onclick=()=>{curId=el.dataset.id;saveConvs();renderList();showChat();};
+    el.onclick=()=>{tempConv=null;editIdx=null;curId=el.dataset.id;saveConvs();renderList();showChat();};
   });
 }
 function showFiles(){
@@ -977,6 +1083,7 @@ function renderAuth(){
   $("main").style.display=logged?"":"none";
 }
 function enterAccount(em,nm){
+  tempConv=null;editIdx=null;
   em=(em||"").trim().toLowerCase();
   if(!em||!em.includes("@")){toast("Escreve um email válido.");return false;}
   const a=accts[em];
@@ -1043,27 +1150,54 @@ function finishOnboard(){
   $("onboardPage").classList.remove("open");
   applyCfg();renderList();renderChat();renderAuth();
 }
-$("ghostBtn").onclick=openAccount;
+$("ghostBtn").onclick=startTempChat;
+function startTempChat(){
+  tempConv={id:"temp"+Date.now(),title:"Conversa temporária",msgs:[],ts:Date.now(),created:Date.now(),temp:true};
+  curId=null;editIdx=null;
+  showChat();renderList();
+  toast("Conversa temporária — não é guardada.");
+  $("prompt").focus();
+}
 $("userRow").onclick=openAccount;
 $("loginGoogle").onclick=()=>{
   const em=($("loginPageEmail").value||"").trim();
   if(!em){$("loginPageEmail").focus();toast("Digite o teu e-mail para entrar.");return;}
   enterAccount(em,"");
 };
-$("loginApple").onclick=()=>{toast("Usa o teu email para entrar.");};
+$("loginApple").onclick=()=>{
+  const em=($("loginPageEmail").value||"").trim();
+  if(!em){$("loginPageEmail").focus();toast("Digite o teu e-mail para entrar com a Apple.");return;}
+  enterAccount(em,"");
+};
 $("loginPageGo").onclick=()=>{enterAccount($("loginPageEmail").value,"");};
 $("loginPageEmail").addEventListener("keydown",e=>{if(e.key==="Enter")enterAccount($("loginPageEmail").value,"");});
 $("loginDownload").onclick=()=>{window.open("https://claude.ai","_blank");};
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
-$("accLang").onclick=()=>{alert("Idioma: Português (o Claude responde na língua que escolheres nas Configurações).");};
-$("accHelp").onclick=()=>{alert("Ajuda: escreve a tua pergunta no chat. Se o Claude não responder, verifica a chave da API nas Configurações.");};
+$("accLang").onclick=()=>{$("accountOverlay").classList.remove("open");openLang();};
+$("accHelp").onclick=()=>{$("accountOverlay").classList.remove("open");openHelp();};
 $("accUpgrade").onclick=()=>{$("accountOverlay").classList.remove("open");openUpgrade();};
 $("accApps").onclick=()=>{$("accountOverlay").classList.remove("open");openApps();};
 $("accAbout").onclick=()=>{$("accountOverlay").classList.remove("open");openAbout();};
+$("accAcademy").onclick=()=>{$("accountOverlay").classList.remove("open");window.open("https://claude.ai","_blank");};
+const LANGS=["Português","English","Español","Français","Deutsch","Italiano","日本語","한국어","中文","Русский","Nederlands"];
+function openLang(){
+  const cur=cfg.lang||"Português";
+  const rows=LANGS.map(l=>"<div class='convRow' data-lang='"+l+"' style='padding:13px 4px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;align-items:center'><span style='font-size:16px'>"+l+"</span>"+(l===cur?"<span style='color:var(--blue);font-size:20px'>✓</span>":"")+"</div>").join("");
+  showPage("Idioma","<div>"+rows+"</div>");
+  document.querySelectorAll(".convRow").forEach(el=>{
+    el.onclick=()=>{cfg.lang=el.dataset.lang;saveCfg();toast("Idioma: "+cfg.lang+".");showChat();};
+  });
+}
+function openHelp(){
+  showPage("Receber ajuda",
+  "<h1>Receber ajuda</h1>"
+  +"<div class='card'><h2>Central de ajuda</h2><p>Respostas às perguntas mais comuns sobre o Claude.</p><a class='btn' href='https://support.anthropic.com' target='_blank'>Abrir central de ajuda</a></div>"
+  +"<div class='card'><h2>Contactar suporte</h2><p>Fala com a equipa de suporte da Anthropic.</p><a class='btn' href='https://support.anthropic.com' target='_blank'>Contactar suporte</a></div>"
+  +"<div class='card'><h2>Atalhos de teclado</h2><p><b>Enter</b> — enviar mensagem<br><b>Shift + Enter</b> — nova linha<br><b>Ctrl + /</b> — ver atalhos<br><b>Esc</b> — fechar janelas</p></div>");
+}
 $("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");localStorage.setItem(LS.sess,"");location.reload();};
 $("upgradeLink").onclick=e=>{e.preventDefault();openUpgrade();};
-document.querySelector("#navCode .up").onclick=e=>{e.stopPropagation();openUpgrade();};
 $("pageBack").onclick=showChat;
 $("modelBtn").onclick=()=>{
   const el=$("modelList");el.innerHTML="";
@@ -1110,8 +1244,7 @@ const SET_SECTIONS=[
   {id:"cobranca",label:"Cobrança",grp:"Preferências"},
   {id:"recursos",label:"Recursos",grp:"Preferências"},
   {id:"memoria",label:"Memória",grp:"Preferências"},
-  {id:"reflexao",label:"Reflexão",grp:"Preferências"},
-  {id:"tempo",label:"Tempo e foco",grp:"Preferências"},
+  {id:"usage",label:"Utilização",grp:"Preferências"},
   {id:"code",label:"Claude Code",grp:"Preferências"},
   {id:"skills",label:"Skills",grp:"Personalização"},
   {id:"conectores",label:"Conectores",grp:"Personalização"},
@@ -1132,7 +1265,7 @@ function setGeral(){
   +keys
   +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.short+"</option>").join("")+"</select>"
   +"<h3>Aparência</h3>"
-  +"<div class='setRow'><div><div class='lab'>Tema</div><div class='desc'>Sistema, Claro ou Escuro.</div></div><select><option>Sistema</option><option>Claro</option><option>Escuro</option></select></div>"
+  +"<div class='setRow'><div><div class='lab'>Tema</div><div class='desc'>Sistema, Claro ou Escuro.</div></div><select id='setTheme'><option value='system'>Sistema</option><option value='light'>Claro</option><option value='dark'>Escuro</option></select></div>"
   +"<div class='setRow'><div><div class='lab'>Fonte da interface</div></div><span style='font-size:14.5px;color:var(--ink2)'>Padrão · Anthropic Sans</span></div>"
   +"<div class='setRow'><div><div class='lab'>Fonte das respostas</div></div><span style='font-size:14.5px;color:var(--ink2)'>Anthropic Serif</span></div>"
   +"<div class='setRow'><div><div class='lab'>Tamanho do texto da conversa</div></div><span style='font-size:14.5px;color:var(--ink2)'>Médio</span></div>"
@@ -1153,8 +1286,7 @@ function setConta(){
   +"<label>Instruções para o Claude</label><textarea id='setSystem' placeholder='Diga ao Claude um pouco sobre você e suas preferências. Por exemplo, “Sempre inclua referências e fontes...”'>"+esc(cfg.system||"")+"</textarea>"
   +"<h3>Conta</h3>"
   +"<div class='setRow'><div><div class='lab'>Sair em todos os aparelhos</div></div><button class='setBtn' id='setSignOut'>Sair</button></div>"
-  +"<div class='setRow'><div><div class='lab'>Excluir sua conta</div></div><button class='setBtn' id='setDelete'>Apagar conta</button></div>"
-  +"<div class='setRow'><div><div class='lab'>ID da organização</div></div><button class='setBtn' id='setCopyOrg'>Copiar ID</button></div>";
+  +"<div class='setRow'><div><div class='lab'>Excluir sua conta</div></div><button class='setBtn' id='setDelete'>Apagar conta</button></div>";
 }
 function setPrivacidade(){
   return "<h2>Privacidade</h2><p>A Anthropic acredita em práticas transparentes de dados. Saiba como suas informações são protegidas aqui: Central de privacidade e Política de privacidade para mais detalhes.</p>"
@@ -1195,17 +1327,15 @@ function setMemoria(){
   +"<div class='setRow'><div><div class='lab'>Importar memória de outros provedores de IA</div></div><button class='setBtn' id='setImportMem'>Iniciar importação</button></div>"
   +"<div class='setRow'><div><div class='lab'>Exportar memória</div><div class='desc'>Baixe sua memória como um .zip de arquivos Markdown. Ainda não há nada para exportar.</div></div><button class='setBtn' disabled style='opacity:.5'>Exportar</button></div>";
 }
-function setReflexao(){
-  return "<h2>Reflexão</h2><p>Você poderá alterar isso quando sua retrospectiva estiver pronta.</p>"
-  +"<div class='setRow'><div><div class='lab'>Período de tempo</div></div><span style='font-size:14.5px;color:var(--ink2)'>Último mês</span></div>"
-  +"<button class='setBtn' disabled style='opacity:.5'>Regenerar reflexão</button>"
-  +"<p style='margin-top:14px'>Analisando seu último mês. Isso deve levar apenas um minuto ou menos.</p>";
-}
-function setTempo(){
-  return "<h2>Tempo e foco</h2>"
-  +"<div class='setRow'><div><div class='lab'>Lembretes de pausa</div><div class='desc'>Receba um lembrete para fazer uma pausa no Claude. Você pode adiar ou ajustar a qualquer momento.</div></div><span style='font-size:14.5px;color:var(--ink2)'>Nenhuma</span></div>"
-  +"<div class='setRow'><div><div class='lab'>Horas silenciosas</div><div class='desc'>Defina limites de tempo para o Claude. Você pode dispensar ou ajustar a qualquer momento.</div></div><span style='font-size:14.5px;color:var(--ink2)'>Desligado</span></div>"
-  +"<p>D S T Q Q S S — todos desligados.</p>";
+function setUsage(){
+  const weekAgo=Date.now()-7*864e5;
+  let week=0;
+  convs.forEach(c=>{if((c.ts||0)>=weekAgo)week+=(c.msgs||[]).filter(m=>m.role==="user").length;});
+  const sess=sessMsgs;
+  const bar=(n,max)=>"<div style='height:10px;background:#F1F1EE;border-radius:6px;overflow:hidden;margin:8px 0 4px'><div style='height:100%;width:"+Math.min(100,Math.round(n/max*100))+"%;background:#1A1A1A;border-radius:6px'></div></div>";
+  return "<h2>Utilização</h2><p>O teu uso do Claude nesta sessão e nos últimos 7 dias.</p>"
+  +"<h3>Esta sessão</h3>"+bar(sess,50)+"<p>"+sess+" mensagens enviadas</p>"
+  +"<h3>Últimos 7 dias</h3>"+bar(week,100)+"<p>"+week+" mensagens enviadas</p>";
 }
 function setCode(){
   return "<h2>Claude Code</h2><p>Claude entende sua base de código e ajuda você a criar, depurar e entregar mais rápido. Faça upgrade para Pro, Max ou Ultra.</p>"
@@ -1226,13 +1356,13 @@ function setCode(){
   +"<p>Nenhuma instância do Claude Code conectada. Quando você fizer login no Claude Code, seus tokens de autorização aparecerão aqui.</p>";
 }
 function setSkills(){
+  const list=(cfg.skills||[]);
+  const rows=list.length
+    ?list.map(s=>"<div class='setRow'><div><div class='lab'>"+esc(typeof s==="string"?s:(s.name||""))+"</div></div></div>").join("")
+    :"<p>Ainda não tens skills instaladas.</p>";
   return "<h2>Skills</h2><p>As Skills ensinam ao Claude como você trabalha.</p>"
   +"<div class='card' style='background:#F7F7F4'><h2>Adicione suas primeiras Skills</h2><p>Adicione Skills em Descobrir ou crie as suas próprias.</p><button class='setBtn dark' id='setDiscoverSkills'>Descobrir Skills</button></div>"
-  +"<h3>Da Anthropic e parceiros</h3>"
-  +"<div class='setRow'><div><div class='lab'>skill-creator</div><div class='desc'>28 de out.</div></div></div>"
-  +"<div class='setRow'><div><div class='lab'>google-workspace</div><div class='desc'>14 de out.</div></div></div>"
-  +"<div class='setRow'><div><div class='lab'>import-memory</div><div class='desc'>14 de set.</div></div></div>"
-  +"<div class='setRow'><div><div class='lab'>morning</div><div class='desc'>14 de set.</div></div></div>";
+  +"<h3>Instaladas</h3>"+rows;
 }
 function setConectores(){
   return "<h2>Conectores</h2><p>Ligue os teus serviços ao Claude.</p>"
@@ -1264,8 +1394,7 @@ function renderSetSection(){
   else if(setCur==="cobranca")el.innerHTML=setCobranca();
   else if(setCur==="recursos")el.innerHTML=setRecursos();
   else if(setCur==="memoria")el.innerHTML=setMemoria();
-  else if(setCur==="reflexao")el.innerHTML=setReflexao();
-  else if(setCur==="tempo")el.innerHTML=setTempo();
+  else if(setCur==="usage")el.innerHTML=setUsage();
   else if(setCur==="code")el.innerHTML=setCode();
   else if(setCur==="skills")el.innerHTML=setSkills();
   else if(setCur==="conectores")el.innerHTML=setConectores();
@@ -1288,7 +1417,17 @@ function toast(msg){
   netToastTimer=setTimeout(()=>t.classList.remove("show"),3200);
 }
 function wireSetSection(){
-  document.querySelectorAll("#setContent .tgl").forEach(t=>{t.onclick=()=>t.classList.toggle("on");});
+  document.querySelectorAll("#setContent .tgl").forEach(t=>{
+    const row=t.closest(".setRow");
+    const lab=row?row.querySelector(".lab"):null;
+    const key=lab?("tgl_"+lab.textContent.trim()):null;
+    if(key&&cfg.toggles&&key in cfg.toggles)t.classList.toggle("on",!!cfg.toggles[key]);
+    t.onclick=()=>{
+      t.classList.toggle("on");
+      if(key){if(!cfg.toggles)cfg.toggles={};cfg.toggles[key]=t.classList.contains("on");saveCfg();}
+    };
+  });
+  const th=$("setTheme");if(th){th.value=cfg.theme||"system";th.onchange=()=>{cfg.theme=th.value;saveCfg();applyTheme();};}
   const ak=$("setApiKey");if(ak)ak.addEventListener("input",()=>{cfg.apiKey=ak.value.trim();saveCfg();});
   const gk=$("setGeminiKey");if(gk)gk.addEventListener("input",()=>{cfg.geminiKey=gk.value.trim();saveCfg();});
   document.querySelectorAll("#setContent [data-mk]").forEach(inp=>inp.addEventListener("input",()=>{if(!cfg.modelKeys)cfg.modelKeys={};cfg.modelKeys[inp.dataset.mk]=inp.value.trim();saveCfg();}));
@@ -1298,7 +1437,6 @@ function wireSetSection(){
   const ss=$("setSystem");if(ss)ss.addEventListener("input",()=>{cfg.system=ss.value.trim();saveCfg();});
   const so=$("setSignOut");if(so)so.onclick=()=>{localStorage.setItem(LS.sess,"");location.reload();};
   const sd=$("setDelete");if(sd)sd.onclick=()=>{if(confirm("Apagar esta conta e as conversas dela?")){const em=(cfg.email||"").trim().toLowerCase();if(em){delete accts[em];saveAccts(accts);}localStorage.setItem(LS.sess,"");location.reload();}};
-  const sco=$("setCopyOrg");if(sco)sco.onclick=()=>{navigator.clipboard.writeText("org-"+(cfg.user||"claude"));sco.textContent="Copiado ✓";setTimeout(()=>sco.textContent="Copiar ID",1500);};
   const se=$("setExport");if(se)se.onclick=()=>{
     const blob=new Blob([JSON.stringify(convs,null,2)],{type:"application/json"});
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="claude-conversas.json";a.click();
@@ -1391,9 +1529,9 @@ function openArtifacts(){
   +"<div class='segToggle' style='margin-bottom:18px'><button id='artTabAll' class='on'>Todos</button><button id='artTabMine'>Meus</button><button id='artTabShared'>Compartilhados com você</button></div>"
   +"<h2 style='font-size:19px;margin:6px 0 12px'>Crie algo novo</h2>"
   +"<div style='display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px'>"
-  +"<div class='card' style='background:#E8EFFC;border-color:#D3E0F7;margin:0'><h2>Documentos</h2><p style='color:#4A5568'>Pela Anthropic. Um documento que sua equipe lê, comenta e edita ali mesmo, enquanto o Claude o mantém atualizado.</p></div>"
-  +"<div class='card' style='background:#FDEEE3;border-color:#F6DCC8;margin:0'><h2>Apresentações</h2><p style='color:#4A5568'>Pela Anthropic. Uma apresentação de slides que você pode apresentar, reestilizar com um design system e exportar para o PowerPoint.</p></div>"
-  +"<div class='card' style='background:#F1E9FC;border-color:#E0D2F5;margin:0'><h2>Design</h2><p style='color:#4A5568'>Pela Anthropic. Telas, fluxos e gráficos dispostos como pranchetas em um único canvas que você pode editar manualmente.</p></div>"
+  +"<div class='card' id='artCardDoc' style='background:#E8EFFC;border-color:#D3E0F7;margin:0;cursor:pointer'><h2>Documentos</h2><p style='color:#4A5568'>Pela Anthropic. Um documento que sua equipe lê, comenta e edita ali mesmo, enquanto o Claude o mantém atualizado.</p></div>"
+  +"<div class='card' id='artCardSlides' style='background:#FDEEE3;border-color:#F6DCC8;margin:0;cursor:pointer'><h2>Apresentações</h2><p style='color:#4A5568'>Pela Anthropic. Uma apresentação de slides que você pode apresentar, reestilizar com um design system e exportar para o PowerPoint.</p></div>"
+  +"<div class='card' id='artCardDesign' style='background:#F1E9FC;border-color:#E0D2F5;margin:0;cursor:pointer'><h2>Design</h2><p style='color:#4A5568'>Pela Anthropic. Telas, fluxos e gráficos dispostos como pranchetas em um único canvas que você pode editar manualmente.</p></div>"
   +"</div>"
   +"<div id='artList'></div>");
   renderArtList("all");
@@ -1401,6 +1539,10 @@ function openArtifacts(){
   $("artTabMine").onclick=()=>{setArtTab("mine");};
   $("artTabShared").onclick=()=>{setArtTab("shared");};
   $("artCreateBtn").onclick=()=>{newConv();$("prompt").value="Cria um artefacto: ";$("prompt").focus();};
+  const artNew=t=>{newConv();$("prompt").value="Cria um artefacto ("+t+"): ";$("prompt").focus();};
+  $("artCardDoc").onclick=()=>artNew("documento");
+  $("artCardSlides").onclick=()=>artNew("apresentação");
+  $("artCardDesign").onclick=()=>artNew("design");
 }
 function setArtTab(t){
   ["artTabAll","artTabMine","artTabShared"].forEach(id=>$(id).classList.remove("on"));
@@ -1421,6 +1563,14 @@ function collectArtifacts(){
   }));
   return out;
 }
+function openArtifactView(code,lang){
+  const isMd=(lang||"").toLowerCase()==="md"||(lang||"").toLowerCase()==="markdown";
+  const body=isMd?md(code):"<pre style='background:#1F1C19;color:#F5F2EA;padding:16px;border-radius:12px;overflow-x:auto;white-space:pre-wrap'><code>"+esc(code)+"</code></pre>";
+  showPage("Artefacto — "+(lang||"código"),
+  "<div class='card'><h2>"+esc(lang||"código")+"</h2>"+body+"</div>"
+  +"<button class='setBtn dark' id='artCopyBtn'>Copiar</button>");
+  $("artCopyBtn").onclick=()=>{navigator.clipboard.writeText(code);toast("Copiado.");};
+}
 function renderArtList(tab){
   const el=$("artList");if(!el)return;el.innerHTML="";
   const arts=collectArtifacts();
@@ -1434,19 +1584,36 @@ function renderArtList(tab){
   }
   arts.forEach(a=>{
     const d=document.createElement("div");d.className="listRow";
-    d.innerHTML="<b>"+esc(a.lang)+" — "+esc(a.title)+"</b><button>Copiar</button>";
-    d.querySelector("button").onclick=()=>{navigator.clipboard.writeText(a.code);};
+    d.innerHTML="<b>"+esc(a.lang)+" — "+esc(a.title)+"</b><span style='display:flex;gap:6px'><button class='artView'>Ver</button><button class='artCopy'>Copiar</button></span>";
+    d.querySelector(".artView").onclick=()=>openArtifactView(a.code,a.lang);
+    d.querySelector(".artCopy").onclick=()=>{navigator.clipboard.writeText(a.code);toast("Copiado.");};
     el.appendChild(d);
   });
 }
 $("navProjects").onclick=openProjects;
 $("navArtifacts").onclick=openArtifacts;
-$("navCode").onclick=()=>{
-  newConv();
-  $("prompt").value="Escreve uma função em JavaScript que";
-  updateSend();
-  $("prompt").focus();
-};
+$("navScheduled").onclick=openScheduled;
+function openScheduled(){
+  const list=(cfg.scheduled||[]);
+  const rows=list.length
+    ?list.map((s,i)=>"<div class='listRow'><b>"+esc(s.title)+" — "+esc(s.time)+"</b><button data-i='"+i+"'>Apagar</button></div>").join("")
+    :"<p style='color:var(--ink2)'>Ainda não tens agendamentos.</p>";
+  showPage("Agendamentos",
+  "<div class='card'><h2>Criar agendamento</h2>"
+  +"<label style='display:block;font-size:13.5px;font-weight:600;margin:10px 0 6px'>Título</label><input type='text' id='schTitle' placeholder='Ex.: Resumo das notícias' style='width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px'>"
+  +"<label style='display:block;font-size:13.5px;font-weight:600;margin:10px 0 6px'>Hora</label><input type='time' id='schTime' style='width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px'>"
+  +"<div style='margin-top:14px'><button class='setBtn dark' id='schAdd'>Criar agendamento</button></div></div>"
+  +"<div id='schList'>"+rows+"</div>");
+  $("schAdd").onclick=()=>{
+    const t=$("schTitle").value.trim(),h=$("schTime").value;
+    if(!t||!h){toast("Escreve um título e escolhe a hora.");return;}
+    if(!cfg.scheduled)cfg.scheduled=[];
+    cfg.scheduled.push({title:t,time:h});saveCfg();openScheduled();toast("Agendamento criado.");
+  };
+  document.querySelectorAll("#schList .listRow button").forEach(b=>{
+    b.onclick=()=>{cfg.scheduled.splice(+b.dataset.i,1);saveCfg();openScheduled();};
+  });
+}
 $("fileInput").onchange=e=>{
   const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();
@@ -1459,6 +1626,12 @@ $("fileInput").onchange=e=>{
   }
   e.target.value="";
 };
+$("attachBtn").onclick=e=>{e.stopPropagation();$("attachMenu").classList.toggle("open");};
+document.addEventListener("click",e=>{const m=$("attachMenu");if(m&&!m.contains(e.target)&&e.target.id!=="attachBtn")m.classList.remove("open");});
+$("amFile").onclick=()=>{$("attachMenu").classList.remove("open");$("fileInput").click();};
+$("amShot").onclick=()=>{$("attachMenu").classList.remove("open");toast("A captura de ecrã ainda não está disponível neste navegador.");};
+$("amSearch").onclick=()=>{$("attachMenu").classList.remove("open");document.body.classList.remove("noSide");if(window.innerWidth<=760)$("sidebar").classList.add("open");$("searchInput").focus();};
+$("permModeBtn").onclick=()=>{cfg.permMode=cfg.permMode==="auto"?"manual":"auto";saveCfg();};
 let rec=null;
 let recStopping=false;
 let recRetries=0;
@@ -1466,14 +1639,14 @@ function stopRec(){
   recStopping=true;
   try{if(rec)rec.stop();}catch(e){}
 }
-function startRec(intent){
+function startRec(intent,quiet){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){toast("O teu navegador não suporta ditado por voz.");return;}
   if(rec){stopRec();return;}
   recStopping=false;
   const btns=[$("micBtn"),$("voiceBtn")];
   btns.forEach(b=>{if(b)b.classList.add("listening");});
-  toast(intent==="voice"?"Modo de voz: fala agora.":"A ouvir… fala agora.");
+  if(!quiet)toast(intent==="voice"?"Modo de voz: fala agora.":"A ouvir… fala agora.");
   const r=new SR();r.lang="pt-PT";r.interimResults=false;
   r.onresult=ev=>{
     const t=ev.results[0][0].transcript;
@@ -1507,7 +1680,7 @@ $("voiceBtn").onclick=startVoiceMode;
 let voiceMode=false;
 let speaking=false;
 let curSpeakBtn=null;
-function speak(text,btn){
+function speak(text,btn,fromVoice){
   if(!("speechSynthesis" in window)){toast("O teu navegador não suporta leitura em voz alta.");return;}
   window.speechSynthesis.cancel();
   const clean=String(text||"").replace(/```[\s\S]*?```/g," ").replace(/[*#`_>\[\]()]/g," ").replace(/\s+/g," ").trim();
@@ -1517,7 +1690,7 @@ function speak(text,btn){
   const v=window.speechSynthesis.getVoices().find(x=>x.lang&&x.lang.toLowerCase().indexOf("pt")===0);
   if(v)u.voice=v;
   const reset=()=>{speaking=false;if(curSpeakBtn){curSpeakBtn.textContent="Ouvir";curSpeakBtn=null;}};
-  u.onend=reset;
+  u.onend=()=>{reset();if(fromVoice&&voiceMode){recRetries=0;startRec("voice",true);}};
   u.onerror=ev=>{
     reset();
     const e=ev.error||"";
