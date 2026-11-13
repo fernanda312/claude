@@ -540,7 +540,7 @@ let accts=loadAccts();
 let sessEmail=(localStorage.getItem(LS.sess)||"").trim().toLowerCase();
 let acct=sessEmail?accts[sessEmail]:null;
 if(sessEmail&&!acct){localStorage.setItem(LS.sess,"");sessEmail="";}
-let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
+let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde SEMPRE em português de Moçambique. Nunca respondas em russo, inglês ou qualquer outra língua. A tua língua é o português.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
 /* Título igual ao do claude.ai — o anterior era inventado. */
 if(cfg.welcome==="Que bom ter você aqui!"){cfg.welcome="O que vamos pensar juntos?";if(cfg.email)persistAcct();}
 /* Migração: antes a chave única era do Google (AIza...); agora apiKey é Anthropic e geminiKey é a reserva. */
@@ -1024,7 +1024,7 @@ function onbStep(n){
 }
 function finishOnboard(){
   const nm=($("onbName").value||"").trim()||onbName||onbEmail.split("@")[0];
-  cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde em português, de forma clara e directa.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
+  cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",system:"Responde SEMPRE em português de Moçambique. Nunca respondas em russo, inglês ou qualquer outra língua. A tua língua é o português.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},{});
   cfg.email=onbEmail;cfg.user=nm;
   convs=[];projects=[];curId=null;
   localStorage.setItem(LS.sess,onbEmail);
