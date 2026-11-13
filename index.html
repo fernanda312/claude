@@ -628,7 +628,8 @@ function renderChat(){
     const d=document.createElement("div");
     d.className="msg "+(m.role==="user"?"user":"ai");
     if(m.role==="user"){
-      d.innerHTML="<div class='body'>"+esc(m.content)+"</div>";
+      const img=m.img?"<img src='data:"+(m.imgType||"image/jpeg")+";base64,"+m.img+"' style='max-width:100%;border-radius:10px;margin-bottom:8px;display:block'>":"";
+      d.innerHTML="<div class='body'>"+img+esc(m.content)+"</div>";
     }else{
       d.innerHTML="<div class='av'>"+markSVG("#fff",16)+"</div><div class='body'>"+md(m.content)+"</div>";
       const t=document.createElement("div");t.className="tools";
@@ -1034,7 +1035,11 @@ function finishOnboard(){
 }
 $("ghostBtn").onclick=openAccount;
 $("userRow").onclick=openAccount;
-$("loginGoogle").onclick=()=>{enterAccount("nacerinha@gmail.com","");};
+$("loginGoogle").onclick=()=>{
+  const em=($("loginPageEmail").value||"").trim();
+  if(!em){$("loginPageEmail").focus();toast("Digite o teu e-mail para entrar.");return;}
+  enterAccount(em,"");
+};
 $("loginApple").onclick=()=>{toast("Usa o teu email para entrar.");};
 $("loginPageGo").onclick=()=>{enterAccount($("loginPageEmail").value,"");};
 $("loginPageEmail").addEventListener("keydown",e=>{if(e.key==="Enter")enterAccount($("loginPageEmail").value,"");});
@@ -1116,7 +1121,7 @@ function setGeral(){
   :"";
   return "<h2>Geral</h2>"
   +keys
-  +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.label+"</option>").join("")+"</select>"
+  +"<label>Modelo</label><select id='setModel'>"+MODELS.map(m=>"<option value='"+m.id+"'"+(m.id===cfg.model?" selected":"")+">"+m.short+"</option>").join("")+"</select>"
   +"<h3>Aparência</h3>"
   +"<div class='setRow'><div><div class='lab'>Tema</div><div class='desc'>Sistema, Claro ou Escuro.</div></div><select><option>Sistema</option><option>Claro</option><option>Escuro</option></select></div>"
   +"<div class='setRow'><div><div class='lab'>Fonte da interface</div></div><span style='font-size:14.5px;color:var(--ink2)'>Padrão · Anthropic Sans</span></div>"
@@ -1428,8 +1433,6 @@ function renderArtList(tab){
 $("navProjects").onclick=openProjects;
 $("navArtifacts").onclick=openArtifacts;
 $("navCode").onclick=()=>{
-  cfg.system="És um programador experiente. Responde com código limpo e explica só o essencial, em português.";
-  saveCfg();
   newConv();
   $("prompt").value="Escreve uma função em JavaScript que";
   updateSend();
