@@ -344,6 +344,14 @@ body.dark .tgl.on{background:var(--accent)}
       <div class="loginOr">OU</div>
       <input type="email" class="loginInput" id="loginPageEmail" placeholder="Digite seu e-mail" autocomplete="email">
       <button class="loginBtn" id="loginPageGo" style="margin-bottom:0">Continuar com e-mail</button>
+      <div id="loginPassWrap" style="display:none">
+        <div style="font-size:14.5px;color:var(--ink2);margin-bottom:10px">A entrar como <b id="loginPassEmail" style="color:var(--ink)"></b> · <a href="#" id="loginPassBack" style="color:var(--ink);text-decoration:underline">Alterar</a></div>
+        <div style="position:relative">
+          <input type="password" class="loginInput" id="loginPagePass" placeholder="Digite a tua senha" autocomplete="current-password" style="padding-right:86px">
+          <button id="loginPassShow" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:13.5px;font-weight:600;color:var(--ink2);cursor:pointer">Mostrar</button>
+        </div>
+        <button class="loginBtn dark" id="loginPageEnter" style="margin-bottom:0">Entrar</button>
+      </div>
       <p class="loginFine">Ao continuar, reconheces a <a href="https://www.anthropic.com/privacy" target="_blank">Política de Privacidade</a> da Anthropic.</p>
     </div>
   </div>
@@ -526,7 +534,8 @@ function proEmails(){
 }
 function isPro(){
   const em=(cfg.email||"").trim().toLowerCase();
-  return !!em&&proEmails().includes(em);
+  if(em&&proEmails().includes(em)) return true;
+  return !!centralToken;
 }
 function isOwner(){return OWNER_EMAILS.includes((cfg.email||"").trim().toLowerCase());}
 function planName(){return isPro()?"Pro":"Free";}
@@ -560,6 +569,8 @@ let accts=loadAccts();
 let sessEmail=(localStorage.getItem(LS.sess)||"").trim().toLowerCase();
 let acct=sessEmail?accts[sessEmail]:null;
 if(sessEmail&&!acct){localStorage.setItem(LS.sess,"");sessEmail="";}
+let centralToken=acct&&acct.token?acct.token:"";
+let pwSet=false,pwFetched=false;
 let cfg=Object.assign({name:"Claude",welcome:"O que vamos pensar juntos?",user:"",email:"",color:"#D97757",model:"claude-sonnet-5-5",effort:"medium",permMode:"manual",theme:"system",lang:"Português",toggles:{},scheduled:[],skills:[],system:"Responde SEMPRE em português de Moçambique. Nunca respondas em russo, inglês ou qualquer outra língua. A tua língua é o português.",sug:DEFAULT_SUG,proEmails:"",geminiKey:"",modelKeys:{}},acct?acct.cfg:{});
 /* Título igual ao do claude.ai — o anterior era inventado. */
 if(cfg.welcome==="Que bom ter você aqui!"){cfg.welcome="O que vamos pensar juntos?";if(cfg.email)persistAcct();}
@@ -624,7 +635,7 @@ function md(t){
 function persistAcct(){
   const em=(cfg.email||"").trim().toLowerCase();
   if(!em)return;
-  accts[em]={cfg:cfg,convs:convs,proj:projects,cur:curId};
+  accts[em]={cfg:cfg,convs:convs,proj:projects,cur:curId,token:centralToken||undefined};
   saveAccts(accts);
 }
 function saveCfg(){persistAcct();applyCfg();}
@@ -773,12 +784,30 @@ async function callCentral(messages){
   const r=await fetch(CENTRAL_URL,{
     method:"POST",
     headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},
-    body:JSON.stringify({email:email,messages:messages,model:cfg.model,system:cfg.system||""})
+    body:JSON.stringify({email:email,token:centralToken||undefined,messages:messages,model:cfg.model,system:cfg.system||""})
   });
   const j=await r.json().catch(()=>({}));
+  if(r.status===401) throw new Error("SESSAO_EXPIRADA");
   if(!r.ok) throw new Error(j.error||("Erro "+r.status));
   if(!j.text) throw new Error(j.error||"Sem resposta do servidor.");
   return j.text;
+}
+/* Sessão central: token emitido no login com senha (30 dias). */
+function clearStoredToken(){
+  const em=(cfg.email||"").trim().toLowerCase();
+  if(em&&accts[em]){delete accts[em].token;saveAccts(accts);}
+  centralToken="";
+}
+function sessionExpired(){ clearStoredToken(); localStorage.setItem(LS.sess,""); location.reload(); }
+async function fetchPwStatus(){
+  if(pwFetched) return pwSet;
+  try{
+    const r=await fetch(CENTRAL_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},body:JSON.stringify({action:"password-status"})});
+    const j=await r.json().catch(()=>({}));
+    pwSet=!!(r.ok&&j.passwordSet);
+  }catch(e){ pwSet=false; }
+  pwFetched=true;
+  return pwSet;
 }
 async function callAnthropic(messages,keyArg){
   const key=(keyArg||cfg.apiKey||"").trim();
@@ -920,6 +949,7 @@ async function send(){
     if(voiceMode)speak(ans,null,true);
   }catch(e){
     document.getElementById("typingRow")?.remove();
+    if(e.message==="SESSAO_EXPIRADA"){sessionExpired();return;}
     c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
       ?"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic (a que compraste) — ou a chave de reserva do Google, que é grátis. A chave fica só neste navegador."
       :"Não consegui responder: "+e.message+". Verifica a chave e o modelo nas Configurações."});
@@ -942,6 +972,7 @@ async function regenerate(idx){
     c.msgs.push({role:"assistant",content:ans});saveConvs();renderChat();
   }catch(e){
     document.getElementById("typingRow")?.remove();
+    if(e.message==="SESSAO_EXPIRADA"){sessionExpired();return;}
     c.msgs.push({role:"assistant",content:"Não consegui gerar de novo: "+e.message});saveConvs();renderChat();
   }
   setBusy(false);
@@ -1094,6 +1125,7 @@ function enterAccount(em,nm){
   if(!em||!em.includes("@")){toast("Escreve um email válido.");return false;}
   const a=accts[em];
   if(a){
+    if(!centralToken)centralToken=a.token||"";
     cfg=Object.assign({},a.cfg);
     cfg.email=em;
     convs=a.convs||[];projects=a.proj||[];curId=a.cur||null;
@@ -1104,6 +1136,41 @@ function enterAccount(em,nm){
   }
   showOnboard(em,nm||"");
   return true;
+}
+/* Login em dois passos, como o original: passo 1 email, passo 2 senha. */
+let loginEmail="";
+async function startLogin(em){
+  em=(em||"").trim().toLowerCase();
+  if(!em||!em.includes("@")){toast("Escreve um email válido.");return;}
+  const needPw=await fetchPwStatus();
+  if(!needPw){ enterAccount(em,""); return; }
+  loginEmail=em;
+  $("loginPassEmail").textContent=em;
+  $("loginPagePass").value="";
+  ["loginGoogle","loginApple","loginPageEmail","loginPageGo"].forEach(id=>{const el=$(id);if(el)el.style.display="none";});
+  const orEl=document.querySelector("#loginPage .loginOr"); if(orEl)orEl.style.display="none";
+  $("loginPassWrap").style.display="block";
+  $("loginPagePass").focus();
+}
+function showLoginStep1(){
+  ["loginGoogle","loginApple","loginPageEmail","loginPageGo"].forEach(id=>{const el=$(id);if(el)el.style.display="";});
+  const orEl=document.querySelector("#loginPage .loginOr"); if(orEl)orEl.style.display="";
+  $("loginPassWrap").style.display="none";
+  loginEmail="";
+  $("loginPageEmail").focus();
+}
+async function doPasswordLogin(){
+  const em=loginEmail;
+  const pw=$("loginPagePass").value||"";
+  if(!pw){$("loginPagePass").focus();toast("Digite a tua senha.");return;}
+  try{
+    const r=await fetch(CENTRAL_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},body:JSON.stringify({action:"login",email:em,password:pw})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){ toast(j.error||"Senha incorreta."); $("loginPagePass").value=""; $("loginPagePass").focus(); return; }
+    if(j.token) centralToken=j.token;
+    showLoginStep1();
+    enterAccount(em,"");
+  }catch(e){ toast("Falha na internet. Verifica a tua ligação e tenta outra vez."); }
 }
 let onbEmail="",onbName="";
 function showOnboard(em,nm){
@@ -1165,18 +1232,14 @@ function startTempChat(){
   $("prompt").focus();
 }
 $("userRow").onclick=openAccount;
-$("loginGoogle").onclick=()=>{
-  const em=($("loginPageEmail").value||"").trim();
-  if(!em){$("loginPageEmail").focus();toast("Digite o teu e-mail para entrar.");return;}
-  enterAccount(em,"");
-};
-$("loginApple").onclick=()=>{
-  const em=($("loginPageEmail").value||"").trim();
-  if(!em){$("loginPageEmail").focus();toast("Digite o teu e-mail para entrar com a Apple.");return;}
-  enterAccount(em,"");
-};
-$("loginPageGo").onclick=()=>{enterAccount($("loginPageEmail").value,"");};
-$("loginPageEmail").addEventListener("keydown",e=>{if(e.key==="Enter")enterAccount($("loginPageEmail").value,"");});
+$("loginGoogle").onclick=()=>{startLogin($("loginPageEmail").value);};
+$("loginApple").onclick=()=>{startLogin($("loginPageEmail").value);};
+$("loginPageGo").onclick=()=>{startLogin($("loginPageEmail").value);};
+$("loginPageEmail").addEventListener("keydown",e=>{if(e.key==="Enter")startLogin($("loginPageEmail").value);});
+$("loginPageEnter").onclick=doPasswordLogin;
+$("loginPagePass").addEventListener("keydown",e=>{if(e.key==="Enter")doPasswordLogin();});
+$("loginPassBack").onclick=e=>{e.preventDefault();showLoginStep1();};
+$("loginPassShow").onclick=()=>{const p=$("loginPagePass");const show=p.type==="password";p.type=show?"text":"password";$("loginPassShow").textContent=show?"Esconder":"Mostrar";p.focus();};
 $("loginDownload").onclick=()=>{window.open("https://claude.ai","_blank");};
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
@@ -1202,7 +1265,7 @@ function openHelp(){
   +"<div class='card'><h2>Contactar suporte</h2><p>Fala com a equipa de suporte da Anthropic.</p><a class='btn' href='https://support.anthropic.com' target='_blank'>Contactar suporte</a></div>"
   +"<div class='card'><h2>Atalhos de teclado</h2><p><b>Enter</b> — enviar mensagem<br><b>Shift + Enter</b> — nova linha<br><b>Ctrl + /</b> — ver atalhos<br><b>Esc</b> — fechar janelas</p></div>");
 }
-$("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");localStorage.setItem(LS.sess,"");location.reload();};
+$("accLogout").onclick=()=>{$("accountOverlay").classList.remove("open");clearStoredToken();localStorage.setItem(LS.sess,"");location.reload();};
 $("upgradeLink").onclick=e=>{e.preventDefault();openUpgrade();};
 $("pageBack").onclick=showChat;
 $("modelBtn").onclick=()=>{
@@ -1266,6 +1329,13 @@ function setGeral(){
   +"<p style='font-size:13.5px;color:var(--ink2);margin:-4px 0 10px'>Se a chave do Claude falhar, o chat usa esta chave de reserva sem mostrar nada. Cria-se grátis em <a class='link' href='https://aistudio.google.com/apikey' target='_blank'>aistudio.google.com/apikey</a>.</p>"
   +"<h3>Chaves por modelo</h3><p>Cada modelo usa a sua chave, se estiver preenchida; senão usa a chave principal. A mesma chave pode ser colada em vários modelos.</p>"
   +MODELS.map(m=>"<label>"+m.short+"</label><input type='password' data-mk='"+m.id+"' placeholder='Chave para "+m.short+"' autocomplete='off' value='"+esc(((cfg.modelKeys||{})[m.id])||"")+"'>").join("")
+  +"<h3>Senha de acesso</h3><p>Uma senha para todos os emails Pro. Quem entra com email + senha usa os modelos Pro. Sem senha definida, o login continua só por email.</p>"
+  +"<div id='pwStatusLine'><p style='font-size:13.5px;color:var(--ink2)'>A verificar…</p></div>"
+  +"<div id='pwCurrentWrap' style='display:none'><label>Senha atual</label><input type='password' id='setPwCurrent' placeholder='Senha atual' autocomplete='current-password'></div>"
+  +"<label>Senha nova</label><input type='password' id='setPwNew' placeholder='Pelo menos 8 caracteres' autocomplete='new-password'>"
+  +"<label>Confirmar senha nova</label><input type='password' id='setPwConfirm' placeholder='Repete a senha nova' autocomplete='new-password'>"
+  +"<button class='setBtn dark' id='setPwSave' style='margin-top:12px'>Guardar senha</button>"
+  +"<p style='font-size:13.5px;color:var(--ink2)'>A senha fica guardada só como código embaralhado no servidor — nunca em texto. Se a esqueceres, apaga a linha da senha na tabela site_settings, no painel do Supabase, e define outra.</p>"
   :"";
   return "<h2>Geral</h2>"
   +keys
@@ -1436,12 +1506,39 @@ function wireSetSection(){
   const th=$("setTheme");if(th){th.value=cfg.theme||"system";th.onchange=()=>{cfg.theme=th.value;saveCfg();applyTheme();};}
   const ak=$("setApiKey");if(ak)ak.addEventListener("input",()=>{cfg.apiKey=ak.value.trim();saveCfg();});
   const gk=$("setGeminiKey");if(gk)gk.addEventListener("input",()=>{cfg.geminiKey=gk.value.trim();saveCfg();});
+  const pwSave=$("setPwSave");
+  if(pwSave){
+    fetchPwStatus().then(v=>{
+      const st=$("pwStatusLine");
+      if(st)st.innerHTML="<p style='font-size:13.5px;color:var(--ink2)'>"+(v?"Senha definida — quem entra precisa de email + senha.":"Ainda não há senha definida — o login continua só por email.")+"</p>";
+      const cw=$("pwCurrentWrap"); if(cw)cw.style.display=v?"block":"none";
+    });
+    pwSave.onclick=async ()=>{
+      const cur=($("setPwCurrent")||{}).value||"";
+      const nw=($("setPwNew")||{}).value||"";
+      const cf=($("setPwConfirm")||{}).value||"";
+      if(nw.length<8){toast("A senha nova tem de ter pelo menos 8 caracteres.");return;}
+      if(nw!==cf){toast("A confirmação não é igual à senha nova.");return;}
+      pwSave.disabled=true;
+      try{
+        const r=await fetch(CENTRAL_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},body:JSON.stringify({action:"set-password",email:(cfg.email||"").trim().toLowerCase(),currentPassword:cur,newPassword:nw})});
+        const j=await r.json().catch(()=>({}));
+        if(!r.ok){toast(j.error||"Não consegui guardar a senha.");pwSave.disabled=false;return;}
+        pwSet=true;
+        toast("Senha guardada. A partir de agora, todos entram com email + senha.");
+        ["setPwCurrent","setPwNew","setPwConfirm"].forEach(id=>{const el=$(id);if(el)el.value="";});
+        const cw=$("pwCurrentWrap"); if(cw)cw.style.display="block";
+        const st=$("pwStatusLine"); if(st)st.innerHTML="<p style='font-size:13.5px;color:var(--ink2)'>Senha definida — quem entra precisa de email + senha.</p>";
+        pwSave.disabled=false;
+      }catch(e){ toast("Falha na internet. Verifica a tua ligação e tenta outra vez."); pwSave.disabled=false; }
+    };
+  }
   document.querySelectorAll("#setContent [data-mk]").forEach(inp=>inp.addEventListener("input",()=>{if(!cfg.modelKeys)cfg.modelKeys={};cfg.modelKeys[inp.dataset.mk]=inp.value.trim();saveCfg();}));
   const sm=$("setModel");if(sm)sm.addEventListener("change",()=>{cfg.model=sm.value;saveCfg();});
   const su=$("setUser");if(su)su.addEventListener("input",()=>{cfg.user=su.value.trim();saveCfg();});
   const sc=$("setCall");if(sc)sc.addEventListener("input",()=>{cfg.user=sc.value.trim();saveCfg();});
   const ss=$("setSystem");if(ss)ss.addEventListener("input",()=>{cfg.system=ss.value.trim();saveCfg();});
-  const so=$("setSignOut");if(so)so.onclick=()=>{localStorage.setItem(LS.sess,"");location.reload();};
+  const so=$("setSignOut");if(so)so.onclick=()=>{clearStoredToken();localStorage.setItem(LS.sess,"");location.reload();};
   const sd=$("setDelete");if(sd)sd.onclick=()=>{if(confirm("Apagar esta conta e as conversas dela?")){const em=(cfg.email||"").trim().toLowerCase();if(em){delete accts[em];saveAccts(accts);}localStorage.setItem(LS.sess,"");location.reload();}};
   const se=$("setExport");if(se)se.onclick=()=>{
     const blob=new Blob([JSON.stringify(convs,null,2)],{type:"application/json"});
@@ -1485,7 +1582,9 @@ $("saveAdmin").onclick=()=>{
       cfg=Object.assign({},a.cfg);
       cfg.email=newEmail;
       convs=a.convs||[];projects=a.proj||[];curId=a.cur||null;
+      centralToken=a.token||"";
     }else{
+      centralToken="";
       cfg.email=newEmail;
       cfg.name=formName;cfg.welcome=formWelcome;cfg.user=formUser;cfg.proEmails=formPro;cfg.color=formColor;cfg.sug=formSug.length?formSug:DEFAULT_SUG;
       convs=[];projects=[];curId=null;
@@ -1733,6 +1832,13 @@ $("memImport").addEventListener("change",e=>{
   e.target.value="";
 });
 applyCfg();renderList();renderChat();renderAuth();
+/* Sessão antiga só por email: com senha definida, pede email + senha. */
+(async function(){
+  if(sessEmail&&accts[sessEmail]&&!centralToken){
+    const needPw=await fetchPwStatus();
+    if(needPw){ localStorage.setItem(LS.sess,""); cfg.email=""; renderAuth(); }
+  }
+})();
 </script>
 <div id="netToast"></div>
 </body>
