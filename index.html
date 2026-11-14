@@ -203,9 +203,9 @@ body.dark .tgl.on{background:var(--accent)}
 #sendBtn.show{display:flex}
 #sendBtn:hover{opacity:.9}
 #sendBtn:disabled{background:#DCDCD6;opacity:1}
-#hint{font-size:12px;color:var(--ink2)}
-#compFoot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:9px}
-#compFoot .modelBtn{font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:5px;white-space:nowrap;padding:6px 8px;border-radius:8px}
+#hint{font-size:12px;color:var(--ink2);text-align:center}
+#compFoot{display:flex;flex-direction:column;align-items:stretch;gap:5px;margin-top:9px}
+#compFoot .modelBtn{align-self:flex-start;font-size:14px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:5px;white-space:nowrap;padding:6px 8px;border-radius:8px}
 #compFoot .modelBtn:hover{background:#F1F1EE}
 /* account sheet */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:60}
@@ -438,7 +438,7 @@ body.dark .tgl.on{background:var(--accent)}
           <button id="sendBtn" title="Enviar" disabled>↑</button>
         </div>
       </div>
-      <div id="compFoot"><span id="hint">Claude é uma IA e pode cometer erros. Confira sempre as respostas.</span><button class="modelBtn" id="permModeBtn" title="Modo de permissão">Manual</button><button class="modelBtn" id="modelBtn"><span id="modelFull">Sonnet 5.5 Médio Manual</span> ﹀</button></div>
+      <div id="compFoot"><button class="modelBtn" id="modelBtn"><span id="modelFull">Sonnet 5.5</span> ﹀</button><span id="hint">Claude é uma IA e pode cometer erros. Confira sempre as respostas.</span></div>
     </div>
   </div>
 </main>
@@ -616,6 +616,18 @@ function markSVG(color,size){return markIMG(size);}
 const LANG_PT_RULE="Responde SEMPRE em português de Moçambique. Nunca respondas em russo, inglês ou qualquer outra língua. A tua língua é o português.";
 const LANG_EN_RULE="Always respond in English. Never respond in Russian, Portuguese or any other language. Your language is English.";
 const WELCOME_EN="What shall we think about together?";
+/* Saudações da página inicial, no estilo do original (v7.39): rodam a cada
+   conversa nova (rotateGreet). A saudação personalizada da dona não roda. */
+const GREET_EN=["What shall we think about together?","How can I help you today?","What can I do for you today?","What are we working on today?","Ready when you are."];
+const GREET_PT=["O que vamos pensar juntos?","Como posso ajudar você hoje?","O que posso fazer por você hoje?","Em que vamos trabalhar hoje?","Pronto quando você estiver."];
+function isDefaultGreet(w){return GREET_EN.includes(w)||GREET_PT.includes(w);}
+function rotateGreet(){
+  if(!isDefaultGreet(cfg.welcome))return;
+  const list=langCode()==="en"?GREET_EN:GREET_PT;
+  const cur=list.indexOf(cfg.welcome);
+  cfg.welcome=list[(cur+1)%list.length];
+  if(cfg.email)persistAcct();
+}
 const DEFAULT_SUG_EN=[
   ["Write an email","A short, professional email to a client."],
   ["Summarize a text","Paste a text and ask for a 5-line summary."],
@@ -879,15 +891,14 @@ const I18N={
 "Editar":"Edit","Copiar":"Copy","Copiado ✓":"Copied ✓","Gerar de novo":"Regenerate",
 "Ouvir":"Listen","Parar":"Stop","Gosto":"Like","Não gosto":"Dislike","Partilhar":"Share","Ver artefacto":"View artifact",
 "Edita a mensagem e envia — as respostas seguintes são refeitas.":"Edit the message and send — the following answers are redone.",
-"Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic (a que compraste) — ou a chave de reserva do Google, que é grátis. A chave fica só neste navegador.":"There's no API key yet. Go to **Settings** and add your Anthropic key (the one you bought) — or the Google backup key, which is free. The key stays only in this browser.",
-"Não consegui responder:":"I couldn't respond:",". Verifica a chave e o modelo nas Configurações.":". Check the key and model in Settings.",
-"Não consegui gerar de novo:":"I couldn't regenerate:","Descreve esta imagem.":"Describe this image.",
+"Algo correu mal. Tenta de novo.":"Something went wrong. Please try again.",
+"Descreve esta imagem.":"Describe this image.",
 "A reserva não devolveu texto.":"The backup returned no text.","Sem resposta do servidor.":"No response from the server.",
 "Erro":"Error","Nova conversa":"New conversation","Apagar":"Delete",
 "mensagem":"message","mensagens":"messages","mensagem enviada":"message sent","mensagens enviadas":"messages sent",
 "Cria um artefacto:":"Create an artifact:","Cria um artefacto (":"Create an artifact (",
 "documento":"document","apresentação":"presentation","Artefacto":"Artifact","código":"code",
-"Escreve um email válido.":"Enter a valid email.","Digite a tua senha.":"Enter your password.",
+"Escreve um email válido.":"Enter a valid email.","Digite a tua senha.":"Enter your password.","Falha na internet. Verifica a tua ligação e tenta outra vez.":"No internet connection. Check your connection and try again.",
 "Falha na internet. Verifica a tua ligação e tenta outra vez.":"Internet failure. Check your connection and try again.",
 "Senha incorreta.":"Incorrect password.","A senha nova tem de ter pelo menos 8 caracteres.":"The new password must be at least 8 characters.",
 "A confirmação não é igual à senha nova.":"The confirmation doesn't match the new password.",
@@ -1050,7 +1061,7 @@ function saveCfg(){persistAcct();applyCfg();}
 function saveConvs(){persistAcct();}
 function saveProj(){persistAcct();}
 function modelShort(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Sonnet";}
-function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return (m?m.short:"Sonnet")+" "+tr(effortOf().short)+" "+(cfg.permMode==="auto"?"Auto":"Manual");}
+function modelFull(){const m=MODELS.find(x=>x.id===cfg.model);return m?m.short:"Sonnet";}
 function applyTheme(){
   const th=cfg.theme||"system";
   const dark=th==="dark"||(th==="system"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -1073,10 +1084,9 @@ function applyCfg(){
   $("accountEmail").textContent=cfg.email||"";
   const pro=isPro();
   const up=$("userPlan");if(up)up.textContent=cfg.email?(" · "+(pro?"Pro":"Free")):"";
-  const pt=$("planPillText");if(pt)pt.textContent=pro?"plano Pro":"plano Gratuito";
+  const pt=$("planPillText");if(pt)pt.textContent=pro?tr("plano Pro"):tr("plano Gratuito");
   const pu=$("planPillUp");if(pu)pu.style.display=pro?"none":"";
   const mf=$("modelFull");if(mf)mf.textContent=modelFull();
-  const pm=$("permModeBtn");if(pm)pm.textContent=cfg.permMode==="auto"?"Auto":"Manual";
   applyTheme();
   document.title=cfg.name;
   applyLang();
@@ -1084,6 +1094,7 @@ function applyCfg(){
 function getConv(){if(tempConv&&!curId)return tempConv;return convs.find(c=>c.id===curId);}
 function newConv(){
   tempConv=null;editIdx=null;
+  rotateGreet();
   const c={id:"c"+Date.now(),title:tr("Nova conversa"),msgs:[],ts:Date.now(),created:Date.now()};
   convs.unshift(c);curId=c.id;saveConvs();renderList();renderChat();
 }
@@ -1133,7 +1144,7 @@ function renderChat(){
   const c=getConv(),box=$("msgs"),w=$("welcome");
   box.innerHTML="";
   const pt=$("planPillText");
-  if(pt)pt.textContent=(c&&c.temp)?"Conversa temporária — não é guardada":(isPro()?"plano Pro":"plano Gratuito");
+  if(pt)pt.textContent=(c&&c.temp)?tr("Conversa temporária — não é guardada"):(isPro()?tr("plano Pro"):tr("plano Gratuito"));
   if(!c||c.msgs.length===0){w.style.display="block";return;}
   w.style.display="none";
   c.msgs.forEach((m,i)=>{
@@ -1391,9 +1402,7 @@ async function send(){
   }catch(e){
     document.getElementById("typingRow")?.remove();
     if(e.message==="SESSAO_EXPIRADA"){sessionExpired();return;}
-    c.msgs.push({role:"assistant",content:e.message==="NO_KEY"
-      ?tr("Ainda não há chave da API. Vai a **Configurações** e coloca a tua chave da Anthropic (a que compraste) — ou a chave de reserva do Google, que é grátis. A chave fica só neste navegador.")
-      :tr("Não consegui responder:")+" "+e.message+tr(". Verifica a chave e o modelo nas Configurações.")});
+    c.msgs.push({role:"assistant",content:tr("Algo correu mal. Tenta de novo.")});
     saveConvs();renderChat();
     if(voiceMode)speak(c.msgs[c.msgs.length-1].content,null,true);
   }
@@ -1414,7 +1423,7 @@ async function regenerate(idx){
   }catch(e){
     document.getElementById("typingRow")?.remove();
     if(e.message==="SESSAO_EXPIRADA"){sessionExpired();return;}
-    c.msgs.push({role:"assistant",content:tr("Não consegui gerar de novo:")+" "+e.message});saveConvs();renderChat();
+    c.msgs.push({role:"assistant",content:tr("Algo correu mal. Tenta de novo.")});saveConvs();renderChat();
   }
   setBusy(false);
 }
@@ -1566,7 +1575,7 @@ function renderAuth(){
 function enterAccount(em,nm){
   tempConv=null;editIdx=null;
   em=(em||"").trim().toLowerCase();
-  if(!em||!em.includes("@")){toast("Escreve um email válido.");return false;}
+  if(!em||!em.includes("@")){toast(tr("Escreve um email válido."));return false;}
   const a=accts[em];
   if(a){
     if(!centralToken)centralToken=a.token||"";
@@ -1586,7 +1595,11 @@ function enterAccount(em,nm){
 let loginEmail="";
 async function startLogin(em){
   em=(em||"").trim().toLowerCase();
-  if(!em||!em.includes("@")){toast("Escreve um email válido.");return;}
+  if(!em||!em.includes("@")){toast(tr("Escreve um email válido."));return;}
+  /* v7.39 — língua do login: a da conta guardada desse email; email novo → inglês. */
+  const saved=(accts&&accts[em]&&accts[em].cfg)||null;
+  cfg.lang=saved&&saved.lang?saved.lang:(OWNER_EMAILS.includes(em)?"Português":"English");
+  applyLang();
   const needPw=await fetchPwStatus();
   if(!needPw){ enterAccount(em,""); return; }
   loginEmail=em;
@@ -1607,7 +1620,7 @@ function showLoginStep1(){
 async function doPasswordLogin(){
   const em=loginEmail;
   const pw=$("loginPagePass").value||"";
-  if(!pw){$("loginPagePass").focus();toast("Digite a tua senha.");return;}
+  if(!pw){$("loginPagePass").focus();toast(tr("Digite a tua senha."));return;}
   try{
     const r=await fetch(CENTRAL_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},body:JSON.stringify({action:"login",email:em,password:pw})});
     const j=await r.json().catch(()=>({}));
@@ -1615,7 +1628,7 @@ async function doPasswordLogin(){
     if(j.token) centralToken=j.token;
     showLoginStep1();
     enterAccount(em,"");
-  }catch(e){ toast("Falha na internet. Verifica a tua ligação e tenta outra vez."); }
+  }catch(e){ toast(tr("Falha na internet. Verifica a tua ligação e tenta outra vez.")); }
 }
 let onbEmail="",onbName="";
 function showOnboard(em,nm){
@@ -1745,6 +1758,16 @@ $("modelBtn").onclick=()=>{
     const check=e.id===cfg.effort?"<span style='color:var(--blue);font-size:22px;line-height:1'>✓</span>":"";
     d.innerHTML="<div style='flex:1;display:flex;align-items:center;gap:7px'><b style='font-size:16px'>"+e.short+"</b>"+rec+warn+"</div>"+check;
     d.onclick=()=>{cfg.effort=e.id;saveCfg();$("modelWrap").classList.remove("open");};
+    el.appendChild(d);
+  });
+  const ph=document.createElement("p");ph.style.cssText="color:var(--ink2);font-size:13.5px;margin:18px 0 4px;font-weight:600";ph.textContent=tr("Modo de permissão");
+  el.appendChild(ph);
+  ["manual","auto"].forEach(pm=>{
+    const d=document.createElement("div");
+    d.style.cssText="display:flex;align-items:center;gap:10px;padding:11px 2px;cursor:pointer";
+    const check=cfg.permMode===pm?"<span style='color:var(--blue);font-size:22px;line-height:1'>✓</span>":"";
+    d.innerHTML="<div style='flex:1;display:flex;align-items:center;gap:7px'><b style='font-size:16px'>"+(pm==="auto"?"Auto":"Manual")+"</b></div>"+check;
+    d.onclick=()=>{cfg.permMode=pm;saveCfg();$("modelWrap").classList.remove("open");};
     el.appendChild(d);
   });
   const mh=document.createElement("p");mh.style.cssText="color:var(--ink2);font-size:13.5px;margin:18px 0 4px;font-weight:600";mh.textContent="Mais modelos";
@@ -2193,7 +2216,6 @@ document.addEventListener("click",e=>{const m=$("attachMenu");if(m&&!m.contains(
 $("amFile").onclick=()=>{$("attachMenu").classList.remove("open");$("fileInput").click();};
 $("amShot").onclick=()=>{$("attachMenu").classList.remove("open");toast("A captura de ecrã ainda não está disponível neste navegador.");};
 $("amSearch").onclick=()=>{$("attachMenu").classList.remove("open");document.body.classList.remove("noSide");if(window.innerWidth<=760)$("sidebar").classList.add("open");$("searchInput").focus();};
-$("permModeBtn").onclick=()=>{cfg.permMode=cfg.permMode==="auto"?"manual":"auto";saveCfg();};
 let rec=null;
 let recStopping=false;
 let recRetries=0;
