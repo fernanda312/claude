@@ -672,6 +672,15 @@ const I18N={
 "Confirmar senha nova":"Confirm new password","Repete a senha nova":"Repeat the new password",
 "Guardar senha":"Save password",
 "A senha fica guardada só como código embaralhado no servidor — nunca em texto. Se a esqueceres, apaga a linha da senha na tabela site_settings, no painel do Supabase, e define outra.":"The password is stored only as a scrambled code on the server — never as plain text. If you forget it, delete the password row in the site_settings table in the Supabase dashboard, and set a new one.",
+"Contas à venda":"Accounts for sale",
+"Cada email vendido vale 30 dias. Cortar um email tira-lhe o acesso logo — os outros continuam a entrar.":"Each sold email lasts 30 days. Cutting an email removes its access right away — the others keep signing in.",
+"A carregar…":"Loading…",
+"Ativa":"Active","Cortada":"Cut off","Cortar":"Cut off","Repor":"Restore",
+"Conta cortada.":"Account cut off.","Conta reposta.":"Account restored.",
+"Não consegui carregar as contas.":"Couldn't load the accounts.",
+"Não consegui cortar a conta.":"Couldn't cut off the account.",
+"Não consegui repor a conta.":"Couldn't restore the account.",
+"Ainda não há contas à venda.":"No accounts for sale yet.",
 "Modelo":"Model","Aparência":"Appearance","Tema":"Theme","Sistema":"System","Claro":"Light","Escuro":"Dark",
 "Sistema, Claro ou Escuro.":"System, Light, or Dark.",
 "Fonte da interface":"Interface font","Padrão · Anthropic Sans":"Default · Anthropic Sans",
@@ -1211,6 +1220,36 @@ async function fetchPwStatus(){
   pwFetched=true;
   return pwSet;
 }
+/* Contas à venda (só a dona): lista os emails permitidos com o estado
+   (Ativa/Cortada) e corta/repõe um a um — a senha é única para todos, por
+   isso o corte é por email e não toca nos outros. */
+async function loadSaleAccts(){
+  const el=$("acctList"); if(!el) return;
+  const owner=(cfg.email||"").trim().toLowerCase();
+  try{
+    const r=await fetch(CENTRAL_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},body:JSON.stringify({action:"list-allowed",email:owner})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!Array.isArray(j.accounts)){ el.innerHTML="<p style='font-size:13.5px;color:var(--ink2)'>"+tr("Não consegui carregar as contas.")+"</p>"; return; }
+    if(!j.accounts.length){ el.innerHTML="<p style='font-size:13.5px;color:var(--ink2)'>"+tr("Ainda não há contas à venda.")+"</p>"; return; }
+    el.innerHTML=j.accounts.map(a=>
+      "<div class='setRow'><div><div class='lab' style='word-break:break-all'>"+esc(a.email)+"</div><div class='desc'>"+(a.blocked?tr("Cortada"):tr("Ativa"))+"</div></div>"
+      +"<button class='setBtn' data-acct='"+esc(a.email)+"' data-blocked='"+(a.blocked?"1":"0")+"'>"+(a.blocked?tr("Repor"):tr("Cortar"))+"</button></div>"
+    ).join("");
+    el.querySelectorAll("[data-acct]").forEach(b=>{
+      b.onclick=async ()=>{
+        const target=b.dataset.acct, blocked=b.dataset.blocked==="1";
+        b.disabled=true;
+        try{
+          const r2=await fetch(CENTRAL_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":CENTRAL_KEY,"Authorization":"Bearer "+CENTRAL_KEY},body:JSON.stringify({action:blocked?"unblock-email":"block-email",email:owner,target})});
+          const j2=await r2.json().catch(()=>({}));
+          if(!r2.ok){ toast(j2.error||(blocked?tr("Não consegui repor a conta."):tr("Não consegui cortar a conta."))); b.disabled=false; return; }
+          toast(blocked?tr("Conta reposta."):tr("Conta cortada."));
+          loadSaleAccts();
+        }catch(e){ toast(tr("Falha na internet. Verifica a tua ligação e tenta outra vez.")); b.disabled=false; }
+      };
+    });
+  }catch(e){ el.innerHTML="<p style='font-size:13.5px;color:var(--ink2)'>"+tr("Não consegui carregar as contas.")+"</p>"; }
+}
 async function callAnthropic(messages,keyArg){
   const key=(keyArg||cfg.apiKey||"").trim();
   if(!key) throw new Error("NO_KEY");
@@ -1745,6 +1784,8 @@ function setGeral(){
   +"<label>Confirmar senha nova</label><input type='password' id='setPwConfirm' placeholder='Repete a senha nova' autocomplete='new-password'>"
   +"<button class='setBtn dark' id='setPwSave' style='margin-top:12px'>Guardar senha</button>"
   +"<p style='font-size:13.5px;color:var(--ink2)'>A senha fica guardada só como código embaralhado no servidor — nunca em texto. Se a esqueceres, apaga a linha da senha na tabela site_settings, no painel do Supabase, e define outra.</p>"
+  +"<h3>Contas à venda</h3><p>Cada email vendido vale 30 dias. Cortar um email tira-lhe o acesso logo — os outros continuam a entrar.</p>"
+  +"<div id='acctList'><p style='font-size:13.5px;color:var(--ink2)'>A carregar…</p></div>"
   :"";
   return "<h2>Geral</h2>"
   +keys
@@ -1944,6 +1985,8 @@ function wireSetSection(){
       }catch(e){ toast("Falha na internet. Verifica a tua ligação e tenta outra vez."); pwSave.disabled=false; }
     };
   }
+  const acctList=$("acctList");
+  if(acctList) loadSaleAccts();
   document.querySelectorAll("#setContent [data-mk]").forEach(inp=>inp.addEventListener("input",()=>{if(!cfg.modelKeys)cfg.modelKeys={};cfg.modelKeys[inp.dataset.mk]=inp.value.trim();saveCfg();}));
   const sm=$("setModel");if(sm)sm.addEventListener("change",()=>{cfg.model=sm.value;saveCfg();});
   const su=$("setUser");if(su)su.addEventListener("input",()=>{cfg.user=su.value.trim();saveCfg();});
