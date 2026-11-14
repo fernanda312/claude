@@ -1624,7 +1624,7 @@ $("loginPageEnter").onclick=doPasswordLogin;
 $("loginPagePass").addEventListener("keydown",e=>{if(e.key==="Enter")doPasswordLogin();});
 $("loginPassBack").onclick=e=>{e.preventDefault();showLoginStep1();};
 $("loginPassShow").onclick=()=>{const p=$("loginPagePass");const show=p.type==="password";p.type=show?"text":"password";$("loginPassShow").textContent=show?tr("Esconder"):tr("Mostrar");p.focus();};
-$("loginDownload").onclick=()=>{window.open("https://claude.ai","_blank");};
+$("loginDownload").onclick=()=>{window.open("https://claude.ai/download","_blank");};
 $("accountOverlay").onclick=e=>{if(e.target.id==="accountOverlay")e.target.classList.remove("open");};
 $("accSettings").onclick=()=>{$("accountOverlay").classList.remove("open");openSettings();};
 $("accLang").onclick=()=>{$("accountOverlay").classList.remove("open");openLang();};
